@@ -1,0 +1,38 @@
+Metadata-Version: 1.0
+Name: pycronify
+Version: 0.0.0
+Summary: Python wrapper for Cronofy
+Home-page: https://github.com/venuebook/pycronofy
+Author: Venuebook Dev Team (Dan Pozmanter et al)
+Author-email: dev@venuebook.com
+License: Copyright (c) 2016-2016 Venuebook <dev@venuebook.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+Download-URL: http://cheeseshop.python.org/pypi/pycronify
+Description: Python wrapper for Cronify calendaring services.
+        
+Keywords: cronify,calendar
+Platform: Independant
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
