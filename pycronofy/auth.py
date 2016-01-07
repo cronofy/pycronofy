@@ -21,6 +21,7 @@ class Auth:
         self.refresh_token = refresh_token
         self.expires_in = 0
         self.authorization_datetime = datetime.datetime.now()
+        self.redirect_uri = ''
 
     def get_authorization(self):
         """Get the authorization header with the currently active token
@@ -29,14 +30,21 @@ class Auth:
         """
         return 'Bearer %s' % self.access_token
 
-    def update_token_from_code(self, code, redirect_uri):
+    def update_tokens_from_code(self, code):
+        """Updates the authorization tokens from the user provided code.
+
+        :param string code: Authorization code to pass to Cronofy.
+
+        :return: "Expires In".
+        :rtype: ``int``
+        """
         url = '%s/oauth/token' % settings.API_BASE_URL
         response = requests.post(url, json={
             'grant_type': 'authorization_code',
             'client_id': self.client_id,
             'client_secret': self.client_secret,
             'code': code,
-            'redirect_uri': redirect_uri,
+            'redirect_uri': self.redirect_uri,
             })
         if response.status_code != requests.codes.ok:
             response.raise_for_status()
@@ -45,6 +53,7 @@ class Auth:
         self.access_token = data['access_token']
         self.refresh_token = data['refresh_token']
         self.expires_in = data['expires_in']
+        return self.expires_in
 
     def user_auth_link(self, redirect_uri, scope, state=''):
         """Generates a URL to send the user for OAuth 2.0
@@ -57,6 +66,7 @@ class Auth:
         :rtype: ``string``
         """
         url = '%s/oauth/authorize' % settings.APP_BASE_URL
+        self.redirect_uri = redirect_uri
         response = requests.get(url, params={
             'response_type': 'code',
             'client_id': self.client_id,

@@ -23,6 +23,16 @@ class CronofyClient:
         """
         self.auth = Auth(client_id, client_secret, access_token, refresh_token)
 
+    def authorize_from_code(self, code):
+        """Updates the authorization from the user provided code.
+
+        :param string code: Authorization code to pass to Cronofy.
+
+        :return: "Expires In".
+        :rtype: ``int``
+        """
+        return self.auth.update_tokens_from_code(code)
+
     def list_calendars(self):
         """Return a list of calendars available for the active account.
 
@@ -58,9 +68,6 @@ class CronofyClient:
             'include_managed':True,
             })
         return Pages(self, events, 'events', automatic_pagination)
-
-    def update_token_from_code(self, code, redirect_uri):
-        return self.auth.update_token_from_code(code, redirect_uri)
 
     def upsert_event(self, calendar_id, event):
         """
