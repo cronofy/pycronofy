@@ -1,7 +1,8 @@
 import datetime
 import requests
 from pycronofy import settings
-class Auth:
+
+class Auth(object):
     """
     Handle authorization with Cronofy services via Personal Token and OAuth
 
@@ -58,7 +59,7 @@ class Auth:
     def user_auth_link(self, redirect_uri, scope, state=''):
         """Generates a URL to send the user for OAuth 2.0
 
-        :param string redict_url: meow
+        :param string redict_url: URL to redirect the user to after auth.
         :param string scope: The scope of the privileges you want the eventual access_token to grant.
         :param string state: A value that will be returned to you unaltered along with the user's authorization request decision.
         (The OAuth 2.0 RFC recommends using this to prevent cross-site request forgery.)

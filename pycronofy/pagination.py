@@ -1,4 +1,4 @@
-class Pages:
+class Pages(object):
     """
         Get paged data from Cronofy.
         Optionally iterate through all data (automatically fetching pages) or manually list and paginate.
