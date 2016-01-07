@@ -68,8 +68,9 @@ for event in events:
 #######################
 
 # Create a test event with local timezone
+test_event_id = 'example-%s' % uuid.uuid4(), # You need to supply a uuid, most likely from your system.
 event = {
-    'event_id': 'example-%s' % uuid.uuid4(), # You need to supply a uuid, most likely from your system.
+    'event_id': test_event_id
     'summary': 'Test Event', # The event title
     'description': 'Discuss proactive strategies for a reactive world.',
     'start': datetime.datetime.now().replace(tzinfo=pytz.timezone(timezone_id)),
@@ -80,4 +81,10 @@ event = {
     },
 }
 print(cronofy.upsert_event(calendar_id=cal['calendar_id'], event=event))
+
+#######################
+# Deleting a test event
+#######################
+
+print(cronofy.delete_event(calendar_id=cal['calendar_id'], event_id=test_event_id))
 ```
