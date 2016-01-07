@@ -33,6 +33,15 @@ class CronofyClient(object):
         """
         return self.auth.update_tokens_from_code(code)
 
+    def delete_event(self, calendar_id, event_id):
+        """
+        :param string calendar_id: ID of calendar to insert/update event into.
+        :param string event_id: ID of event to delete.
+        :return: Response from _delete
+        :rtype: ``Response``
+        """
+        return self._delete(endpoint='calendars/%s/events' % calendar_id, params={'event_id': event_id})
+
     def list_calendars(self):
         """Return a list of calendars available for the active account.
 
@@ -106,15 +115,18 @@ class CronofyClient(object):
         :return: Response json.
         :rtype: ``dict``
         """
-        if endpoint and not url:
-            url = '%s/%s/%s' % (settings.API_BASE_URL, settings.API_VERSION, endpoint)
-        response = requests.get(url, headers={'Authorization': self.auth.get_authorization()}, params=params)
-        if response.status_code == requests.codes.unauthorized:
-            #refresh
-            pass
-        elif response.status_code != requests.codes.ok:
-            response.raise_for_status()
-        return response.json()
+        return self._request(requests.get, endpoint, url, params=params, return_json=True)
+
+    def _delete(self, endpoint='', url='', params={}):
+        """Perform a get for a json API endpoint.
+
+        :param string endpoint: Target endpoint. (Optional).
+        :param string url: Override the endpoint and provide the full url (eg for pagination). (Optional).
+        :param dict params: Provide parameters to pass to the request. (Optional).
+        :return: Response json.
+        :rtype: ``dict``
+        """
+        return self._request(requests.delete, endpoint, url, params=params)
 
     def _post(self, endpoint='', url='', data={}):
         """Perform a post to an API endpoint.
@@ -125,12 +137,31 @@ class CronofyClient(object):
         :return: Response.
         :rtype: ``Response``
         """
+        return self._request(requests.post, endpoint, url, data=data)
+
+    def _request(self, request_method, endpoint='', url='', data={}, params={}, return_json=False):
+        """Perform a http request via the specified method to an API endpoint.
+
+        :param string endpoint: Target endpoint. (Optional).
+        :param string url: Override the endpoint and provide the full url (eg for pagination). (Optional).
+        :param dict params: Provide parameters to pass to the request. (Optional).
+        :param dict data: Data to pass to the post. (Optional).
+        :param bool return_json: Return json instead of the Response object. (Optional, default False).
+        :return: Response or Response json
+        :rtype: ``Response`` or ``dict``
+        """
         if endpoint and not url:
             url = '%s/%s/%s' % (settings.API_BASE_URL, settings.API_VERSION, endpoint)
-        response = requests.post(url, headers={'Authorization': self.auth.get_authorization()}, json=data)
+        if data:
+            response = request_method(url, headers={'Authorization': self.auth.get_authorization()}, json=data)
+        else:
+            response = request_method(url, headers={'Authorization': self.auth.get_authorization()}, params=params)
         if response.status_code == requests.codes.unauthorized:
             #refresh
             pass
         elif response.status_code != requests.codes.ok:
             response.raise_for_status()
+        if return_json:
+            return response.json()
         return response
+
