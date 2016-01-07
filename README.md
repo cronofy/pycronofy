@@ -14,12 +14,34 @@ import uuid
 import pytz
 from pycronofy import CronofyClient
 
-cronofy = CronofyClient(access_token=YOUR_TOKEN) # Using a personal token for testing.
-
+# Example timezone id
 timezone_id = 'America/New_York'
 
-# Get first calendar
+#######################
+# Authorization:
+#######################
+
+### With a personal access token
+cronofy = CronofyClient(access_token=YOUR_TOKEN) # Using a personal token for testing.
+
+### With OAuth
+cronofy = CronofyClient(client_id=YOUR_CLIENT_ID, client_secret=YOUR_CLIENT_SECRET)
+
+response = cronofy.user_auth_link('http://yourwebsite.com')
+print('Go to this url in your browser, and paste the code below')
+print(response.url)
+code = input('Paste Code Here: ')
+cronofy.authorize_from_code(code)
+
+#######################
+# Getting a Calendar
+#######################
+
 print(cronofy.list_calendars()[0])
+
+#######################
+# Getting events
+#######################
 
 # For from_date, to_date, start, end, you can pass in a datetime object or an ISO 8601 datetime string with the offset included.
 # For example:
@@ -38,6 +60,11 @@ events = cronofy.read_events(calendar_ids=(YOUR_CAL_ID,), from_date=from_date, t
 # Automatic pagination through an iterator
 for event in events:
     print('%s (From %s to %s, %i attending)' % (event['summary'], event['start'], event['end'], len(event['attendees'])))
+
+
+#######################
+# Creating a test event
+#######################
 
 # Create a test event with local timezone
 event = {
