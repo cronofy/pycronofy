@@ -43,7 +43,8 @@ print(cronofy.list_calendars()[0])
 # Getting events
 #######################
 
-# For from_date, to_date, start, end, you can pass in a datetime object or an ISO 8601 datetime string with the offset included.
+# For from_date, to_date, start, end, you can pass in a datetime object 
+# or an ISO 8601 datetime string with the offset included.
 # For example:
 example_datetime_string = '2016-01-06T16:49:37-0456' #ISO 8601 with offset.
 
