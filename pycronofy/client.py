@@ -56,8 +56,11 @@ class CronofyClient:
             'from': get_datetime_string(from_date), 
             'to': get_datetime_string(to_date),
             'include_managed':True,
-        })
+            })
         return Pages(self, events, 'events', automatic_pagination)
+
+    def update_token_from_code(self, code, redirect_uri):
+        return self.auth.update_token_from_code(code, redirect_uri)
 
     def upsert_event(self, calendar_id, event):
         """
@@ -72,6 +75,20 @@ class CronofyClient:
         event['start'] = get_datetime_string(event['start'])
         event['end'] = get_datetime_string(event['end'])
         return self._post(endpoint='calendars/%s/events' % calendar_id, data=event)
+
+    def user_auth_link(self, redirect_uri, scope='', state=''):
+        """Generates a URL to send the user for OAuth 2.0
+
+        :param string redict_url: meow
+        :param string scope: The scope of the privileges you want the eventual access_token to grant.
+        :param string state: A value that will be returned to you unaltered along with the user's authorization request decision.
+        (The OAuth 2.0 RFC recommends using this to prevent cross-site request forgery.)
+        :return: authorization link
+        :rtype: ``string``
+        """
+        if not scope:
+            scope = ' '.join(settings.DEFAULT_OAUTH_SCOPE)
+        return self.auth.user_auth_link(redirect_uri, scope, state)
 
     def _get(self, endpoint='', url='', params={}):
         """Perform a get for a json API endpoint.

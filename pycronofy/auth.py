@@ -1,3 +1,6 @@
+import datetime
+import requests
+from pycronofy import settings
 class Auth:
     """
     Handle authorization with Cronofy services via Personal Token and OAuth
@@ -12,12 +15,55 @@ class Auth:
         :param string access_token: Access Token for User's Account.
         :param string refresh_token: Existing Refresh Token for User's Account.
         """
-        if access_token:
-            self._token = access_token
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.access_token = access_token
+        self.refresh_token = refresh_token
+        self.expires_in = 0
+        self.authorization_datetime = datetime.datetime.now()
 
     def get_authorization(self):
         """Get the authorization header with the currently active token
         :return: 'Authorization' header
         :rtype: ``string``
         """
-        return 'Bearer %s' % self._token
+        return 'Bearer %s' % self.access_token
+
+    def update_token_from_code(self, code, redirect_uri):
+        url = '%s/oauth/token' % settings.API_BASE_URL
+        response = requests.post(url, json={
+            'grant_type': 'authorization_code',
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+            'code': code,
+            'redirect_uri': redirect_uri,
+            })
+        if response.status_code != requests.codes.ok:
+            response.raise_for_status()
+        self.authorization_datetime = datetime.datetime.now()  
+        data = response.json()
+        self.access_token = data['access_token']
+        self.refresh_token = data['refresh_token']
+        self.expires_in = data['expires_in']
+
+    def user_auth_link(self, redirect_uri, scope, state=''):
+        """Generates a URL to send the user for OAuth 2.0
+
+        :param string redict_url: meow
+        :param string scope: The scope of the privileges you want the eventual access_token to grant.
+        :param string state: A value that will be returned to you unaltered along with the user's authorization request decision.
+        (The OAuth 2.0 RFC recommends using this to prevent cross-site request forgery.)
+        :return: authorization link
+        :rtype: ``string``
+        """
+        url = '%s/oauth/authorize' % settings.APP_BASE_URL
+        response = requests.get(url, params={
+            'response_type': 'code',
+            'client_id': self.client_id,
+            'redirect_uri': redirect_uri,
+            'scope': scope,
+            'state': state,
+            })
+        if response.status_code != requests.codes.ok:
+            response.raise_for_status()
+        return response

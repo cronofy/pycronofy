@@ -1,2 +1,3 @@
+future==0.15.2
+pytz==2015.7
 requests==2.9.1
-pytz
