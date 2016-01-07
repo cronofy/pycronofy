@@ -34,7 +34,7 @@ code = input('Paste Code Here: ')
 cronofy.authorize_from_code(code)
 
 #######################
-# Getting a Calendar
+# Getting a calendar
 #######################
 
 print(cronofy.list_calendars()[0])
