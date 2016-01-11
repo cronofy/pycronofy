@@ -86,6 +86,10 @@ class CronofyClient(object):
         """
         return self.auth.refresh(code)
 
+    def revoke_authorization(self):
+        """Revokes Oauth authorization."""
+        self.auth.revoke()
+
     def upsert_event(self, calendar_id, event):
         """
         :param string calendar_id: ID of calendar to insert/update event into.

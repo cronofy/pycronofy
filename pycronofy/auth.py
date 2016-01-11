@@ -26,7 +26,7 @@ class Auth(object):
 
     def get_authorization(self):
         """Get the authorization header with the currently active token
-        
+
         :return: 'Authorization' header
         :rtype: ``string``
         """
@@ -52,6 +52,20 @@ class Auth(object):
         self.access_token = data['access_token']
         self.expires_in = data['expires_in']
         return self.expires_in
+
+    def revoke(self):
+        """Revokes Oauth authorization."""
+        url = '%s/oauth/token/revoke' % settings.API_BASE_URL
+        response = requests.post(url, json={
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+            'token': self.access_token,
+            })
+        if response.status_code != requests.codes.ok:
+            response.raise_for_status()
+        self.access_token = None
+        self.refresh_token = None
+        self.expires_in = 0
 
     def update_tokens_from_code(self, code):
         """Updates the authorization tokens from the user provided code.
