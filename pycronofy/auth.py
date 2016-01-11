@@ -26,17 +26,39 @@ class Auth(object):
 
     def get_authorization(self):
         """Get the authorization header with the currently active token
+        
         :return: 'Authorization' header
         :rtype: ``string``
         """
         return 'Bearer %s' % self.access_token
+
+    def refresh(self):
+        """Refreshes the authorization token.
+
+        :return: "Expires in".
+        :rtype: ``int``
+        """
+        url = '%s/oauth/token' % settings.API_BASE_URL
+        response = requests.post(url, json={
+            'grant_type': 'refresh_token',
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+            'refresh_token': self.refresh_token,
+            })
+        if response.status_code != requests.codes.ok:
+            response.raise_for_status()
+        self.authorization_datetime = datetime.datetime.now()  
+        data = response.json()
+        self.access_token = data['access_token']
+        self.expires_in = data['expires_in']
+        return self.expires_in
 
     def update_tokens_from_code(self, code):
         """Updates the authorization tokens from the user provided code.
 
         :param string code: Authorization code to pass to Cronofy.
 
-        :return: "Expires In".
+        :return: "Expires in".
         :rtype: ``int``
         """
         url = '%s/oauth/token' % settings.API_BASE_URL

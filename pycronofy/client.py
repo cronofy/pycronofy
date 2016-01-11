@@ -78,6 +78,14 @@ class CronofyClient(object):
             })
         return Pages(self, events, 'events', automatic_pagination)
 
+    def refresh_access_token(self):
+        """Refreshes the authorization token.
+
+        :return: "Expires in".
+        :rtype: ``int``
+        """
+        return self.auth.refresh(code)
+
     def upsert_event(self, calendar_id, event):
         """
         :param string calendar_id: ID of calendar to insert/update event into.
