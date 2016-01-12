@@ -66,8 +66,9 @@ for event in events:
 print(events[2])
 print(len(events))
 
-# Alternatively grab the actual list object:
-events.list()
+# Alternatively grab the actual list object for the current page:
+page = events.current_page()
+print(page[1])
 
 # Manually move to the next page:
 events.fetch_next_page()

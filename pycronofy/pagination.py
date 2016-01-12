@@ -25,6 +25,14 @@ class Pages(object):
         self.length = len(self.data[data_type])
         self.automatic_pagination = automatic_pagination
 
+    def current_page(self):
+        """Return the current json data as a list.
+
+        :return: Current page of data.
+        :rtype: ``list``
+        """
+        return self.data[self.data_type]
+
     def data(self):
         """Get the raw json data of the response
         :return: Dictionary containing response data.
@@ -36,14 +44,6 @@ class Pages(object):
         """Retrieves the next page of data and refreshes Pages instance."""
         result = self.client._get(url=self.next_page_url)
         self.__init__(self.client, result, self.data_type, self.automatic_pagination)
-
-    def list(self):
-        """Return the current json data as a list.
-
-        :return: Current page of data.
-        :rtype: ``list``
-        """
-        return self.data[self.data_type]
 
     def next(self):
         """Python 2 backwards compatibility"""
