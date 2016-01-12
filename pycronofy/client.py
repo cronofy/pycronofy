@@ -32,8 +32,27 @@ class CronofyClient(object):
         """
         return self.auth.update_tokens_from_code(code)
 
-    def delete_event(self, calendar_id, event_id):
+    def close_notification_channel(self, channel_id):
+        """Close a notification channel to stop push notifications from being sent.
+
+        :param string channel_id: The id of the notification channel.
+        :return: Response
+        :rtype: ``response``
         """
+        return self._delete(endpoint='channels/%s' % channel_id)
+
+    def create_notification_channel(self, callback_url):
+        """Create a new channel for receiving push notifications.
+
+        :param string callback_url: The url that will receive push notifications.
+        Must not be longer than 128 characters and should be HTTPS.
+        :return: Response
+        :rtype: ``response``
+        """
+        return self._post('channels', data={'callback_url': callback_url})
+
+    def delete_event(self, calendar_id, event_id):
+        """Delete an event from the specified calendar.
         :param string calendar_id: ID of calendar to insert/update event into.
         :param string event_id: ID of event to delete.
         :return: Response from _delete
@@ -49,6 +68,15 @@ class CronofyClient(object):
         """
         calendars = self._get(endpoint='calendars')
         return calendars['calendars']
+
+    def list_notification_channels(self):
+        """Return a list of notification channels available for the active account.
+
+        :return: List of notification channels (dictionaries).
+        :rtype: ``list``
+        """
+        channels = self._get(endpoint='channels')
+        return channels['channels']
 
     def read_events(self, 
         calendar_ids=(), 
