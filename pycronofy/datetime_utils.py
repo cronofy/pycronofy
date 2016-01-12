@@ -12,6 +12,8 @@ def get_datetime_string(date_time):
         :return: ISO 8601 formatted datetime string.
         :rtype: ``string`` 
     """
+    if not date_time:
+        return date_time
     if type(date_time) == type(''):
         return date_time
     elif type(date_time) != type(datetime.datetime.now()):
