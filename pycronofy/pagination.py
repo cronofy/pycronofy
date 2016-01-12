@@ -25,10 +25,6 @@ class Pages(object):
         self.length = len(self.data[data_type])
         self.automatic_pagination = automatic_pagination
 
-    def __iter__(self):
-        """Function as an interator"""
-        return self
-
     def data(self):
         """Get the raw json data of the response
         :return: Dictionary containing response data.
@@ -43,12 +39,45 @@ class Pages(object):
 
     def list(self):
         """Return the current json data as a list.
+
+        :return: Current page of data.
+        :rtype: ``list``
         """
         return self.data[self.data_type]
 
     def next(self):
         """Python 2 backwards compatibility"""
         return self.__next__()
+
+    def __delitem__(self, idx):
+        """Delete the item at idx in the returned data. Not recommended.
+
+        :param int idx: Index
+        :return: Value at index. Most likely returns a dictionary.
+        :rtype: ``dict``
+        """
+        del self.data[self.data_type][idx]
+
+    def __getitem__(self, idx):
+        """Get the item at idx in the returned data.
+
+        :param int idx: Index
+        :return: Value at index. Most likely returns a dictionary.
+        :rtype: ``dict``
+        """
+        return self.data[self.data_type][idx]
+
+    def __iter__(self):
+        """Function as an interator"""
+        return self
+
+    def __len__(self):
+        """Get the length of the current page of data
+
+        :return: Length of current page.
+        :rtype: ``int``
+        """
+        return len(self.data[self.data_type])
 
     def __next__(self):
         """Iterate to the next item in the data set.
@@ -66,3 +95,11 @@ class Pages(object):
                 return self.__next__()
             else:
                 raise StopIteration()
+
+    def __setitem__(self, idx, value):
+        """Set the value of an item in the list. Not recommended.
+
+        :param int idx: Index
+        :param dict value: Value to replace the item at index with.
+        """
+        self.data[self.data_type][idx] = value

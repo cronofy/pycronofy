@@ -62,6 +62,18 @@ events = cronofy.read_events(calendar_ids=(YOUR_CAL_ID,), from_date=from_date, t
 for event in events:
     print('%s (From %s to %s, %i attending)' % (event['summary'], event['start'], event['end'], len(event['attendees'])))
 
+# Treat the events as a list (holding the current page only).
+print(events[2])
+print(len(events))
+
+# Alternatively grab the actual list object:
+events.list()
+
+# Manually move to the next page:
+events.fetch_next_page()
+
+# Access the raw data returned by the request:
+events.data()
 
 #######################
 # Creating a test event
