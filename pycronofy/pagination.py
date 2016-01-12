@@ -25,6 +25,18 @@ class Pages(object):
         self.length = len(self.data[data_type])
         self.automatic_pagination = automatic_pagination
 
+    def all(self):
+        """Return all results as a list by automatically fetching all pages.
+
+        :return: All results.
+        :rtype: ``list``
+        """
+        results = self.data[self.data_type]
+        while self.current < self.total:
+            self.fetch_next_page()
+            results.extend(self.data[self.data_type])
+        return results
+
     def current_page(self):
         """Return the current json data as a list.
 

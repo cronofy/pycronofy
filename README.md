@@ -76,6 +76,13 @@ events.fetch_next_page()
 # Access the raw data returned by the request:
 events.data()
 
+# Retrieve all data in a list:
+# Option 1:
+all = [event for event in cronofy.read_events(calendar_ids=(YOUR_CAL_ID,), from_date=from_date, to_date=to_date, tzid=timezone_id)]
+
+# Option 2:
+all = cronofy.read_events(calendar_ids=(YOUR_CAL_ID,), from_date=from_date, to_date=to_date, tzid=timezone_id).all()
+
 #######################
 # Creating a test event
 #######################
