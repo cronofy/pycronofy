@@ -27,9 +27,8 @@ class CronofyClient(object):
         """Updates the authorization from the user provided code.
 
         :param string code: Authorization code to pass to Cronofy.
-
-        :return: "Expires In".
-        :rtype: ``int``
+        :return: Response.
+        :rtype: ``response``
         """
         return self.auth.update_tokens_from_code(code)
 
@@ -81,8 +80,8 @@ class CronofyClient(object):
     def refresh_access_token(self):
         """Refreshes the authorization token.
 
-        :return: "Expires in".
-        :rtype: ``int``
+        :return: Response.
+        :rtype: ``response``
         """
         return self.auth.refresh(code)
 
@@ -116,7 +115,7 @@ class CronofyClient(object):
         """
         if not scope:
             scope = ' '.join(settings.DEFAULT_OAUTH_SCOPE)
-        return self.auth.user_auth_link(redirect_uri, scope, state)
+        return self.auth.user_auth_link(redirect_uri, scope, state).url
 
     def _get(self, endpoint='', url='', params={}):
         """Perform a get for a json API endpoint.

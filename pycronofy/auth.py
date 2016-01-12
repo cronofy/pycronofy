@@ -35,8 +35,8 @@ class Auth(object):
     def refresh(self):
         """Refreshes the authorization token.
 
-        :return: "Expires in".
-        :rtype: ``int``
+        :return: Response.
+        :rtype: ``response``
         """
         url = '%s/oauth/token' % settings.API_BASE_URL
         response = requests.post(url, json={
@@ -51,10 +51,14 @@ class Auth(object):
         data = response.json()
         self.access_token = data['access_token']
         self.expires_in = data['expires_in']
-        return self.expires_in
+        return response
 
     def revoke(self):
-        """Revokes Oauth authorization."""
+        """Revokes Oauth authorization.
+
+        :return: Response.
+        :rtype: ``response``
+        """
         url = '%s/oauth/token/revoke' % settings.API_BASE_URL
         response = requests.post(url, json={
             'client_id': self.client_id,
@@ -66,14 +70,15 @@ class Auth(object):
         self.access_token = None
         self.refresh_token = None
         self.expires_in = 0
+        return response
 
     def update_tokens_from_code(self, code):
         """Updates the authorization tokens from the user provided code.
 
         :param string code: Authorization code to pass to Cronofy.
 
-        :return: "Expires in".
-        :rtype: ``int``
+        :return: Response.
+        :rtype: ``response``
         """
         url = '%s/oauth/token' % settings.API_BASE_URL
         response = requests.post(url, json={
@@ -90,7 +95,7 @@ class Auth(object):
         self.access_token = data['access_token']
         self.refresh_token = data['refresh_token']
         self.expires_in = data['expires_in']
-        return self.expires_in
+        return response
 
     def user_auth_link(self, redirect_uri, scope, state=''):
         """Generates a URL to send the user for OAuth 2.0
@@ -99,8 +104,8 @@ class Auth(object):
         :param string scope: The scope of the privileges you want the eventual access_token to grant.
         :param string state: A value that will be returned to you unaltered along with the user's authorization request decision.
         (The OAuth 2.0 RFC recommends using this to prevent cross-site request forgery.)
-        :return: authorization link
-        :rtype: ``string``
+        :return: Response.
+        :rtype: ``response``
         """
         url = '%s/oauth/authorize' % settings.APP_BASE_URL
         self.redirect_uri = redirect_uri
