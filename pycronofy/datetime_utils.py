@@ -16,7 +16,7 @@ def get_datetime_string(date_time, date=False):
         return date_time
     if type(date_time) in (type(''), type(u'')):
         return date_time
-    elif type(date_time) not in (type(datetime.date.today(), type(datetime.datetime.now())):
+    elif type(date_time) not in (type(datetime.date.today()), type(datetime.datetime.now())):
         raise Exception('Unsupported type for get_datetime_string.\nSupported types: ``datetime.datetime``, ``datetime.date``, or ``string``.')
     if not date_time.tzinfo:
         raise Exception('tzinfo is None')
