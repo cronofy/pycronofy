@@ -14,7 +14,7 @@ def get_datetime_string(date_time):
     """
     if not date_time:
         return date_time
-    if type(date_time) == type(''):
+    if type(date_time) in (type(''), type(u'')):
         return date_time
     elif type(date_time) != type(datetime.datetime.now()):
         raise Exception('Unsupported type for get_datetime_string.\nSupported types: ``datetime.datetime`` or ``string``.')
