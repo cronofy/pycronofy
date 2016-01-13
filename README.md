@@ -107,4 +107,12 @@ print(cronofy.upsert_event(calendar_id=cal['calendar_id'], event=event))
 #######################
 
 print(cronofy.delete_event(calendar_id=cal['calendar_id'], event_id=test_event_id))
+
+#######################
+# Creating a notification channel
+#######################
+
+# Note this will only work with Oauth, not with a personal access token.
+response = cronofy.create_notification_channel('http://example.com', calendar_ids=(cal['calendar_id'],))
+print(response)
 ```
