@@ -195,10 +195,10 @@ class CronofyClient(object):
             response = request_method(url, headers={'Authorization': self.auth.get_authorization()}, json=data)
         else:
             response = request_method(url, headers={'Authorization': self.auth.get_authorization()}, params=params)
-        if response.status_code == requests.codes.unauthorized:
-            #refresh
-            pass
-        elif response.status_code != requests.codes.ok:
+        # if response.status_code == requests.codes.unauthorized:
+        #     #refresh
+        #     pass
+        if response.status_code != requests.codes.ok:
             response.raise_for_status()
         if return_json:
             return response.json()
