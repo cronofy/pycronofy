@@ -41,7 +41,7 @@ class CronofyClient(object):
         """
         return self._delete(endpoint='channels/%s' % channel_id)
 
-    def create_notification_channel(self, callback_url):
+    def create_notification_channel(self, callback_url, calendar_ids=()):
         """Create a new channel for receiving push notifications.
 
         :param string callback_url: The url that will receive push notifications.
@@ -49,7 +49,10 @@ class CronofyClient(object):
         :return: Response
         :rtype: ``response``
         """
-        return self._post('channels', data={'callback_url': callback_url})
+        data = {'callback_url': callback_url}
+        if calendar_ids:
+            data['filters'] = {'calendar_ids':calendar_ids}
+        return self._post('channels', data=data)
 
     def delete_event(self, calendar_id, event_id):
         """Delete an event from the specified calendar.
@@ -82,15 +85,19 @@ class CronofyClient(object):
         calendar_ids=(), 
         from_date=None, 
         to_date=None, 
+        last_modified=None,
         tzid=settings.DEFAULT_TIMEZONE_ID, 
+        only_managed=False,
         include_managed=True, 
         automatic_pagination=True):
         """Read events for linked account (optionally for the specified calendars).
 
         :param tuple calendar_ids: Tuple or list of calendar ids to pass to cronofy. (Optional).
-        :param datetime.datetime from_date: Start datetime (or ISO8601 string) for query. (Optional).
-        :param datetime.datetime to_date: End datetime (or ISO8601 string) for query. (Optional).
+        :param datetime.date from_date: Start datetime (or ISO8601 string) for query. (Optional).
+        :param datetime.date to_date: End datetime (or ISO8601 string) for query. (Optional).
+        :param datetime.datetime last_modified: Return items modified on or after last_modified. Datetime or ISO8601 string. (Optional).
         :param string tzid: Timezone ID for query. (Optional, default settings.DEFAULT_TIMEZONE_ID). Should match tzinfo on datetime objects.
+        :param bool only_managed: Only include pages created through the API. (Optional, default False)
         :param bool include_managed: Include pages created through the API. (Optional, default True)
         :param bool automatic_pagination: Autonatically fetch next page when iterating through results (Optional, default True)
         :return: Wrapped results (Containing first page of events).
@@ -99,9 +106,11 @@ class CronofyClient(object):
         events = self._get(endpoint='events', params={
             'tzid': tzid, 
             'calendar_ids':calendar_ids,
-            'from': get_datetime_string(from_date), 
-            'to': get_datetime_string(to_date),
-            'include_managed':True,
+            'from': get_datetime_string(from_date, date=True), 
+            'to': get_datetime_string(to_date, date=True),
+            'last_modified': get_datetime_string(last_modified),
+            'only_managed': only_managed,
+            'include_managed': include_managed,
             })
         return Pages(self, events, 'events', automatic_pagination)
 
@@ -192,6 +201,7 @@ class CronofyClient(object):
         if endpoint and not url:
             url = '%s/%s/%s' % (settings.API_BASE_URL, settings.API_VERSION, endpoint)
         if data:
+            print data
             response = request_method(url, headers={'Authorization': self.auth.get_authorization()}, json=data)
         else:
             response = request_method(url, headers={'Authorization': self.auth.get_authorization()}, params=params)
