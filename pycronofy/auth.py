@@ -44,7 +44,7 @@ class Auth(object):
             'client_id': self.client_id,
             'client_secret': self.client_secret,
             'refresh_token': self.refresh_token,
-            })
+        })
         if response.status_code != requests.codes.ok:
             response.raise_for_status()
         self.authorization_datetime = datetime.datetime.now()  
@@ -64,7 +64,7 @@ class Auth(object):
             'client_id': self.client_id,
             'client_secret': self.client_secret,
             'token': self.access_token,
-            })
+        })
         if response.status_code != requests.codes.ok:
             response.raise_for_status()
         self.access_token = None
@@ -87,7 +87,7 @@ class Auth(object):
             'client_secret': self.client_secret,
             'code': code,
             'redirect_uri': self.redirect_uri,
-            })
+        })
         if response.status_code != requests.codes.ok:
             response.raise_for_status()
         self.authorization_datetime = datetime.datetime.now()  
@@ -115,7 +115,7 @@ class Auth(object):
             'redirect_uri': redirect_uri,
             'scope': scope,
             'state': state,
-            })
+        })
         if response.status_code != requests.codes.ok:
             response.raise_for_status()
         return response

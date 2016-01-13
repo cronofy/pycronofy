@@ -111,7 +111,7 @@ class CronofyClient(object):
             'last_modified': get_datetime_string(last_modified),
             'only_managed': only_managed,
             'include_managed': include_managed,
-            })
+        })
         return Pages(self, events, 'events', automatic_pagination)
 
     def refresh_access_token(self):
