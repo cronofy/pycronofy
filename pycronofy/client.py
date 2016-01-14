@@ -106,8 +106,8 @@ class CronofyClient(object):
         events = self._get(endpoint='events', params={
             'tzid': tzid, 
             'calendar_ids':calendar_ids,
-            'from': get_iso8601_string(from_date, date=True), 
-            'to': get_iso8601_string(to_date, date=True),
+            'from': get_iso8601_string(from_date), 
+            'to': get_iso8601_string(to_date),
             'last_modified': get_iso8601_string(last_modified),
             'only_managed': only_managed,
             'include_managed': include_managed,
