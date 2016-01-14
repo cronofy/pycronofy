@@ -1,6 +1,6 @@
 ## PyCronofy ##
 
-A minimalist python library for [Cronofy](http://www.cronofy.com)
+A python library for [Cronofy](http://www.cronofy.com)
 
 Inspired by [Cronofy-Ruby](https://github.com/cronofy/cronofy-ruby)
 
@@ -43,7 +43,7 @@ print(cronofy.list_calendars()[0])
 # Getting events
 #######################
 
-# For from_date, to_date, start, end, you can pass in a datetime object 
+# For from_date, to_date, start, end, you can pass in a datetime object
 # or an ISO 8601 datetime string with the offset included.
 # For example:
 example_datetime_string = '2016-01-06T16:49:37-0456' #ISO 8601 with offset.
