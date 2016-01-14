@@ -13,16 +13,16 @@ class UTC(datetime.tzinfo):
 # End UTC class
 
 def test_none():
-    assert(get_iso8601_string(None) == None)
+    assert get_iso8601_string(None) == None
 
 def test_iso8601_string():
-    assert(get_iso8601_string('2016-01-15') == '2016-01-15')
+    assert get_iso8601_string('2016-01-15') == '2016-01-15'
 
 def test_date():
-    assert(get_iso8601_string(datetime.date(2016, 1, 15)) == '2016-01-15')
+    assert get_iso8601_string(datetime.date(2016, 1, 15)) == '2016-01-15'
 
 def test_datetime():
     target_datetime = '2016-01-15T09:08:00'
     d = datetime.datetime.strptime(target_datetime, '%Y-%m-%dT%H:%M:%S')
     d = d.replace(tzinfo=UTC())
-    assert(get_iso8601_string(d) == ('%s+0000' % target_datetime))
+    assert get_iso8601_string(d) == ('%s+0000' % target_datetime)
