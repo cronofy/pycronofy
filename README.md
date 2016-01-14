@@ -6,6 +6,12 @@ Inspired by [Cronofy-Ruby](https://github.com/cronofy/cronofy-ruby)
 
 [Developer API](http://www.cronofy.com/developers/api)
 
+Dependencies:
+future (for python 2/3 compatibility)
+requests (for http requests)
+pytest (for testing)
+responses (for testing requests)
+
 Usage:
 
 ```python
