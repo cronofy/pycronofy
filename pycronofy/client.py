@@ -1,7 +1,7 @@
 import requests
 from pycronofy import settings
 from .auth import Auth
-from .datetime_utils import get_datetime_string
+from .datetime_utils import get_iso8601_string
 from .pagination import Pages
 
 class CronofyClient(object):
@@ -106,9 +106,9 @@ class CronofyClient(object):
         events = self._get(endpoint='events', params={
             'tzid': tzid, 
             'calendar_ids':calendar_ids,
-            'from': get_datetime_string(from_date, date=True), 
-            'to': get_datetime_string(to_date, date=True),
-            'last_modified': get_datetime_string(last_modified),
+            'from': get_iso8601_string(from_date, date=True), 
+            'to': get_iso8601_string(to_date, date=True),
+            'last_modified': get_iso8601_string(last_modified),
             'only_managed': only_managed,
             'include_managed': include_managed,
         })
@@ -136,8 +136,8 @@ class CronofyClient(object):
         for key in settings.EVENTS_REQUIRED_FIELDS:
             if not key in event:
                 raise Exception('%s not found in event.' % key)
-        event['start'] = get_datetime_string(event['start'])
-        event['end'] = get_datetime_string(event['end'])
+        event['start'] = get_iso8601_string(event['start'])
+        event['end'] = get_iso8601_string(event['end'])
         return self._post(endpoint='calendars/%s/events' % calendar_id, data=event)
 
     def user_auth_link(self, redirect_uri, scope='', state=''):
