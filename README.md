@@ -141,15 +141,15 @@ response = cronofy.create_notification_channel('http://example.com', calendar_id
 print(response)
 ```
 
-If you get an insecure platform warning, you can:
-
-* Install python >= 2.7.9
-* pip install requests\[security\] (you may need to install additional library packages)
-* Call ``requests.packages.urllib3.disable_warnings()`` in your code to suppress the warnings.
-
 Dependencies:
 
 * funcsigs (for testing)
 * requests (for http requests)
 * pytest (for testing)
 * responses (for testing requests)
+
+In the event of an insecure platform warning:
+
+* Install python >= 2.7.9
+* pip install requests\[security\] (you may need to install additional library packages)
+* Call ``requests.packages.urllib3.disable_warnings()`` in your code to suppress the warnings.
