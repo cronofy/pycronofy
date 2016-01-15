@@ -23,6 +23,15 @@ class CronofyClient(object):
         """
         self.auth = Auth(client_id, client_secret, access_token, refresh_token)
 
+    def account(self):
+        """Get identifying information for the active account.
+
+        :return: Account data.
+        :rtype: ``dict``
+        """
+        raw_json = self._get(endpoint='account')
+        return raw_json['account']
+
     def authorize_from_code(self, code):
         """Updates the authorization from the user provided code.
 
@@ -69,8 +78,17 @@ class CronofyClient(object):
         :return: List of calendars (dictionaries).
         :rtype: ``list``
         """
-        calendars = self._get(endpoint='calendars')
-        return calendars['calendars']
+        raw_json = self._get(endpoint='calendars')
+        return raw_json['calendars']
+
+    def list_profiles(self):
+        """Get list of active user's calendar profiles.
+
+        :return: Calendar profiles.
+        :rtype: ``list``
+        """
+        raw_json = self._get(endpoint='profiles')
+        return raw_json['profiles']
 
     def list_notification_channels(self):
         """Return a list of notification channels available for the active account.
@@ -78,8 +96,8 @@ class CronofyClient(object):
         :return: List of notification channels (dictionaries).
         :rtype: ``list``
         """
-        channels = self._get(endpoint='channels')
-        return channels['channels']
+        raw_json = self._get(endpoint='channels')
+        return raw_json['channels']
 
     def read_events(self, 
         calendar_ids=(), 
@@ -89,6 +107,7 @@ class CronofyClient(object):
         tzid=settings.DEFAULT_TIMEZONE_ID, 
         only_managed=False,
         include_managed=True, 
+        localized_times=False,
         automatic_pagination=True):
         """Read events for linked account (optionally for the specified calendars).
 
@@ -99,11 +118,12 @@ class CronofyClient(object):
         :param string tzid: Timezone ID for query. (Optional, default settings.DEFAULT_TIMEZONE_ID). Should match tzinfo on datetime objects.
         :param bool only_managed: Only include pages created through the API. (Optional, default False)
         :param bool include_managed: Include pages created through the API. (Optional, default True)
+        :param bool localized_times: Return time values for event start/end with localization information. This varies across providers. (Optional, default False).
         :param bool automatic_pagination: Autonatically fetch next page when iterating through results (Optional, default True)
         :return: Wrapped results (Containing first page of events).
         :rtype: ``Pages``
         """
-        events = self._get(endpoint='events', params={
+        results = self._get(endpoint='events', params={
             'tzid': tzid, 
             'calendar_ids':calendar_ids,
             'from': get_iso8601_string(from_date), 
@@ -111,8 +131,40 @@ class CronofyClient(object):
             'last_modified': get_iso8601_string(last_modified),
             'only_managed': only_managed,
             'include_managed': include_managed,
+            'localized_times': localized_times,
         })
-        return Pages(self, events, 'events', automatic_pagination)
+        return Pages(self, results, 'events', automatic_pagination)
+
+    def read_free_busy(self, 
+        calendar_ids=(), 
+        from_date=None, 
+        to_date=None, 
+        last_modified=None,
+        tzid=settings.DEFAULT_TIMEZONE_ID, 
+        include_managed=True, 
+        localized_times=False,
+        automatic_pagination=True):
+        """Read free/busy blocks for linked account (optionally for the specified calendars).
+
+        :param tuple calendar_ids: Tuple or list of calendar ids to pass to cronofy. (Optional).
+        :param datetime.date from_date: Start datetime (or ISO8601 string) for query. (Optional).
+        :param datetime.date to_date: End datetime (or ISO8601 string) for query. (Optional).
+        :param string tzid: Timezone ID for query. (Optional, default settings.DEFAULT_TIMEZONE_ID). Should match tzinfo on datetime objects.
+        :param bool include_managed: Include pages created through the API. (Optional, default True)
+        :param bool localized_times: Return time values for event start/end with localization information. This varies across providers. (Optional, default False).
+        :param bool automatic_pagination: Autonatically fetch next page when iterating through results (Optional, default True)
+        :return: Wrapped results (Containing first page of free/busy blocks).
+        :rtype: ``Pages``
+        """
+        results = self._get(endpoint='free_busy', params={
+            'tzid': tzid, 
+            'calendar_ids':calendar_ids,
+            'from': get_iso8601_string(from_date), 
+            'to': get_iso8601_string(to_date),
+            'include_managed': include_managed,
+            'localized_times': localized_times,
+        })
+        return Pages(self, results, 'free_busy', automatic_pagination)
 
     def refresh_access_token(self):
         """Refreshes the authorization token.

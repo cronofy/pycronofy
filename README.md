@@ -42,6 +42,19 @@ code = input('Paste Code Here: ')
 cronofy.authorize_from_code(code)
 
 #######################
+# Getting account info
+#######################
+
+print(cronofy.account())
+
+#######################
+# Getting profiles
+#######################
+
+for profile in cronofy.list_profiles():
+    print(profile)
+
+#######################
 # Getting a calendar
 #######################
 
@@ -90,6 +103,17 @@ all = [event for event in cronofy.read_events(calendar_ids=(YOUR_CAL_ID,), from_
 
 # Option 2:
 all = cronofy.read_events(calendar_ids=(YOUR_CAL_ID,), from_date=from_date, to_date=to_date, tzid=timezone_id).all()
+
+#######################
+# Getting free/busy blocks
+#######################
+
+# Essentially the same as reading events.
+
+free_busy_blocks = cronofy.read_free_busy(calendar_ids=(YOUR_CAL_ID,), from_date=from_date, to_date=to_date)
+
+for block in free_busy_blocks:
+    print(block)
 
 #######################
 # Creating a test event
