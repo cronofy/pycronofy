@@ -6,14 +6,6 @@ Inspired by [Cronofy-Ruby](https://github.com/cronofy/cronofy-ruby)
 
 [Developer API](http://www.cronofy.com/developers/api)
 
-Dependencies:
-
-* funcsigs (for testing)
-* future (for python 2/3 compatibility)
-* requests (for http requests)
-* pytest (for testing)
-* responses (for testing requests)
-
 Usage:
 
 ```python
@@ -38,7 +30,7 @@ cronofy = CronofyClient(client_id=YOUR_CLIENT_ID, client_secret=YOUR_CLIENT_SECR
 url = cronofy.user_auth_link('http://yourwebsite.com')
 print('Go to this url in your browser, and paste the code below')
 print(url)
-code = input('Paste Code Here: ')
+code = input('Paste Code Here: ') # raw_input() for python 2.
 cronofy.authorize_from_code(code)
 
 #######################
@@ -154,3 +146,10 @@ If you get an insecure platform warning, you can:
 * Install python >= 2.7.9
 * pip install requests\[security\] (you may need to install additional library packages)
 * Call ``requests.packages.urllib3.disable_warnings()`` in your code to suppress the warnings.
+
+Dependencies:
+
+* funcsigs (for testing)
+* requests (for http requests)
+* pytest (for testing)
+* responses (for testing requests)
