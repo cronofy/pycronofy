@@ -141,7 +141,7 @@ response = cronofy.create_notification_channel('http://example.com', calendar_id
 print(response)
 ```
 
-To test:
+To run pycronofy tests:
 
 ```
 py.test pycronofy
