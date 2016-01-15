@@ -7,13 +7,13 @@ API_VERSION = 'v1'
 
 # Turned into a space separated string
 DEFAULT_OAUTH_SCOPE = (
-    # 'read_account',
+    'read_account',
     'list_calendars',
     'read_account',
     'read_events',
     'create_event',
     'delete_event',
-    # 'read_free_busy',
+    'read_free_busy',
     )
 
 # Default Timezone ID (used in read_events)
