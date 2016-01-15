@@ -8,6 +8,7 @@ Inspired by [Cronofy-Ruby](https://github.com/cronofy/cronofy-ruby)
 
 Dependencies:
 
+* funcsigs (for testing)
 * future (for python 2/3 compatibility)
 * requests (for http requests)
 * pytest (for testing)
@@ -123,3 +124,9 @@ print(cronofy.delete_event(calendar_id=cal['calendar_id'], event_id=test_event_i
 response = cronofy.create_notification_channel('http://example.com', calendar_ids=(cal['calendar_id'],))
 print(response)
 ```
+
+If you get an insecure platform warning, you can:
+
+* Install python >= 2.7.9
+* pip install requests\[security\] (you may need to install additional library packages)
+* Call ``requests.packages.urllib3.disable_warnings()`` in your code to suppress the warnings.

@@ -201,7 +201,6 @@ class CronofyClient(object):
         if endpoint and not url:
             url = '%s/%s/%s' % (settings.API_BASE_URL, settings.API_VERSION, endpoint)
         if data:
-            print data
             response = request_method(url, headers={'Authorization': self.auth.get_authorization()}, json=data)
         else:
             response = request_method(url, headers={'Authorization': self.auth.get_authorization()}, params=params)
