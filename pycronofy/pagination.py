@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 class Pages(object):
     """
         Get paged data from Cronofy.
@@ -22,7 +20,7 @@ class Pages(object):
         if 'next_page' in data['pages']:
             self.next_page_url = data['pages']['next_page']
         self.data_type = data_type
-        self.data = deepcopy(data)
+        self.data = data
         self.index = 0
         self.length = len(self.data[data_type])
         self.automatic_pagination = automatic_pagination

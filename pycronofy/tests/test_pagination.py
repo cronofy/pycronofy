@@ -1,3 +1,4 @@
+from copy import deepcopy
 import pytest
 import responses
 import requests
@@ -17,7 +18,7 @@ def test_all(client):
 
     :param CronofyClient client: CronofyClient instance with test data.
     """
-    pages = Pages(client=client, data=test_data.TEST_DATA_PAGE_ONE, data_type='events')
+    pages = Pages(client=client, data=deepcopy(test_data.TEST_DATA_PAGE_ONE), data_type='events')
     responses.add(**test_data.NEXT_PAGE_GET_ARGS)
     results = pages.all()
     assert len(results) == 2
@@ -29,7 +30,7 @@ def test_current_page(client):
 
     :param CronofyClient client: CronofyClient instance with test data.
     """
-    pages = Pages(client=client, data=test_data.TEST_DATA_PAGE_ONE, data_type='events')
+    pages = Pages(client=client, data=deepcopy(test_data.TEST_DATA_PAGE_ONE), data_type='events')
     assert pages.current_page() == test_data.TEST_DATA_PAGE_ONE['events']
 
 @responses.activate
@@ -38,7 +39,7 @@ def test_fetch_next_page(client):
 
     :param CronofyClient client: CronofyClient instance with test data.
     """
-    pages = Pages(client=client, data=test_data.TEST_DATA_PAGE_ONE, data_type='events')
+    pages = Pages(client=client, data=deepcopy(test_data.TEST_DATA_PAGE_ONE), data_type='events')
     responses.add(**test_data.NEXT_PAGE_GET_ARGS)
     pages.fetch_next_page()
     assert pages[0]['summary'] == test_data.TEST_DATA_PAGE_TWO['events'][0]['summary']
@@ -48,7 +49,7 @@ def test_json(client):
 
     :param CronofyClient client: CronofyClient instance with test data.
     """
-    pages = Pages(client=client, data=test_data.TEST_DATA_PAGE_ONE, data_type='events')
+    pages = Pages(client=client, data=deepcopy(test_data.TEST_DATA_PAGE_ONE), data_type='events')
     assert pages.json() == test_data.TEST_DATA_PAGE_ONE
 
 @responses.activate
@@ -57,7 +58,7 @@ def test_next(client):
 
     :param CronofyClient client: CronofyClient instance with test data.
     """
-    pages = Pages(client=client, data=test_data.TEST_DATA_PAGE_ONE, data_type='events')
+    pages = Pages(client=client, data=deepcopy(test_data.TEST_DATA_PAGE_ONE), data_type='events')
     responses.add(**test_data.NEXT_PAGE_GET_ARGS)
     results = []
     for item in pages:
@@ -71,7 +72,7 @@ def test___getitem__(client):
 
     :param CronofyClient client: CronofyClient instance with test data.
     """
-    pages = Pages(client=client, data=test_data.TEST_DATA_PAGE_ONE, data_type='events')
+    pages = Pages(client=client, data=deepcopy(test_data.TEST_DATA_PAGE_ONE), data_type='events')
     assert pages[0]['summary'] == test_data.TEST_DATA_PAGE_ONE['events'][0]['summary']
 
 def test___len__(client):
@@ -79,5 +80,5 @@ def test___len__(client):
 
     :param CronofyClient client: CronofyClient instance with test data.
     """
-    pages = Pages(client=client, data=test_data.TEST_DATA_PAGE_ONE, data_type='events')
+    pages = Pages(client=client, data=deepcopy(test_data.TEST_DATA_PAGE_ONE), data_type='events')
     assert len(pages) == 1
