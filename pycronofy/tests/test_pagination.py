@@ -63,7 +63,7 @@ def test_next(client):
     for item in pages:
         results.append(item)
     assert len(results) == 2
-    assert results[0]['summary'] == test_data.TEST_DATA_PAGE_ONE, data_type='events')
+    assert results[0]['summary'] == test_data.TEST_DATA_PAGE_ONE['events'][0]['summary']
     assert results[1]['summary'] == test_data.TEST_DATA_PAGE_TWO['events'][0]['summary']
 
 def test___getitem__(client):
@@ -72,7 +72,7 @@ def test___getitem__(client):
     :param CronofyClient client: CronofyClient instance with test data.
     """
     pages = Pages(client=client, data=test_data.TEST_DATA_PAGE_ONE, data_type='events')
-    assert pages[0]['summary'] == test_data.TEST_DATA_PAGE_ONE, data_type='events')
+    assert pages[0]['summary'] == test_data.TEST_DATA_PAGE_ONE['events'][0]['summary']
 
 def test___len__(client):
     """Test Pages.__len__() returns the length of the current page of data.
