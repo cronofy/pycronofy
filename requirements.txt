@@ -1,4 +1,2 @@
-funcsigs==0.4
-pytest==2.8.5
-requests==2.9.1
-responses==0.5.0
+-r requirements/core.txt
+-r requirements/test.txt

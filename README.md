@@ -6,6 +6,15 @@ Inspired by [Cronofy-Ruby](https://github.com/cronofy/cronofy-ruby)
 
 [Developer API](http://www.cronofy.com/developers/api)
 
+Installation:
+
+(unless performing a system wide install, it's recommended to install inside of a virtualenv)
+
+```
+pip install -r requirements/core.txt
+python setup.py install
+```
+
 Usage:
 
 ```python
@@ -144,15 +153,15 @@ print(response)
 To run pycronofy tests:
 
 ```
+pip install -r requirements/tests.txt
 py.test pycronofy
 ```
 
 Dependencies:
 
-* funcsigs (for testing)
-* requests (for http requests)
-* pytest (for testing)
-* responses (for testing requests)
+Core library depends on ``requests``.
+
+Tests depend on ``pytest, funcsigs, responses``.
 
 In the event of an insecure platform warning:
 
