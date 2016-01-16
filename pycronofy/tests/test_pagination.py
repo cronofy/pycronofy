@@ -21,8 +21,8 @@ def test_all(client):
     responses.add(**test_data.NEXT_PAGE_GET_ARGS)
     results = pages.all()
     assert len(results) == 2
-    assert results[0]['summary'] == 'Company Retreat'
-    assert results[1]['summary'] == 'Company Retreat 2'
+    assert results[0]['summary'] == test_data.TEST_DATA_PAGE_ONE['events'][0]['summary']
+    assert results[1]['summary'] == test_data.TEST_DATA_PAGE_TWO['events'][0]['summary']
 
 def test_current_page(client):
     """Test Pages.current_page() returns current page.
@@ -41,7 +41,7 @@ def test_fetch_next_page(client):
     pages = Pages(client=client, data=test_data.TEST_DATA_PAGE_ONE, data_type='events')
     responses.add(**test_data.NEXT_PAGE_GET_ARGS)
     pages.fetch_next_page()
-    assert pages[0]['summary'] == 'Company Retreat 2'
+    assert pages[0]['summary'] == test_data.TEST_DATA_PAGE_TWO['events'][0]['summary']
 
 def test_json(client):
     """Test Pages.json() returns raw json for page one.
@@ -63,8 +63,8 @@ def test_next(client):
     for item in pages:
         results.append(item)
     assert len(results) == 2
-    assert results[0]['summary'] == 'Company Retreat'
-    assert results[1]['summary'] == 'Company Retreat 2'
+    assert results[0]['summary'] == test_data.TEST_DATA_PAGE_ONE, data_type='events')
+    assert results[1]['summary'] == test_data.TEST_DATA_PAGE_TWO['events'][0]['summary']
 
 def test___getitem__(client):
     """Test Pages.__getitem__() returns the item at the specified index.
@@ -72,7 +72,7 @@ def test___getitem__(client):
     :param CronofyClient client: CronofyClient instance with test data.
     """
     pages = Pages(client=client, data=test_data.TEST_DATA_PAGE_ONE, data_type='events')
-    assert pages[0]['summary'] == 'Company Retreat'
+    assert pages[0]['summary'] == test_data.TEST_DATA_PAGE_ONE, data_type='events')
 
 def test___len__(client):
     """Test Pages.__len__() returns the length of the current page of data.
