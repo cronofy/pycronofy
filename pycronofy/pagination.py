@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 class Pages(object):
     """
         Get paged data from Cronofy.
@@ -20,7 +22,7 @@ class Pages(object):
         if 'next_page' in data['pages']:
             self.next_page_url = data['pages']['next_page']
         self.data_type = data_type
-        self.data = data
+        self.data = deepcopy(data)
         self.index = 0
         self.length = len(self.data[data_type])
         self.automatic_pagination = automatic_pagination
@@ -45,17 +47,17 @@ class Pages(object):
         """
         return self.data[self.data_type]
 
-    def data(self):
+    def fetch_next_page(self):
+        """Retrieves the next page of data and refreshes Pages instance."""
+        result = self.client._get(url=self.next_page_url)
+        self.__init__(self.client, result, self.data_type, self.automatic_pagination)
+
+    def json(self):
         """Get the raw json data of the response
         :return: Dictionary containing response data.
         :rtype: ``dict``
         """
         return self.data
-
-    def fetch_next_page(self):
-        """Retrieves the next page of data and refreshes Pages instance."""
-        result = self.client._get(url=self.next_page_url)
-        self.__init__(self.client, result, self.data_type, self.automatic_pagination)
 
     def next(self):
         """Python 2 backwards compatibility"""
@@ -100,10 +102,12 @@ class Pages(object):
         """
         if self.index < self.length:
             self.index += 1
+            print('\nReturning %i, %s' % (self.index-1, self.data[self.data_type][self.index-1]['summary']))
             return self.data[self.data_type][self.index-1]
         else:
             if self.automatic_pagination and (self.current < self.total):
                 self.fetch_next_page()
+                print('\n__next__')
                 return self.__next__()
             else:
                 raise StopIteration()

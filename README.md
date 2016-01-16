@@ -96,7 +96,7 @@ print(page[1])
 events.fetch_next_page()
 
 # Access the raw data returned by the request:
-events.data()
+events.json()
 
 # Retrieve all data in a list:
 # Option 1:

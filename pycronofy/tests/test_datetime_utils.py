@@ -1,16 +1,14 @@
 import datetime
 from ..datetime_utils import get_iso8601_string
 
-# UTC tzinfo class to remove pytz dependency only used in tests:
 class UTC(datetime.tzinfo):
-    """UTC"""
+    """UTC tzinfo class to remove pytz dependency only used in tests."""
     def utcoffset(self, dt):
         return datetime.timedelta(0)
     def tzname(self, dt):
         return "UTC"
     def dst(self, dt):
         return datetime.timedelta(0)
-# End UTC class
 
 def test_none():
     """Test get_iso8601_string returns None when passed None"""

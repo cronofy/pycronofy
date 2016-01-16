@@ -6,12 +6,13 @@ from .. import settings
 
 @pytest.fixture(scope="module")
 def auth():
+    """Setup Auth instance with test values."""
     return Auth(client_id='cats', client_secret='opposable thumbs', access_token='paw', refresh_token='teeth')
 
 def test_get_authorization(auth):
     """Test get_authorization returns the correct Authorization header value.
 
-    :param Auth auth: Auth instance with default values.
+    :param Auth auth: Auth instance with test data.
     """
     assert auth.get_authorization() == 'Bearer paw'
 
@@ -19,7 +20,7 @@ def test_get_authorization(auth):
 def test_refresh(auth):
     """Test refresh updates the access_token, expires_in, and authorization_datetime.
 
-    :param Auth auth: Auth instance with default values.
+    :param Auth auth: Auth instance with test data.
     """
     responses.add(responses.POST, 
         '%s/oauth/token' % settings.API_BASE_URL,
@@ -38,7 +39,7 @@ def test_refresh(auth):
 def test_revoke(auth):
     """Test revoke sets the access_token, refresh_token and authorization_datetime to None and the expires_in to 0.
 
-    :param Auth auth: Auth instance with default values.
+    :param Auth auth: Auth instance with test data.
     """
     responses.add(responses.POST, 
         '%s/oauth/token/revoke' % settings.API_BASE_URL,
@@ -56,7 +57,7 @@ def test_revoke(auth):
 def test_update_tokens_from_code(auth):
     """Test update_tokens_from code updates access_token, refresh_token, authorization_datetime and expires_in.
 
-    :param Auth auth: Auth instance with default values.
+    :param Auth auth: Auth instance with test data.
     """
     responses.add(responses.POST, 
         '%s/oauth/token' % settings.API_BASE_URL,
@@ -74,7 +75,7 @@ def test_update_tokens_from_code(auth):
 def test_user_auth_link(auth):
     """Test user auth link returns a properly formatted user auth url.
 
-    :param Auth auth: Auth instance with default values.
+    :param Auth auth: Auth instance with test data.
     """
     querystring = 'scope=felines&state=NY&redirect_uri=http%3A%2F%2Fexample.com&response_type=code&client_id=cats'
     responses.add(responses.GET, 
