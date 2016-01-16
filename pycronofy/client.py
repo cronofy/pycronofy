@@ -32,14 +32,15 @@ class CronofyClient(object):
         raw_json = self._get(endpoint='account')
         return raw_json['account']
 
-    def authorize_from_code(self, code):
+    def authorize_from_code(self, code, redirect_uri=''):
         """Updates the authorization from the user provided code.
 
         :param string code: Authorization code to pass to Cronofy.
+        :param string redirect_uri: Optionally override redirect uri obtained from user_auth_link.
         :return: Response.
         :rtype: ``response``
         """
-        return self.auth.update_tokens_from_code(code)
+        return self.auth.update_tokens_from_code(code, redirect_uri)
 
     def close_notification_channel(self, channel_id):
         """Close a notification channel to stop push notifications from being sent.
@@ -256,9 +257,6 @@ class CronofyClient(object):
             response = request_method(url, headers={'Authorization': self.auth.get_authorization()}, json=data)
         else:
             response = request_method(url, headers={'Authorization': self.auth.get_authorization()}, params=params)
-        # if response.status_code == requests.codes.unauthorized:
-        #     #refresh
-        #     pass
         if response.status_code != requests.codes.ok:
             response.raise_for_status()
         if return_json:

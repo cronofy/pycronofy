@@ -67,16 +67,17 @@ class Auth(object):
         })
         if response.status_code != requests.codes.ok:
             response.raise_for_status()
+        self.authorization_datetime = None
         self.access_token = None
         self.refresh_token = None
         self.expires_in = 0
         return response
 
-    def update_tokens_from_code(self, code):
+    def update_tokens_from_code(self, code, redirect_uri=''):
         """Updates the authorization tokens from the user provided code.
 
         :param string code: Authorization code to pass to Cronofy.
-
+        :param string redirect_uri: Optionally override redirect uri obtained from user_auth_link.
         :return: Response.
         :rtype: ``response``
         """
@@ -86,7 +87,7 @@ class Auth(object):
             'client_id': self.client_id,
             'client_secret': self.client_secret,
             'code': code,
-            'redirect_uri': self.redirect_uri,
+            'redirect_uri': redirect_uri if redirect_uri else self.redirect_uri,
         })
         if response.status_code != requests.codes.ok:
             response.raise_for_status()
