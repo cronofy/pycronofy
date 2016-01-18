@@ -100,12 +100,10 @@ class Pages(object):
         """
         if self.index < self.length:
             self.index += 1
-            print('\nReturning %i, %s' % (self.index-1, self.data[self.data_type][self.index-1]['summary']))
             return self.data[self.data_type][self.index-1]
         else:
             if self.automatic_pagination and (self.current < self.total):
                 self.fetch_next_page()
-                print('\n__next__')
                 return self.__next__()
             else:
                 raise StopIteration()

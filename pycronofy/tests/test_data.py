@@ -87,3 +87,9 @@ NEXT_PAGE_GET_ARGS = {
     'content_type':'application/json'
 }
 
+TEST_EVENTS_ARGS = { 
+    'url': 'https://api.cronofy.com/v1/events',
+    'body': '{"example": 1}',
+    'status': 200,
+    'content_type':'application/json'
+}
