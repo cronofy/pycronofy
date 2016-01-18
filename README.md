@@ -162,7 +162,7 @@ Dependencies:
 
 Core library depends on ``requests``.
 
-Tests depend on ``pytest, funcsigs, responses``.
+Tests depend on ``pytest, pytest-cov, funcsigs, responses``.
 
 In the event of an insecure platform warning:
 
