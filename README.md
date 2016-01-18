@@ -155,7 +155,7 @@ To run pycronofy tests:
 ```
 pip install -r requirements/tests.txt
 py.test pycronofy
-py.test pycronofy --cov=pycronofy
+py.test pycronofy --cov=pycronofy --cov-config=coverage.rc
 ```
 
 Dependencies:
