@@ -1,8 +1,8 @@
 import requests
 from pycronofy import settings
-from .auth import Auth
-from .datetime_utils import get_iso8601_string
-from .pagination import Pages
+from pycronofy.auth import Auth
+from pycronofy.datetime_utils import get_iso8601_string
+from pycronofy.pagination import Pages
 
 class CronofyClient(object):
     """Client for cronofy web service.

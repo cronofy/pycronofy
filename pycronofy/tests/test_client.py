@@ -1,8 +1,8 @@
 import pytest
 import responses
 import requests
-from ..client import CronofyClient
-from .. import settings
+from pycronofy.client import CronofyClient
+from pycronofy import settings
 import test_data
 
 TEST_EVENT = {

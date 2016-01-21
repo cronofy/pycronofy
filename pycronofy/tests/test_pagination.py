@@ -3,9 +3,9 @@ import json
 import pytest
 import responses
 import requests
-from ..client import CronofyClient
-from ..pagination import Pages
-from .. import settings
+from pycronofy.client import CronofyClient
+from pycronofy.pagination import Pages
+from pycronofy import settings
 import test_data
 
 TEST_DATA_PAGE_ONE = {

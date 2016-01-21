@@ -1,5 +1,5 @@
 import datetime
-from ..datetime_utils import get_iso8601_string
+from pycronofy.datetime_utils import get_iso8601_string
 
 class UTC(datetime.tzinfo):
     """UTC tzinfo class to remove pytz dependency only used in tests."""

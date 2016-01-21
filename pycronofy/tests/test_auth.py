@@ -1,8 +1,8 @@
 import pytest
 import responses
 import requests
-from ..auth import Auth
-from .. import settings
+from pycronofy.auth import Auth
+from pycronofy import settings
 import test_data
 
 @pytest.fixture(scope="module")
