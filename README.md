@@ -10,8 +10,13 @@ Installation:
 
 (unless performing a system wide install, it's recommended to install inside of a virtualenv)
 
-```
-pip install -r requirements/core.txt
+```bash
+# Install dependencies:
+pip install -r requirements.txt # Install core & tests
+pip install -r requirements/core.txt # Just install core dependencies
+pip install -r requirements/tests.txt # Install test dependencies
+
+# Install PyCronofy
 python setup.py install
 ```
 
@@ -153,9 +158,8 @@ print(response)
 To run pycronofy tests:
 
 ```
-pip install -r requirements/tests.txt
 py.test pycronofy
-py.test pycronofy --cov=pycronofy --cov-config=coverage.rc
+py.test pycronofy --cov=pycronofy
 ```
 
 Dependencies:

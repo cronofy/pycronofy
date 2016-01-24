@@ -3,7 +3,7 @@ import responses
 import requests
 from pycronofy.client import CronofyClient
 from pycronofy import settings
-import test_data
+import common_data
 
 TEST_EVENT = {
     'event_id': 'test-1',
@@ -43,7 +43,7 @@ TEST_UPSERT_EVENT_ARGS = {
 @pytest.fixture(scope="module")
 def client():
     """Setup Client instance with test values."""
-    return CronofyClient(**test_data.AUTH_ARGS)
+    return CronofyClient(**common_data.AUTH_ARGS)
 
 @responses.activate
 def test_create_notification_channel(client):

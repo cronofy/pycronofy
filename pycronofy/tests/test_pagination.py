@@ -6,76 +6,76 @@ import requests
 from pycronofy.client import CronofyClient
 from pycronofy.pagination import Pages
 from pycronofy import settings
-import test_data
+import common_data
 
 TEST_DATA_PAGE_ONE = {
-  "pages": {
-    "current": 1,
-    "total": 2,
-    "next_page": "%s/%s/events/pages/08a07b034306679e" % (settings.API_BASE_URL, settings.API_VERSION)
-  },
-  "events": [
-    {
-      "calendar_id": "cal_U9uuErStTG@EAAAB_IsAsykA2DBTWqQTf-f0kJw",
-      "event_uid": "evt_external_54008b1a4a41730f8d5c6037",
-      "summary": "Company Retreat",
-      "description": "",
-      "start": "2014-09-06",
-      "end": "2014-09-08",
-      "deleted": False,
-      "location": {
-        "description": "Beach"
-      },
-      "participation_status": "needs_action",
-      "transparency": "opaque",
-      "event_status": "confirmed",
-      "categories": [],
-      "attendees": [
+    "pages": {
+        "current": 1,
+        "total": 2,
+        "next_page": "%s/%s/events/pages/08a07b034306679e" % (settings.API_BASE_URL, settings.API_VERSION)
+    },
+    "events": [
         {
-          "email": "example@cronofy.com",
-          "display_name": "Example Person",
-          "status": "needs_action"
+            "calendar_id": "cal_U9uuErStTG@EAAAB_IsAsykA2DBTWqQTf-f0kJw",
+            "event_uid": "evt_external_54008b1a4a41730f8d5c6037",
+            "summary": "Company Retreat",
+            "description": "",
+            "start": "2014-09-06",
+            "end": "2014-09-08",
+            "deleted": False,
+            "location": {
+                "description": "Beach"
+            },
+            "participation_status": "needs_action",
+            "transparency": "opaque",
+            "event_status": "confirmed",
+            "categories": [],
+            "attendees": [
+                {
+                    "email": "example@cronofy.com",
+                    "display_name": "Example Person",
+                    "status": "needs_action"
+                }
+            ],
+            "created": "2014-09-01T08:00:01Z",
+            "updated": "2014-09-01T09:24:16Z"
         }
-      ],
-      "created": "2014-09-01T08:00:01Z",
-      "updated": "2014-09-01T09:24:16Z"
-    }
-  ]
+    ]
 }
 
 TEST_DATA_PAGE_TWO = {
-  "pages": {
-    "current": 2,
-    "total": 2,
-    "next_page": ""
-  },
-  "events": [
-    {
-      "calendar_id": "cal_U9uuErStTG@EAAAB_IsAsykA2DBTWqQTf-f0kJw",
-      "event_uid": "evt_external_64008b1a4a41730f8d5c6057",
-      "summary": "Company Retreat 2",
-      "description": "",
-      "start": "2014-10-06",
-      "end": "2014-10-08",
-      "deleted": False,
-      "location": {
-        "description": "Mountains"
-      },
-      "participation_status": "needs_action",
-      "transparency": "opaque",
-      "event_status": "confirmed",
-      "categories": [],
-      "attendees": [
+    "pages": {
+        "current": 2,
+        "total": 2,
+        "next_page": ""
+    },
+    "events": [
         {
-          "email": "example@cronofy.com",
-          "display_name": "Example Person",
-          "status": "needs_action"
+            "calendar_id": "cal_U9uuErStTG@EAAAB_IsAsykA2DBTWqQTf-f0kJw",
+            "event_uid": "evt_external_64008b1a4a41730f8d5c6057",
+            "summary": "Company Retreat 2",
+            "description": "",
+            "start": "2014-10-06",
+            "end": "2014-10-08",
+            "deleted": False,
+            "location": {
+                "description": "Mountains"
+            },
+            "participation_status": "needs_action",
+            "transparency": "opaque",
+            "event_status": "confirmed",
+            "categories": [],
+            "attendees": [
+                {
+                    "email": "example@cronofy.com",
+                    "display_name": "Example Person",
+                    "status": "needs_action"
+                }
+            ],
+            "created": "2014-10-01T08:00:01Z",
+            "updated": "2014-10-01T09:24:16Z"
         }
-      ],
-      "created": "2014-10-01T08:00:01Z",
-      "updated": "2014-10-01T09:24:16Z"
-    }
-  ]
+    ]
 }
 
 NEXT_PAGE_GET_ARGS = {
@@ -89,7 +89,7 @@ NEXT_PAGE_GET_ARGS = {
 @pytest.fixture(scope="module")
 def client():
     """Setup Client instance with test values."""
-    return CronofyClient(**test_data.AUTH_ARGS)
+    return CronofyClient(**common_data.AUTH_ARGS)
 
 @responses.activate
 def test_all(client):
