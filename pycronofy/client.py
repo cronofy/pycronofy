@@ -35,32 +35,6 @@ class CronofyClient(object):
         raw_json = self.request_handler.get(endpoint='account')
         return raw_json['account']
 
-    def authorize_from_code(self, code, redirect_uri=''):
-        """Updates the authorization tokens from the user provided code.
-
-        :param string code: Authorization code to pass to Cronofy.
-        :param string redirect_uri: Optionally override redirect uri obtained from user_auth_link.
-        :return: Response.
-        :rtype: ``response``
-        """
-        response = self.request_handler.post(
-            url='%s/oauth/token' % settings.API_BASE_URL, 
-            data={
-                'grant_type': 'authorization_code',
-                'client_id': self.auth.client_id,
-                'client_secret': self.auth.client_secret,
-                'code': code,
-                'redirect_uri': redirect_uri if redirect_uri else self.auth.redirect_uri,
-        })
-        data = response.json()
-        self.auth.update(
-            authorization_datetime=datetime.datetime.now(),
-            access_token=data['access_token'],
-            refresh_token=data['refresh_token'],
-            expires_in=data['expires_in'],
-        )
-        return response
-
     def close_notification_channel(self, channel_id):
         """Close a notification channel to stop push notifications from being sent.
 
@@ -228,6 +202,32 @@ class CronofyClient(object):
             access_token=None,
             refresh_token=None,
             expires_in=0,
+        )
+        return response
+
+    def update_authorization_from_code(self, code, redirect_uri=''):
+        """Updates the authorization tokens from the user provided code.
+
+        :param string code: Authorization code to pass to Cronofy.
+        :param string redirect_uri: Optionally override redirect uri obtained from user_auth_link.
+        :return: Response.
+        :rtype: ``response``
+        """
+        response = self.request_handler.post(
+            url='%s/oauth/token' % settings.API_BASE_URL, 
+            data={
+                'grant_type': 'authorization_code',
+                'client_id': self.auth.client_id,
+                'client_secret': self.auth.client_secret,
+                'code': code,
+                'redirect_uri': redirect_uri if redirect_uri else self.auth.redirect_uri,
+        })
+        data = response.json()
+        self.auth.update(
+            authorization_datetime=datetime.datetime.now(),
+            access_token=data['access_token'],
+            refresh_token=data['refresh_token'],
+            expires_in=data['expires_in'],
         )
         return response
 

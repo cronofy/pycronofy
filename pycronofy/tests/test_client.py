@@ -33,24 +33,6 @@ TEST_UPSERT_EVENT_ARGS = {
     'content_type':'application/json'
 }
 
-@responses.activate
-def test_authorize_from_code(client):
-    """Test update_tokens_from code updates access_token, refresh_token, authorization_datetime and expires_in.
-
-    :param Auth auth: Auth instance with test data.
-    """
-    responses.add(responses.POST, 
-        '%s/oauth/token' % settings.API_BASE_URL,
-        body='{"access_token": "tail", "refresh_token": "meow", "expires_in": 3600}', 
-        status=200,
-        content_type='application/json'
-    )
-    response = client.authorize_from_code('code')
-    assert response.status_code == requests.codes.ok
-    assert client.auth.access_token == 'tail'
-    assert client.auth.refresh_token == 'meow'
-    assert client.auth.expires_in == 3600
-
 @pytest.fixture(scope="module")
 def client():
     """Setup Client instance with test values."""
@@ -102,6 +84,24 @@ def test_revoke(client):
     assert client.auth.refresh_token == None
     assert client.auth.expires_in == 0
     assert client.auth.authorization_datetime == None
+
+@responses.activate
+def test_update_authorization_from_code(client):
+    """Test update_tokens_from code updates access_token, refresh_token, authorization_datetime and expires_in.
+
+    :param Auth auth: Auth instance with test data.
+    """
+    responses.add(responses.POST, 
+        '%s/oauth/token' % settings.API_BASE_URL,
+        body='{"access_token": "tail", "refresh_token": "meow", "expires_in": 3600}', 
+        status=200,
+        content_type='application/json'
+    )
+    response = client.update_authorization_from_code('code')
+    assert response.status_code == requests.codes.ok
+    assert client.auth.access_token == 'tail'
+    assert client.auth.refresh_token == 'meow'
+    assert client.auth.expires_in == 3600
 
 @responses.activate
 def test_upsert_event(client):
