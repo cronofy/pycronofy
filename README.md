@@ -1,4 +1,4 @@
-## PyCronofy ##
+## pycronofy ##
 
 A python library for [Cronofy](http://www.cronofy.com)
 
@@ -16,7 +16,7 @@ pip install -r requirements.txt # Install core & tests
 pip install -r requirements/core.txt # Just install core dependencies
 pip install -r requirements/tests.txt # Install test dependencies
 
-# Install PyCronofy
+# Install pycronofy
 python setup.py install
 ```
 
