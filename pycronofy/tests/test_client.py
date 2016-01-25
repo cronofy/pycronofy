@@ -128,3 +128,5 @@ def test_user_auth_link(client):
     )
     url = client.user_auth_link(redirect_uri='http://example.com', scope='felines', state='NY')
     assert url == auth_url
+    url = client.user_auth_link(redirect_uri='http://example.com', state='NY')
+    assert settings.APP_BASE_URL in url

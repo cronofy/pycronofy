@@ -32,8 +32,7 @@ class CronofyClient(object):
         :return: Account data.
         :rtype: ``dict``
         """
-        raw_json = self.request_handler.get(endpoint='account')
-        return raw_json['account']
+        return self.request_handler.get(endpoint='account')['account']
 
     def close_notification_channel(self, channel_id):
         """Close a notification channel to stop push notifications from being sent.
@@ -102,8 +101,7 @@ class CronofyClient(object):
         :return: List of calendars (dictionaries).
         :rtype: ``list``
         """
-        raw_json = self.request_handler.get(endpoint='calendars')
-        return raw_json['calendars']
+        return self.request_handler.get(endpoint='calendars')['calendars']
 
     def list_profiles(self):
         """Get list of active user's calendar profiles.
@@ -111,8 +109,7 @@ class CronofyClient(object):
         :return: Calendar profiles.
         :rtype: ``list``
         """
-        raw_json = self.request_handler.get(endpoint='profiles')
-        return raw_json['profiles']
+        return self.request_handler.get(endpoint='profiles')['profiles']
 
     def list_notification_channels(self):
         """Return a list of notification channels available for the active account.
@@ -120,8 +117,7 @@ class CronofyClient(object):
         :return: List of notification channels (dictionaries).
         :rtype: ``list``
         """
-        raw_json = self.request_handler.get(endpoint='channels')
-        return raw_json['channels']
+        return self.request_handler.get(endpoint='channels')['channels']
 
     def read_events(self, 
         calendar_ids=(), 
@@ -236,7 +232,8 @@ class CronofyClient(object):
         return response
 
     def upsert_event(self, calendar_id, event):
-        """
+        """Inserts or updates an event for the specified calendar.
+
         :param string calendar_id: ID of calendar to insert/update event into.
         :param dict event: Dictionary of event data to send to cronofy.
         :return: Response from _post
