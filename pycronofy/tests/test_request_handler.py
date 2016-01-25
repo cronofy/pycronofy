@@ -28,6 +28,23 @@ def test_get(request_handler):
     assert response['example'] == 1
 
 @responses.activate
+def test_delete(request_handler):
+    """Test RequestHandler.delete().
+
+    :param RequestHandler request_handler: RequestHandler instance with test data.
+    """
+    calendar_id = '123'
+    event_id = 'evt_12345'
+    responses.add(
+        method=responses.DELETE, 
+        url='%s/%s/calendars/%s/events' % (settings.API_BASE_URL, settings.API_VERSION, calendar_id),
+        status=200,
+        content_type='application/json',
+    )
+    response = request_handler.delete(endpoint='calendars/%s/events' % calendar_id, params={'event_id': event_id})
+    assert response.status_code == requests.codes.ok
+
+@responses.activate
 def test_post(request_handler):
     """Test RequestHandler.post().
 
