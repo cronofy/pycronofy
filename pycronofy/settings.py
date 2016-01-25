@@ -21,3 +21,14 @@ DEFAULT_TIMEZONE_ID = 'Etc/UTC'
 # Tuple of params required by the "events" endpoint.
 # tzid isn't technically required, but should be specified to avoid subtle timezone bugs.
 EVENTS_REQUIRED_FIELDS = ('event_id', 'summary', 'description', 'start', 'end', 'tzid')
+
+# If set to True, print out additional debugging info (such as urls for requests).
+# This will also work if you are testing code that calls pycronofy without needing to alter that code.
+"""
+Example:
+
+import pycronofy
+pycronofy.settings.DEBUG = True
+# Code you want to executre with debug on.
+"""
+DEBUG = False

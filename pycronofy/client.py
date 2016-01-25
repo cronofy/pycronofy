@@ -20,6 +20,7 @@ class CronofyClient(object):
         :param string client_secret: OAuth Client Secret.
         :param string access_token: Access Token for User's Account.
         :param string refresh_token: Existing Refresh Token for User's Account.
+        :param bool debug: Instantiate in debug mode. (Optional, default False).
         """
         self.auth = Auth(client_id, client_secret, access_token, refresh_token)
 
@@ -253,6 +254,10 @@ class CronofyClient(object):
         """
         if endpoint and not url:
             url = '%s/%s/%s' % (settings.API_BASE_URL, settings.API_VERSION, endpoint)
+        print('Moo')
+        print(settings.DEBUG)
+        if settings.DEBUG:
+            print('Request (%s): %s' % (request_method, url))
         if data:
             response = request_method(url, headers={'Authorization': self.auth.get_authorization()}, json=data)
         else:

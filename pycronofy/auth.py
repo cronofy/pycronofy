@@ -15,6 +15,7 @@ class Auth(object):
         :param string client_secret: OAuth Client Secret.
         :param string access_token: Access Token for User's Account.
         :param string refresh_token: Existing Refresh Token for User's Account.
+        :param bool settings.DEBUG: Instantiate in debug mode. (Optional, default False).
         """
         self.client_id = client_id
         self.client_secret = client_secret
@@ -39,6 +40,8 @@ class Auth(object):
         :rtype: ``response``
         """
         url = '%s/oauth/token' % settings.API_BASE_URL
+        if settings.DEBUG:
+            print('Request (%s): %s' % (requests.post, url))
         response = requests.post(url, json={
             'grant_type': 'refresh_token',
             'client_id': self.client_id,
@@ -60,6 +63,8 @@ class Auth(object):
         :rtype: ``response``
         """
         url = '%s/oauth/token/revoke' % settings.API_BASE_URL
+        if settings.DEBUG:
+            print('Request (%s): %s' % (requests.post, url))
         response = requests.post(url, json={
             'client_id': self.client_id,
             'client_secret': self.client_secret,
@@ -82,6 +87,8 @@ class Auth(object):
         :rtype: ``response``
         """
         url = '%s/oauth/token' % settings.API_BASE_URL
+        if settings.DEBUG:
+            print('Request (%s): %s' % (requests.post, url))
         response = requests.post(url, json={
             'grant_type': 'authorization_code',
             'client_id': self.client_id,
@@ -109,6 +116,8 @@ class Auth(object):
         :rtype: ``response``
         """
         url = '%s/oauth/authorize' % settings.APP_BASE_URL
+        if settings.DEBUG:
+            print('Request (%s): %s' % (requests.get, url))
         self.redirect_uri = redirect_uri
         response = requests.get(url, params={
             'response_type': 'code',
