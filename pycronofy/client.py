@@ -254,8 +254,6 @@ class CronofyClient(object):
         """
         if endpoint and not url:
             url = '%s/%s/%s' % (settings.API_BASE_URL, settings.API_VERSION, endpoint)
-        print('Moo')
-        print(settings.DEBUG)
         if settings.DEBUG:
             print('Request (%s): %s' % (request_method, url))
         if data:
