@@ -1,3 +1,4 @@
+from copy import deepcopy
 import pytest
 import requests
 import responses
@@ -16,6 +17,18 @@ TEST_EVENTS_ARGS = {
 def request_handler():
     """Setup RequestHandler instance with test values."""
     return CronofyClient(**common_data.AUTH_ARGS).request_handler
+
+@responses.activate
+def test_accepted(request_handler):
+    """Test RequestHandler.get() handles an accepted status.
+
+    :param RequestHandler request_handler: RequestHandler instance with test data.
+    """
+    args = deepcopy(TEST_EVENTS_ARGS)
+    args['status'] = 202
+    responses.add(method=responses.GET, **args)
+    response = request_handler.get(endpoint='events')
+    assert response['example'] == 1
 
 @responses.activate
 def test_get(request_handler):
@@ -53,3 +66,16 @@ def test_post(request_handler):
     responses.add(method=responses.POST, **TEST_EVENTS_ARGS)
     response = request_handler.post(endpoint='events')
     assert response.status_code == requests.codes.ok
+
+@responses.activate
+def test_unauthorized(request_handler):
+    """Test RequestHandler.get() handles an accepted status.
+
+    :param RequestHandler request_handler: RequestHandler instance with test data.
+    """
+    args = deepcopy(TEST_EVENTS_ARGS)
+    args['status'] = 403
+    responses.add(method=responses.GET, **args)
+    with pytest.raises(Exception) as exception_info:
+        response = request_handler.get(endpoint='events')
+    assert exception_info.typename == 'HTTPError'

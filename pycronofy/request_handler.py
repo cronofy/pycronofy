@@ -64,7 +64,7 @@ class RequestHandler(object):
             response = request_method(url, headers={'Authorization': self.auth.get_authorization()}, json=data)
         else:
             response = request_method(url, headers={'Authorization': self.auth.get_authorization()}, params=params)
-        if response.status_code != requests.codes.ok:
+        if response.status_code not in (requests.codes.ok, requests.codes.accepted):
             response.raise_for_status()
         if return_json:
             return response.json()
