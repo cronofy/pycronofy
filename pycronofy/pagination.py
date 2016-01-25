@@ -6,14 +6,14 @@ class Pages(object):
         Example data: {'pages': {u'current': 1, u'next_page': u'https://api.cronofy.com/v1/events/pages/[blah blah]', u'total': 2},}
     """
 
-    def __init__(self, client, data, data_type, automatic_pagination=True):
+    def __init__(self, request_handler, data, data_type, automatic_pagination=True):
         """
         :param CronofyClient client: CronofyClient (for fetching subsequent pages)
         :param dict data: Dictionary containing json response from cronofy.
         :param string data_type: Type of paged data being retrieved (eg: 'events')
         :param bool automatic_pagination: Default True. During iteration automatically move to the next page.
         """
-        self.client = client
+        self.request_handler = request_handler
         self.current = data['pages']['current']
         self.total = data['pages']['total']
         self.next_page_url = None
@@ -47,8 +47,8 @@ class Pages(object):
 
     def fetch_next_page(self):
         """Retrieves the next page of data and refreshes Pages instance."""
-        result = self.client._get(url=self.next_page_url)
-        self.__init__(self.client, result, self.data_type, self.automatic_pagination)
+        result = self.request_handler.get(url=self.next_page_url)
+        self.__init__(self.request_handler, result, self.data_type, self.automatic_pagination)
 
     def json(self):
         """Get the raw json data of the response

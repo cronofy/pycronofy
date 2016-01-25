@@ -1,8 +1,9 @@
-import requests
+import datetime
 from pycronofy import settings
 from pycronofy.auth import Auth
 from pycronofy.datetime_utils import get_iso8601_string
 from pycronofy.pagination import Pages
+from pycronofy.request_handler import RequestHandler
 
 class CronofyClient(object):
     """Client for cronofy web service.
@@ -23,6 +24,7 @@ class CronofyClient(object):
         :param bool debug: Instantiate in debug mode. (Optional, default False).
         """
         self.auth = Auth(client_id, client_secret, access_token, refresh_token)
+        self.request_handler = RequestHandler(self.auth)
 
     def account(self):
         """Get identifying information for the active account.
@@ -30,18 +32,34 @@ class CronofyClient(object):
         :return: Account data.
         :rtype: ``dict``
         """
-        raw_json = self._get(endpoint='account')
+        raw_json = self.request_handler.get(endpoint='account')
         return raw_json['account']
 
     def authorize_from_code(self, code, redirect_uri=''):
-        """Updates the authorization from the user provided code.
+        """Updates the authorization tokens from the user provided code.
 
         :param string code: Authorization code to pass to Cronofy.
         :param string redirect_uri: Optionally override redirect uri obtained from user_auth_link.
         :return: Response.
         :rtype: ``response``
         """
-        return self.auth.update_tokens_from_code(code, redirect_uri)
+        response = self.request_handler.post(
+            url='%s/oauth/token' % settings.API_BASE_URL, 
+            data={
+                'grant_type': 'authorization_code',
+                'client_id': self.auth.client_id,
+                'client_secret': self.auth.client_secret,
+                'code': code,
+                'redirect_uri': redirect_uri if redirect_uri else self.auth.redirect_uri,
+        })
+        data = response.json()
+        self.auth.update(
+            authorization_datetime=datetime.datetime.now(),
+            access_token=data['access_token'],
+            refresh_token=data['refresh_token'],
+            expires_in=data['expires_in'],
+        )
+        return response
 
     def close_notification_channel(self, channel_id):
         """Close a notification channel to stop push notifications from being sent.
@@ -50,7 +68,7 @@ class CronofyClient(object):
         :return: Response
         :rtype: ``response``
         """
-        return self._delete(endpoint='channels/%s' % channel_id)
+        return self.request_handler.delete(endpoint='channels/%s' % channel_id)
 
     def create_notification_channel(self, callback_url, calendar_ids=()):
         """Create a new channel for receiving push notifications.
@@ -63,7 +81,7 @@ class CronofyClient(object):
         data = {'callback_url': callback_url}
         if calendar_ids:
             data['filters'] = {'calendar_ids':calendar_ids}
-        return self._post('channels', data=data)
+        return self.request_handler.post('channels', data=data)
 
     def delete_event(self, calendar_id, event_id):
         """Delete an event from the specified calendar.
@@ -72,7 +90,7 @@ class CronofyClient(object):
         :return: Response from _delete
         :rtype: ``Response``
         """
-        return self._delete(endpoint='calendars/%s/events' % calendar_id, params={'event_id': event_id})
+        return self.request_handler.delete(endpoint='calendars/%s/events' % calendar_id, params={'event_id': event_id})
 
     def list_calendars(self):
         """Return a list of calendars available for the active account.
@@ -80,7 +98,7 @@ class CronofyClient(object):
         :return: List of calendars (dictionaries).
         :rtype: ``list``
         """
-        raw_json = self._get(endpoint='calendars')
+        raw_json = self.request_handler.get(endpoint='calendars')
         return raw_json['calendars']
 
     def list_profiles(self):
@@ -89,7 +107,7 @@ class CronofyClient(object):
         :return: Calendar profiles.
         :rtype: ``list``
         """
-        raw_json = self._get(endpoint='profiles')
+        raw_json = self.request_handler.get(endpoint='profiles')
         return raw_json['profiles']
 
     def list_notification_channels(self):
@@ -98,7 +116,7 @@ class CronofyClient(object):
         :return: List of notification channels (dictionaries).
         :rtype: ``list``
         """
-        raw_json = self._get(endpoint='channels')
+        raw_json = self.request_handler.get(endpoint='channels')
         return raw_json['channels']
 
     def read_events(self, 
@@ -125,7 +143,7 @@ class CronofyClient(object):
         :return: Wrapped results (Containing first page of events).
         :rtype: ``Pages``
         """
-        results = self._get(endpoint='events', params={
+        results = self.request_handler.get(endpoint='events', params={
             'tzid': tzid, 
             'calendar_ids':calendar_ids,
             'from': get_iso8601_string(from_date), 
@@ -135,7 +153,7 @@ class CronofyClient(object):
             'include_managed': include_managed,
             'localized_times': localized_times,
         })
-        return Pages(self, results, 'events', automatic_pagination)
+        return Pages(self.request_handler, results, 'events', automatic_pagination)
 
     def read_free_busy(self, 
         calendar_ids=(), 
@@ -158,7 +176,7 @@ class CronofyClient(object):
         :return: Wrapped results (Containing first page of free/busy blocks).
         :rtype: ``Pages``
         """
-        results = self._get(endpoint='free_busy', params={
+        results = self.request_handler.get(endpoint='free_busy', params={
             'tzid': tzid, 
             'calendar_ids':calendar_ids,
             'from': get_iso8601_string(from_date), 
@@ -166,7 +184,7 @@ class CronofyClient(object):
             'include_managed': include_managed,
             'localized_times': localized_times,
         })
-        return Pages(self, results, 'free_busy', automatic_pagination)
+        return Pages(self.request_handler, results, 'free_busy', automatic_pagination)
 
     def refresh_access_token(self):
         """Refreshes the authorization token.
@@ -174,11 +192,44 @@ class CronofyClient(object):
         :return: Response.
         :rtype: ``response``
         """
-        return self.auth.refresh(code)
+        response = self.request_handler.post(
+            url='%s/oauth/token' % settings.API_BASE_URL, 
+            data={
+                'grant_type': 'refresh_token',
+                'client_id': self.auth.client_id,
+                'client_secret': self.auth.client_secret,
+                'refresh_token': self.auth.refresh_token,
+            }
+        )
+        data = response.json()
+        self.auth.update(
+            authorization_datetime=datetime.datetime.now(),
+            access_token=data['access_token'],
+            expires_in=data['expires_in'],
+        )
+        return response
 
     def revoke_authorization(self):
-        """Revokes Oauth authorization."""
-        self.auth.revoke()
+        """Revokes Oauth authorization.
+
+        :return: Response.
+        :rtype: ``response``
+        """
+        response = self.request_handler.post(
+            url='%s/oauth/token/revoke' % settings.API_BASE_URL,
+            data={
+                'client_id': self.auth.client_id,
+                'client_secret': self.auth.client_secret,
+                'token': self.auth.access_token,
+            }
+        )
+        self.auth.update(
+            authorization_datetime=None,
+            access_token=None,
+            refresh_token=None,
+            expires_in=0,
+        )
+        return response
 
     def upsert_event(self, calendar_id, event):
         """
@@ -192,12 +243,12 @@ class CronofyClient(object):
                 raise Exception('%s not found in event.' % key)
         event['start'] = get_iso8601_string(event['start'])
         event['end'] = get_iso8601_string(event['end'])
-        return self._post(endpoint='calendars/%s/events' % calendar_id, data=event)
+        return self.request_handler.post(endpoint='calendars/%s/events' % calendar_id, data=event)
 
     def user_auth_link(self, redirect_uri, scope='', state=''):
         """Generates a URL to send the user for OAuth 2.0
 
-        :param string redict_url: URL to redirect the user to after auth.
+        :param string redirect_uri: URL to redirect the user to after auth.
         :param string scope: The scope of the privileges you want the eventual access_token to grant.
         :param string state: A value that will be returned to you unaltered along with the user's authorization request decision.
         (The OAuth 2.0 RFC recommends using this to prevent cross-site request forgery.)
@@ -206,63 +257,17 @@ class CronofyClient(object):
         """
         if not scope:
             scope = ' '.join(settings.DEFAULT_OAUTH_SCOPE)
-        return self.auth.user_auth_link(redirect_uri, scope, state).url
-
-    def _get(self, endpoint='', url='', params={}):
-        """Perform a get for a json API endpoint.
-
-        :param string endpoint: Target endpoint. (Optional).
-        :param string url: Override the endpoint and provide the full url (eg for pagination). (Optional).
-        :param dict params: Provide parameters to pass to the request. (Optional).
-        :return: Response json.
-        :rtype: ``dict``
-        """
-        return self._request(requests.get, endpoint, url, params=params, return_json=True)
-
-    def _delete(self, endpoint='', url='', params={}):
-        """Perform a get for a json API endpoint.
-
-        :param string endpoint: Target endpoint. (Optional).
-        :param string url: Override the endpoint and provide the full url (eg for pagination). (Optional).
-        :param dict params: Provide parameters to pass to the request. (Optional).
-        :return: Response json.
-        :rtype: ``dict``
-        """
-        return self._request(requests.delete, endpoint, url, params=params)
-
-    def _post(self, endpoint='', url='', data={}):
-        """Perform a post to an API endpoint.
-
-        :param string endpoint: Target endpoint. (Optional).
-        :param string url: Override the endpoint and provide the full url (eg for pagination). (Optional).
-        :param dict data: Data to pass to the post. (Optional).
-        :return: Response.
-        :rtype: ``Response``
-        """
-        return self._request(requests.post, endpoint, url, data=data)
-
-    def _request(self, request_method, endpoint='', url='', data={}, params={}, return_json=False):
-        """Perform a http request via the specified method to an API endpoint.
-
-        :param string endpoint: Target endpoint. (Optional).
-        :param string url: Override the endpoint and provide the full url (eg for pagination). (Optional).
-        :param dict params: Provide parameters to pass to the request. (Optional).
-        :param dict data: Data to pass to the post. (Optional).
-        :param bool return_json: Return json instead of the Response object. (Optional, default False).
-        :return: Response or Response json
-        :rtype: ``Response`` or ``dict``
-        """
-        if endpoint and not url:
-            url = '%s/%s/%s' % (settings.API_BASE_URL, settings.API_VERSION, endpoint)
-        if settings.DEBUG:
-            print('Request (%s): %s' % (request_method, url))
-        if data:
-            response = request_method(url, headers={'Authorization': self.auth.get_authorization()}, json=data)
-        else:
-            response = request_method(url, headers={'Authorization': self.auth.get_authorization()}, params=params)
-        if response.status_code != requests.codes.ok:
-            response.raise_for_status()
-        if return_json:
-            return response.json()
-        return response
+        self.auth.update(redirect_uri=redirect_uri)
+        data = self.request_handler.get(
+            url='%s/oauth/authorize' % settings.APP_BASE_URL,
+            params={
+                'response_type': 'code',
+                'client_id': self.auth.client_id,
+                'redirect_uri': redirect_uri,
+                'scope': scope,
+                'state': state,
+            },
+            return_json=False
+        )
+        return data.url
 

@@ -1,10 +1,9 @@
 import datetime
-import requests
 from pycronofy import settings
 
 class Auth(object):
     """
-    Handle authorization with Cronofy services via Personal Token and OAuth
+    Hold OAuth/Access Data, convenience methods.
 
     https://www.cronofy.com/developers/api/#authentication
     """
@@ -33,99 +32,11 @@ class Auth(object):
         """
         return 'Bearer %s' % self.access_token
 
-    def refresh(self):
-        """Refreshes the authorization token.
+    def update(self, **kwargs):
+        """Update fields
 
-        :return: Response.
-        :rtype: ``response``
+        :param KeywordArguments kwargs: Fields and values to update.
         """
-        url = '%s/oauth/token' % settings.API_BASE_URL
-        if settings.DEBUG:
-            print('Request (%s): %s' % (requests.post, url))
-        response = requests.post(url, json={
-            'grant_type': 'refresh_token',
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'refresh_token': self.refresh_token,
-        })
-        if response.status_code != requests.codes.ok:
-            response.raise_for_status()
-        self.authorization_datetime = datetime.datetime.now()  
-        data = response.json()
-        self.access_token = data['access_token']
-        self.expires_in = data['expires_in']
-        return response
+        for kw in kwargs:
+            setattr(self, kw, kwargs[kw])
 
-    def revoke(self):
-        """Revokes Oauth authorization.
-
-        :return: Response.
-        :rtype: ``response``
-        """
-        url = '%s/oauth/token/revoke' % settings.API_BASE_URL
-        if settings.DEBUG:
-            print('Request (%s): %s' % (requests.post, url))
-        response = requests.post(url, json={
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'token': self.access_token,
-        })
-        if response.status_code != requests.codes.ok:
-            response.raise_for_status()
-        self.authorization_datetime = None
-        self.access_token = None
-        self.refresh_token = None
-        self.expires_in = 0
-        return response
-
-    def update_tokens_from_code(self, code, redirect_uri=''):
-        """Updates the authorization tokens from the user provided code.
-
-        :param string code: Authorization code to pass to Cronofy.
-        :param string redirect_uri: Optionally override redirect uri obtained from user_auth_link.
-        :return: Response.
-        :rtype: ``response``
-        """
-        url = '%s/oauth/token' % settings.API_BASE_URL
-        if settings.DEBUG:
-            print('Request (%s): %s' % (requests.post, url))
-        response = requests.post(url, json={
-            'grant_type': 'authorization_code',
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'code': code,
-            'redirect_uri': redirect_uri if redirect_uri else self.redirect_uri,
-        })
-        if response.status_code != requests.codes.ok:
-            response.raise_for_status()
-        self.authorization_datetime = datetime.datetime.now()  
-        data = response.json()
-        self.access_token = data['access_token']
-        self.refresh_token = data['refresh_token']
-        self.expires_in = data['expires_in']
-        return response
-
-    def user_auth_link(self, redirect_uri, scope, state=''):
-        """Generates a URL to send the user for OAuth 2.0
-
-        :param string redict_url: URL to redirect the user to after auth.
-        :param string scope: The scope of the privileges you want the eventual access_token to grant.
-        :param string state: A value that will be returned to you unaltered along with the user's authorization request decision.
-        (The OAuth 2.0 RFC recommends using this to prevent cross-site request forgery.)
-        :return: Response.
-        :rtype: ``response``
-        """
-        url = '%s/oauth/authorize' % settings.APP_BASE_URL
-        if settings.DEBUG:
-            print('Request (%s): %s' % (requests.get, url))
-        self.redirect_uri = redirect_uri
-        response = requests.get(url, params={
-            'response_type': 'code',
-            'client_id': self.client_id,
-            'redirect_uri': redirect_uri,
-            'scope': scope,
-            'state': state,
-        })
-        if response.status_code != requests.codes.ok:
-            response.raise_for_status()
-        return response
