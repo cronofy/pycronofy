@@ -66,6 +66,36 @@ class CronofyClient(object):
         """
         return self.request_handler.delete(endpoint='calendars/%s/events' % calendar_id, params={'event_id': event_id})
 
+    def get_authorization_from_code(self, code, redirect_uri=''):
+        """Updates the authorization tokens from the user provided code.
+
+        :param string code: Authorization code to pass to Cronofy.
+        :param string redirect_uri: Optionally override redirect uri obtained from user_auth_link.
+        :return: Dictionary containing auth tokens and response status.
+        :rtype: ``dict``
+        """
+        response = self.request_handler.post(
+            url='%s/oauth/token' % settings.API_BASE_URL, 
+            data={
+                'grant_type': 'authorization_code',
+                'client_id': self.auth.client_id,
+                'client_secret': self.auth.client_secret,
+                'code': code,
+                'redirect_uri': redirect_uri if redirect_uri else self.auth.redirect_uri,
+        })
+        data = response.json()
+        self.auth.update(
+            authorization_datetime=datetime.datetime.now(),
+            access_token=data['access_token'],
+            refresh_token=data['refresh_token'],
+            expires_in=data['expires_in'],
+        )
+        return {
+            'access_token': self.auth.access_token, 
+            'refresh_token': self.auth.refresh_token, 
+            'response_status': response.status_code,
+        }
+
     def list_calendars(self):
         """Return a list of calendars available for the active account.
 
@@ -202,32 +232,6 @@ class CronofyClient(object):
             access_token=None,
             refresh_token=None,
             expires_in=0,
-        )
-        return response
-
-    def update_authorization_from_code(self, code, redirect_uri=''):
-        """Updates the authorization tokens from the user provided code.
-
-        :param string code: Authorization code to pass to Cronofy.
-        :param string redirect_uri: Optionally override redirect uri obtained from user_auth_link.
-        :return: Response.
-        :rtype: ``response``
-        """
-        response = self.request_handler.post(
-            url='%s/oauth/token' % settings.API_BASE_URL, 
-            data={
-                'grant_type': 'authorization_code',
-                'client_id': self.auth.client_id,
-                'client_secret': self.auth.client_secret,
-                'code': code,
-                'redirect_uri': redirect_uri if redirect_uri else self.auth.redirect_uri,
-        })
-        data = response.json()
-        self.auth.update(
-            authorization_datetime=datetime.datetime.now(),
-            access_token=data['access_token'],
-            refresh_token=data['refresh_token'],
-            expires_in=data['expires_in'],
         )
         return response
 
