@@ -127,6 +127,8 @@ class CronofyClient(object):
         tzid=settings.DEFAULT_TIMEZONE_ID, 
         only_managed=False,
         include_managed=True, 
+        include_deleted=False,
+        include_moved=False,
         localized_times=False,
         automatic_pagination=True):
         """Read events for linked account (optionally for the specified calendars).
@@ -136,8 +138,10 @@ class CronofyClient(object):
         :param datetime.date to_date: End datetime (or ISO8601 string) for query. (Optional).
         :param datetime.datetime last_modified: Return items modified on or after last_modified. Datetime or ISO8601 string. (Optional).
         :param string tzid: Timezone ID for query. (Optional, default settings.DEFAULT_TIMEZONE_ID). Should match tzinfo on datetime objects.
-        :param bool only_managed: Only include pages created through the API. (Optional, default False)
-        :param bool include_managed: Include pages created through the API. (Optional, default True)
+        :param bool only_managed: Only include events created through the API. (Optional, default False)
+        :param bool include_managed: Include events created through the API. (Optional, default True)
+        :param bool include_deleted: Include deleted events. (Optional, default False)
+        :param bool include_moved: Include moved events. (Optional, default False)
         :param bool localized_times: Return time values for event start/end with localization information. This varies across providers. (Optional, default False).
         :param bool automatic_pagination: Autonatically fetch next page when iterating through results (Optional, default True)
         :return: Wrapped results (Containing first page of events).
@@ -151,6 +155,8 @@ class CronofyClient(object):
             'last_modified': get_iso8601_string(last_modified),
             'only_managed': only_managed,
             'include_managed': include_managed,
+            'included_deleted': include_deleted,
+            'include_moved': include_moved,
             'localized_times': localized_times,
         })
         return Pages(self.request_handler, results, 'events', automatic_pagination)
