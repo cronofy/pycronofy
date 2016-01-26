@@ -21,7 +21,7 @@ class RequestHandler(object):
         :return: Response json.
         :rtype: ``dict``
         """
-        return self._request(requests.get, endpoint, url, params=params, return_json=return_json)
+        return self._request('get', endpoint, url, params=params, return_json=return_json)
 
     def delete(self, endpoint='', url='', params={}):
         """Perform a get for a json API endpoint.
@@ -32,7 +32,7 @@ class RequestHandler(object):
         :return: Response json.
         :rtype: ``dict``
         """
-        return self._request(requests.delete, endpoint, url, params=params)
+        return self._request('delete', endpoint, url, params=params)
 
     def post(self, endpoint='', url='', data={}):
         """Perform a post to an API endpoint.
@@ -43,7 +43,7 @@ class RequestHandler(object):
         :return: Response.
         :rtype: ``Response``
         """
-        return self._request(requests.post, endpoint, url, data=data)
+        return self._request('post', endpoint, url, data=data)
 
     def _request(self, request_method, endpoint='', url='', data={}, params={}, return_json=False):
         """Perform a http request via the specified method to an API endpoint.
@@ -61,9 +61,9 @@ class RequestHandler(object):
         if settings.DEBUG:
             print('Request (%s): %s' % (request_method, url))
         if data:
-            response = request_method(url, headers={'Authorization': self.auth.get_authorization()}, json=data)
+            response = requests.__getattribute__(request_method)(url, headers={'Authorization': self.auth.get_authorization()}, json=data)
         else:
-            response = request_method(url, headers={'Authorization': self.auth.get_authorization()}, params=params)
+            response = requests.__getattribute__(request_method)(url, headers={'Authorization': self.auth.get_authorization()}, params=params)
         if response.status_code not in (requests.codes.ok, requests.codes.accepted):
             response.raise_for_status()
         if return_json:
