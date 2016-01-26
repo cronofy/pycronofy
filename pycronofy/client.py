@@ -155,7 +155,7 @@ class CronofyClient(object):
             'last_modified': get_iso8601_string(last_modified),
             'only_managed': only_managed,
             'include_managed': include_managed,
-            'included_deleted': include_deleted,
+            'include_deleted': include_deleted,
             'include_moved': include_moved,
             'localized_times': localized_times,
         })
