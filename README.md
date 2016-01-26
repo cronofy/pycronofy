@@ -168,6 +168,7 @@ Core library depends on ``requests``.
 Tests depend on ``pytest, pytest-cov, responses``.
 
 **Notes:**
+
 In the event of an insecure platform warning:
 
 * Install python >= 2.7.9
