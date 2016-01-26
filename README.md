@@ -6,7 +6,7 @@ Inspired by [Cronofy-Ruby](https://github.com/cronofy/cronofy-ruby)
 
 [Developer API](http://www.cronofy.com/developers/api)
 
-** Installation: **
+**Installation:**
 
 (unless performing a system wide install, it's recommended to install inside of a virtualenv)
 
@@ -20,7 +20,7 @@ pip install -r requirements/tests.txt # Install test dependencies
 python setup.py install
 ```
 
-** Usage: **
+**Usage:**
 
 ```python
 import datetime
@@ -155,19 +155,19 @@ response = cronofy.create_notification_channel('http://example.com', calendar_id
 print(response)
 ```
 
-** Tests: **
+**Tests:**
 
 ```
 py.test pycronofy --cov=pycronofy
 ```
 
-** Dependencies: **
+**Dependencies:**
 
 Core library depends on ``requests``.
 
 Tests depend on ``pytest, pytest-cov, responses``.
 
-** Notes: **
+**Notes:**
 In the event of an insecure platform warning:
 
 * Install python >= 2.7.9
