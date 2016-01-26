@@ -141,7 +141,7 @@ class CronofyClient(object):
         :param bool only_managed: Only include events created through the API. (Optional, default False)
         :param bool include_managed: Include events created through the API. (Optional, default True)
         :param bool include_deleted: Include deleted events. (Optional, default False)
-        :param bool include_moved: Include moved events. (Optional, default False)
+        :param bool include_moved: Include events that ever existed within the from_date/to_date time window. (Optional, default False)
         :param bool localized_times: Return time values for event start/end with localization information. This varies across providers. (Optional, default False).
         :param bool automatic_pagination: Autonatically fetch next page when iterating through results (Optional, default True)
         :return: Wrapped results (Containing first page of events).
