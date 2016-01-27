@@ -1,9 +1,8 @@
 class Pages(object):
-    """
-        Get paged data from Cronofy.
-        Optionally iterate through all data (automatically fetching pages) or manually list and paginate.
+    """Get paged data from Cronofy.
+    Optionally iterate through all data (automatically fetching pages) or manually list and paginate.
 
-        Example data: {'pages': {u'current': 1, u'next_page': u'https://api.cronofy.com/v1/events/pages/[blah blah]', u'total': 2},}
+    Example data: {'pages': {u'current': 1, u'next_page': u'https://api.cronofy.com/v1/events/pages/[blah blah]', u'total': 2},}
     """
 
     def __init__(self, request_handler, data, data_type, automatic_pagination=True):

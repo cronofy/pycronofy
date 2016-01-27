@@ -2,12 +2,10 @@ import requests
 from pycronofy import settings
 
 class RequestHandler(object):
-    """Wrap all request handling.
-    """
+    """Wrap all request handling."""
 
     def __init__(self, auth):
         """
-
         :param Auth auth: Auth instance.
         """
         self.auth = auth
