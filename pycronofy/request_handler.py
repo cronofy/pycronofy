@@ -59,9 +59,15 @@ class RequestHandler(object):
         if settings.DEBUG:
             print('Request (%s): %s' % (request_method, url))
         if data:
-            response = requests.__getattribute__(request_method)(url, headers={'Authorization': self.auth.get_authorization()}, json=data)
+            response = requests.__getattribute__(request_method)(url, 
+                headers={'Authorization': self.auth.get_authorization()}, 
+                json=data
+            )
         else:
-            response = requests.__getattribute__(request_method)(url, headers={'Authorization': self.auth.get_authorization()}, params=params)
+            response = requests.__getattribute__(request_method)(url, 
+                headers={'Authorization': self.auth.get_authorization()}, 
+                params=params
+            )
         if response.status_code not in (requests.codes.ok, requests.codes.accepted):
             response.raise_for_status()
         if return_json:
