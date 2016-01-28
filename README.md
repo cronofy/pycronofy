@@ -78,16 +78,25 @@ example_datetime_string = '2016-01-06T16:49:37-0456' #ISO 8601 with offset.
 # Getting events with UTC
 from_date = (datetime.datetime.utcnow() - datetime.timedelta(days=2))
 to_date = datetime.datetime.utcnow()
-events = cronofy.read_events(calendar_ids=(YOUR_CAL_ID,), from_date=from_date, to_date=to_date)
+events = cronofy.read_events(calendar_ids=(YOUR_CAL_ID,), 
+    from_date=from_date, 
+    to_date=to_date
+)
 
 # Getting events with local timezone
-from_date = (datetime.datetime.now() - datetime.timedelta(days=2)).replace(tzinfo=pytz.timezone(timezone_id))
+from_date = datetime.datetime.now() - datetime.timedelta(days=2)
+from_date = from_date.replace(tzinfo=pytz.timezone(timezone_id)
 to_date = datetime.datetime.now().replace(tzinfo=pytz.timezone(timezone_id))
-events = cronofy.read_events(calendar_ids=(YOUR_CAL_ID,), from_date=from_date, to_date=to_date, tzid=timezone_id)
+events = cronofy.read_events(calendar_ids=(YOUR_CAL_ID,), 
+    from_date=from_date, 
+    to_date=to_date, 
+    tzid=timezone_id
+)
 
 # Automatic pagination through an iterator
 for event in events:
-    print('%s (From %s to %s, %i attending)' % (event['summary'], event['start'], event['end'], len(event['attendees'])))
+    print('%s (From %s to %s, %i attending)' % 
+        (event['summary'], event['start'], event['end'], len(event['attendees'])))
 
 # Treat the events as a list (holding the current page only).
 print(events[2])
@@ -105,10 +114,18 @@ events.json()
 
 # Retrieve all data in a list:
 # Option 1:
-all = [event for event in cronofy.read_events(calendar_ids=(YOUR_CAL_ID,), from_date=from_date, to_date=to_date, tzid=timezone_id)]
+all_events = [event for event in cronofy.read_events(calendar_ids=(YOUR_CAL_ID,), 
+    from_date=from_date, 
+    to_date=to_date, 
+    tzid=timezone_id)
+]
 
 # Option 2:
-all = cronofy.read_events(calendar_ids=(YOUR_CAL_ID,), from_date=from_date, to_date=to_date, tzid=timezone_id).all()
+all_events = cronofy.read_events(calendar_ids=(YOUR_CAL_ID,), 
+    from_date=from_date, 
+    to_date=to_date, 
+    tzid=timezone_id
+).all()
 
 #######################
 # Getting free/busy blocks
@@ -116,7 +133,10 @@ all = cronofy.read_events(calendar_ids=(YOUR_CAL_ID,), from_date=from_date, to_d
 
 # Essentially the same as reading events.
 
-free_busy_blocks = cronofy.read_free_busy(calendar_ids=(YOUR_CAL_ID,), from_date=from_date, to_date=to_date)
+free_busy_blocks = cronofy.read_free_busy(calendar_ids=(YOUR_CAL_ID,), 
+    from_date=from_date, 
+    to_date=to_date
+)
 
 for block in free_busy_blocks:
     print(block)
@@ -126,13 +146,15 @@ for block in free_busy_blocks:
 #######################
 
 # Create a test event with local timezone
-test_event_id = 'example-%s' % uuid.uuid4(), # You need to supply a uuid, most likely from your system.
+# You need to supply a uuid, most likely from your system.
+test_event_id = 'example-%s' % uuid.uuid4(), 
 event = {
-    'event_id': test_event_id
+    'event_id': test_event_id,
     'summary': 'Test Event', # The event title
     'description': 'Discuss proactive strategies for a reactive world.',
     'start': datetime.datetime.now().replace(tzinfo=pytz.timezone(timezone_id)),
-    'end': (datetime.datetime.now() + datetime.timedelta(hours=1)).replace(tzinfo=pytz.timezone(timezone_id)),
+    'end': (datetime.datetime.now() + 
+        datetime.timedelta(hours=1)).replace(tzinfo=pytz.timezone(timezone_id)),
     'tzid': timezone_id,
     'location': {
         'description': 'My Desk!',
@@ -151,7 +173,9 @@ print(cronofy.delete_event(calendar_id=cal['calendar_id'], event_id=test_event_i
 #######################
 
 # Note this will only work with Oauth, not with a personal access token.
-response = cronofy.create_notification_channel('http://example.com', calendar_ids=(cal['calendar_id'],))
+response = cronofy.create_notification_channel('http://example.com', 
+    calendar_ids=(cal['calendar_id'],)
+)
 print(response)
 
 #######################
