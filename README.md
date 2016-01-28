@@ -158,9 +158,6 @@ print(response)
 # Debugging
 #######################
 
-# Sets DEBUG mode on or off: prints additional information to stdout.
-pycronofy.set_debug(True)
-
 # All requests will call response.raise_on_status if the response is not OK or ACCEPTED.
 # You can catch the exception and access
 

@@ -76,7 +76,6 @@ def test_unauthorized(request_handler):
     args = deepcopy(TEST_EVENTS_ARGS)
     args['status'] = 403
     responses.add(method=responses.GET, **args)
-    set_debug(True) # Test debugging
     with pytest.raises(Exception) as exception_info:
         response = request_handler.get(endpoint='events')
     assert exception_info.typename == 'HTTPError'
