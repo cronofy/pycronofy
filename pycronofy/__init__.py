@@ -12,5 +12,9 @@ https://www.cronofy.com/developers/
 https://github.com/venuebook/pycronofy
 """
 
-def set_debug(debug=False):
+def set_debug(debug):
+    """Sets DEBUG mode.
+
+    :param bool debug: Set debug to True or False.
+    """
     settings.DEBUG = debug
