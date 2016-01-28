@@ -26,7 +26,7 @@ python setup.py install
 import datetime
 import uuid
 import pytz
-from pycronofy import CronofyClient
+import pycronofy
 
 # Example timezone id
 timezone_id = 'America/New_York'
@@ -36,10 +36,10 @@ timezone_id = 'America/New_York'
 #######################
 
 ### With a personal access token
-cronofy = CronofyClient(access_token=YOUR_TOKEN) # Using a personal token for testing.
+cronofy = pycronofy.Client(access_token=YOUR_TOKEN) # Using a personal token for testing.
 
 ### With OAuth
-cronofy = CronofyClient(client_id=YOUR_CLIENT_ID, client_secret=YOUR_CLIENT_SECRET)
+cronofy = pycronofy.Client(client_id=YOUR_CLIENT_ID, client_secret=YOUR_CLIENT_SECRET)
 
 url = cronofy.user_auth_link('http://yourwebsite.com')
 print('Go to this url in your browser, and paste the code below')
@@ -153,6 +153,17 @@ print(cronofy.delete_event(calendar_id=cal['calendar_id'], event_id=test_event_i
 # Note this will only work with Oauth, not with a personal access token.
 response = cronofy.create_notification_channel('http://example.com', calendar_ids=(cal['calendar_id'],))
 print(response)
+
+#######################
+# Debugging
+#######################
+
+# Sets DEBUG mode on, which prints additional information to stdout.
+
+# Turn On:
+pycronofy.set_debug(True)
+# Turn Off:
+pycronofy.set_debug(False)
 ```
 
 **Tests:**

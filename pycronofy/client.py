@@ -5,7 +5,7 @@ from pycronofy.datetime_utils import get_iso8601_string
 from pycronofy.pagination import Pages
 from pycronofy.request_handler import RequestHandler
 
-class CronofyClient(object):
+class Client(object):
     """Client for cronofy web service.
     Performs authentication, and wraps API: https://www.cronofy.com/developers/api/
     """
@@ -14,8 +14,8 @@ class CronofyClient(object):
         """
         Example Usage:
 
-        CronofyClient(access_token='')
-        CronofyClient(client_id='', client_secret='')
+        pycronofy.Client(access_token='')
+        pycronofy.Client(client_id='', client_secret='')
 
         :param string client_id: OAuth Client ID.
         :param string client_secret: OAuth Client Secret.

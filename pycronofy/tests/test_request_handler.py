@@ -2,7 +2,7 @@ from copy import deepcopy
 import pytest
 import requests
 import responses
-from pycronofy.client import CronofyClient
+from pycronofy import Client, set_debug
 from pycronofy import settings
 import common_data
 
@@ -16,7 +16,7 @@ TEST_EVENTS_ARGS = {
 @pytest.fixture(scope="module")
 def request_handler():
     """Setup RequestHandler instance with test values."""
-    return CronofyClient(**common_data.AUTH_ARGS).request_handler
+    return Client(**common_data.AUTH_ARGS).request_handler
 
 @responses.activate
 def test_accepted(request_handler):
@@ -76,6 +76,7 @@ def test_unauthorized(request_handler):
     args = deepcopy(TEST_EVENTS_ARGS)
     args['status'] = 403
     responses.add(method=responses.GET, **args)
+    set_debug(True) # Test debugging
     with pytest.raises(Exception) as exception_info:
         response = request_handler.get(endpoint='events')
     assert exception_info.typename == 'HTTPError'

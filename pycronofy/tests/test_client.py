@@ -1,7 +1,7 @@
 import pytest
 import responses
 import requests
-from pycronofy.client import CronofyClient
+from pycronofy import Client
 from pycronofy import settings
 import common_data
 
@@ -36,13 +36,13 @@ TEST_UPSERT_EVENT_ARGS = {
 @pytest.fixture(scope="module")
 def client():
     """Setup Client instance with test values."""
-    return CronofyClient(**common_data.AUTH_ARGS)
+    return Client(**common_data.AUTH_ARGS)
 
 @responses.activate
 def test_create_notification_channel(client):
-    """Test CronofyClient.create_notification_channel().
+    """Test Client.create_notification_channel().
 
-    :param CronofyClient client: CronofyClient instance with test data.
+    :param Client client: Client instance with test data.
     """
     responses.add(**TEST_CREATE_NOTIFICATION_ARGS)
     response = client.create_notification_channel('http://example.com', calendar_ids=('1',))
@@ -104,9 +104,9 @@ def test_revoke(client):
 
 @responses.activate
 def test_upsert_event(client):
-    """Test CronofyClient.upsert_event().
+    """Test Client.upsert_event().
 
-    :param CronofyClient client: CronofyClient instance with test data.
+    :param Client client: Client instance with test data.
     """
     responses.add(**TEST_UPSERT_EVENT_ARGS)
     response = client.upsert_event('1', TEST_EVENT)

@@ -3,7 +3,7 @@ import json
 import pytest
 import responses
 import requests
-from pycronofy.client import CronofyClient
+from pycronofy import Client
 from pycronofy.pagination import Pages
 from pycronofy import settings
 import common_data
@@ -89,13 +89,13 @@ NEXT_PAGE_GET_ARGS = {
 @pytest.fixture(scope="module")
 def client():
     """Setup Client instance with test values."""
-    return CronofyClient(**common_data.AUTH_ARGS)
+    return Client(**common_data.AUTH_ARGS)
 
 @responses.activate
 def test_all(client):
     """Test Pages.all() returns all pages.
 
-    :param CronofyClient client: CronofyClient instance with test data.
+    :param Client client: Client instance with test data.
     """
     pages = Pages(request_handler=client.request_handler, data=deepcopy(TEST_DATA_PAGE_ONE), data_type='events')
     responses.add(**NEXT_PAGE_GET_ARGS)
@@ -107,7 +107,7 @@ def test_all(client):
 def test_current_page(client):
     """Test Pages.current_page() returns current page.
 
-    :param CronofyClient client: CronofyClient instance with test data.
+    :param Client client: Client instance with test data.
     """
     pages = Pages(request_handler=client.request_handler, data=deepcopy(TEST_DATA_PAGE_ONE), data_type='events')
     assert pages.current_page() == TEST_DATA_PAGE_ONE['events']
@@ -116,7 +116,7 @@ def test_current_page(client):
 def test_fetch_next_page(client):
     """Test Pages.fetch_next_page() fetches next page.
 
-    :param CronofyClient client: CronofyClient instance with test data.
+    :param Client client: Client instance with test data.
     """
     pages = Pages(request_handler=client.request_handler, data=deepcopy(TEST_DATA_PAGE_ONE), data_type='events')
     responses.add(**NEXT_PAGE_GET_ARGS)
@@ -126,7 +126,7 @@ def test_fetch_next_page(client):
 def test_json(client):
     """Test Pages.json() returns raw json for page one.
 
-    :param CronofyClient client: CronofyClient instance with test data.
+    :param Client client: Client instance with test data.
     """
     pages = Pages(request_handler=client.request_handler, data=deepcopy(TEST_DATA_PAGE_ONE), data_type='events')
     assert pages.json() == TEST_DATA_PAGE_ONE
@@ -135,7 +135,7 @@ def test_json(client):
 def test_next(client):
     """Test Pages iterator iterates through all pages.
 
-    :param CronofyClient client: CronofyClient instance with test data.
+    :param Client client: Client instance with test data.
     """
     pages = Pages(request_handler=client.request_handler, data=deepcopy(TEST_DATA_PAGE_ONE), data_type='events')
     responses.add(**NEXT_PAGE_GET_ARGS)
@@ -149,7 +149,7 @@ def test_next(client):
 def test___getitem__(client):
     """Test Pages.__getitem__() returns the item at the specified index.
 
-    :param CronofyClient client: CronofyClient instance with test data.
+    :param Client client: Client instance with test data.
     """
     pages = Pages(request_handler=client.request_handler, data=deepcopy(TEST_DATA_PAGE_ONE), data_type='events')
     assert pages[0]['summary'] == TEST_DATA_PAGE_ONE['events'][0]['summary']
@@ -157,7 +157,7 @@ def test___getitem__(client):
 def test___len__(client):
     """Test Pages.__len__() returns the length of the current page of data.
 
-    :param CronofyClient client: CronofyClient instance with test data.
+    :param Client client: Client instance with test data.
     """
     pages = Pages(request_handler=client.request_handler, data=deepcopy(TEST_DATA_PAGE_ONE), data_type='events')
     assert len(pages) == 1

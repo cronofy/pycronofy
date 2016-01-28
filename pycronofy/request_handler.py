@@ -69,6 +69,9 @@ class RequestHandler(object):
                 params=params
             )
         if response.status_code not in (requests.codes.ok, requests.codes.accepted):
+            if settings.DEBUG:
+                print(response.reason)
+                print(response.text)
             response.raise_for_status()
         if return_json:
             return response.json()

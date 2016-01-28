@@ -7,7 +7,7 @@ class Pages(object):
 
     def __init__(self, request_handler, data, data_type, automatic_pagination=True):
         """
-        :param CronofyClient client: CronofyClient (for fetching subsequent pages)
+        :param RequestHandler request_handler: RequestHandler (for fetching subsequent pages)
         :param dict data: Dictionary containing json response from cronofy.
         :param string data_type: Type of paged data being retrieved (eg: 'events')
         :param bool automatic_pagination: Default True. During iteration automatically move to the next page.
