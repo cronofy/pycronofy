@@ -58,6 +58,8 @@ class RequestHandler(object):
             url = '%s/%s/%s' % (settings.API_BASE_URL, settings.API_VERSION, endpoint)
         if settings.DEBUG:
             print('Request (%s): %s' % (request_method, url))
+            print('Params: %s' % params)
+            print('Post Data: %s' % data)
         if data:
             response = requests.__getattribute__(request_method)(url, 
                 headers={'Authorization': self.auth.get_authorization()}, 
@@ -70,8 +72,8 @@ class RequestHandler(object):
             )
         if response.status_code not in (requests.codes.ok, requests.codes.accepted):
             if settings.DEBUG:
-                print(response.reason)
-                print(response.text)
+                print('Error: %s' % response.reason)
+                print('Response Text: %s' % response.text)
             response.raise_for_status()
         if return_json:
             return response.json()

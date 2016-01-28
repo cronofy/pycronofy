@@ -158,12 +158,22 @@ print(response)
 # Debugging
 #######################
 
-# Sets DEBUG mode on, which prints additional information to stdout.
-
-# Turn On:
+# Sets DEBUG mode on or off: prints additional information to stdout.
 pycronofy.set_debug(True)
-# Turn Off:
-pycronofy.set_debug(False)
+
+# All requests will call response.raise_on_status if the response is not OK or ACCEPTED.
+# You can catch the exception and access
+
+try:
+    cronofy.upsert(event(calendar_id='ABC', event=malformed_event))
+except requests.exceptions.HTTPError as e:
+    print(e.response.reason) # Error Message
+    print(e.response.text) # Response Body
+    print(e.request.method) # HTTP Method
+    print(e.request.headers) # Headers
+    print(e.request.url) # URL and Get Data
+    print(e.request.body) # Post Data
+
 ```
 
 **Tests:**
