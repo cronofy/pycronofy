@@ -74,7 +74,7 @@ class Client(object):
         :rtype: ``dict``
         """
         response = self.request_handler.post(
-            url='%s/oauth/token' % settings.API_BASE_URL, 
+            url='%s/oauth/token' % settings.API_BASE_URL,
             data={
                 'grant_type': 'authorization_code',
                 'client_id': self.auth.client_id,
@@ -90,8 +90,8 @@ class Client(object):
             expires_in=data['expires_in'],
         )
         return {
-            'access_token': self.auth.access_token, 
-            'refresh_token': self.auth.refresh_token, 
+            'access_token': self.auth.access_token,
+            'refresh_token': self.auth.refresh_token,
             'response_status': response.status_code,
         }
 
@@ -119,14 +119,14 @@ class Client(object):
         """
         return self.request_handler.get(endpoint='channels')['channels']
 
-    def read_events(self, 
-        calendar_ids=(), 
-        from_date=None, 
-        to_date=None, 
+    def read_events(self,
+        calendar_ids=(),
+        from_date=None,
+        to_date=None,
         last_modified=None,
-        tzid=settings.DEFAULT_TIMEZONE_ID, 
+        tzid=settings.DEFAULT_TIMEZONE_ID,
         only_managed=False,
-        include_managed=True, 
+        include_managed=True,
         include_deleted=False,
         include_moved=False,
         localized_times=False,
@@ -148,9 +148,9 @@ class Client(object):
         :rtype: ``Pages``
         """
         results = self.request_handler.get(endpoint='events', params={
-            'tzid': tzid, 
+            'tzid': tzid,
             'calendar_ids':calendar_ids,
-            'from': get_iso8601_string(from_date), 
+            'from': get_iso8601_string(from_date),
             'to': get_iso8601_string(to_date),
             'last_modified': get_iso8601_string(last_modified),
             'only_managed': only_managed,
@@ -161,13 +161,13 @@ class Client(object):
         })
         return Pages(self.request_handler, results, 'events', automatic_pagination)
 
-    def read_free_busy(self, 
-        calendar_ids=(), 
-        from_date=None, 
-        to_date=None, 
+    def read_free_busy(self,
+        calendar_ids=(),
+        from_date=None,
+        to_date=None,
         last_modified=None,
-        tzid=settings.DEFAULT_TIMEZONE_ID, 
-        include_managed=True, 
+        tzid=settings.DEFAULT_TIMEZONE_ID,
+        include_managed=True,
         localized_times=False,
         automatic_pagination=True):
         """Read free/busy blocks for linked account (optionally for the specified calendars).
@@ -183,23 +183,23 @@ class Client(object):
         :rtype: ``Pages``
         """
         results = self.request_handler.get(endpoint='free_busy', params={
-            'tzid': tzid, 
+            'tzid': tzid,
             'calendar_ids':calendar_ids,
-            'from': get_iso8601_string(from_date), 
+            'from': get_iso8601_string(from_date),
             'to': get_iso8601_string(to_date),
             'include_managed': include_managed,
             'localized_times': localized_times,
         })
         return Pages(self.request_handler, results, 'free_busy', automatic_pagination)
 
-    def refresh_access_token(self):
-        """Refreshes the authorization token.
+    def refresh_authorization(self):
+        """Refreshes the authorization tokens.
 
         :return: Response.
         :rtype: ``response``
         """
         response = self.request_handler.post(
-            url='%s/oauth/token' % settings.API_BASE_URL, 
+            url='%s/oauth/token' % settings.API_BASE_URL,
             data={
                 'grant_type': 'refresh_token',
                 'client_id': self.auth.client_id,
@@ -211,6 +211,7 @@ class Client(object):
         self.auth.update(
             authorization_datetime=datetime.datetime.now(),
             access_token=data['access_token'],
+            refresh_token=data['refresh_token'],
             expires_in=data['expires_in'],
         )
         return response
@@ -277,4 +278,3 @@ class Client(object):
             return_json=False
         )
         return data.url
-
