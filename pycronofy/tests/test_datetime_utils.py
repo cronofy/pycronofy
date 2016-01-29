@@ -1,15 +1,6 @@
 import datetime
 import pytest
-from pycronofy.datetime_utils import get_iso8601_string
-
-class UTC(datetime.tzinfo):
-    """UTC tzinfo class to remove pytz dependency only used in tests."""
-    def utcoffset(self, dt):
-        return datetime.timedelta(0)
-    def tzname(self, dt):
-        return "UTC"
-    def dst(self, dt):
-        return datetime.timedelta(0)
+from pycronofy.datetime_utils import get_iso8601_string, UTC
 
 def test_date():
     """Test get_iso8601_string returns an ISO8601 formatted date string when passed a datetime.date object"""

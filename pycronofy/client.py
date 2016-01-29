@@ -1,7 +1,7 @@
 import datetime
 from pycronofy import settings
 from pycronofy.auth import Auth
-from pycronofy.datetime_utils import get_iso8601_string
+from pycronofy.datetime_utils import get_iso8601_string, UTC
 from pycronofy.pagination import Pages
 from pycronofy.request_handler import RequestHandler
 
@@ -196,7 +196,7 @@ class Client(object):
     def refresh_authorization(self):
         """Refreshes the authorization tokens.
 
-        :return: JSON response dictionary.
+        :return: JSON response dictionary + token_expiration.
         :rtype: ``dict``
         """
         response = self.request_handler.post(
@@ -215,6 +215,9 @@ class Client(object):
             refresh_token=data['refresh_token'],
             expires_in=data['expires_in'],
         )
+        token_expiration = (self.auth.authorization_datetime + 
+            datetime.timedelta(seconds=self.auth.expires_in)).replace(tzinfo=UTC())
+        data['token_expiration'] = get_iso8601_string(token_expiration)
         return data
 
     def revoke_authorization(self):

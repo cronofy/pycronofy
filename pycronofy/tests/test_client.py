@@ -17,7 +17,7 @@ TEST_EVENT = {
     },
 }
 
-TEST_CREATE_NOTIFICATION_ARGS = { 
+TEST_CREATE_NOTIFICATION_ARGS = {
     'method': responses.POST,
     'url': '%s/%s/channels' % (settings.API_BASE_URL, settings.API_VERSION),
     'body': '{"example": 1}',
@@ -25,7 +25,7 @@ TEST_CREATE_NOTIFICATION_ARGS = {
     'content_type':'application/json'
 }
 
-TEST_UPSERT_EVENT_ARGS = { 
+TEST_UPSERT_EVENT_ARGS = {
     'method': responses.POST,
     'url': '%s/%s/calendars/1/events' % (settings.API_BASE_URL, settings.API_VERSION),
     'body': '{"example": 1}',
@@ -54,9 +54,9 @@ def test_get_authorization_from_code(client):
 
     :param Auth auth: Auth instance with test data.
     """
-    responses.add(responses.POST, 
+    responses.add(responses.POST,
         '%s/oauth/token' % settings.API_BASE_URL,
-        body='{"access_token": "tail", "refresh_token": "meow", "expires_in": 3600}', 
+        body='{"access_token": "tail", "refresh_token": "meow", "expires_in": 3600}',
         status=200,
         content_type='application/json'
     )
@@ -71,15 +71,14 @@ def test_refresh(client):
 
     :param Auth auth: Auth instance with test data.
     """
-    responses.add(responses.POST, 
+    responses.add(responses.POST,
         '%s/oauth/token' % settings.API_BASE_URL,
-        body='{"access_token": "tail", "expires_in": 3600}', 
+        body='{"access_token": "tail", "refresh_token": "wagging", "expires_in": 3600}',
         status=200,
         content_type='application/json'
     )
     old_auth_datetime = client.auth.authorization_datetime
-    response = client.refresh_access_token()
-    assert response.status_code == requests.codes.ok
+    response = client.refresh_authorization()
     assert client.auth.access_token == 'tail'
     assert client.auth.expires_in == 3600
     assert client.auth.authorization_datetime > old_auth_datetime
@@ -90,7 +89,7 @@ def test_revoke(client):
 
     :param Auth auth: Auth instance with test data.
     """
-    responses.add(responses.POST, 
+    responses.add(responses.POST,
         '%s/oauth/token/revoke' % settings.API_BASE_URL,
         status=200,
         content_type='application/json'
@@ -123,7 +122,7 @@ def test_user_auth_link(client):
     """
     querystring = 'scope=felines&state=NY&redirect_uri=http%%3A%%2F%%2Fexample.com&response_type=code&client_id=%s' % common_data.AUTH_ARGS['client_id']
     auth_url = '%s/oauth/authorize?%s' % (settings.APP_BASE_URL, querystring)
-    responses.add(responses.GET, 
+    responses.add(responses.GET,
         '%s/oauth/authorize' % settings.APP_BASE_URL,
         status=200,
         body='{"url": "%s"}' % auth_url,
