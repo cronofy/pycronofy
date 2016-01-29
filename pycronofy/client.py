@@ -92,6 +92,7 @@ class Client(object):
         return {
             'access_token': self.auth.access_token,
             'refresh_token': self.auth.refresh_token,
+            'expires_in': self.auth.expires_in,
             'response_status': response.status_code,
         }
 
@@ -195,8 +196,8 @@ class Client(object):
     def refresh_authorization(self):
         """Refreshes the authorization tokens.
 
-        :return: Response.
-        :rtype: ``response``
+        :return: JSON response dictionary.
+        :rtype: ``dict``
         """
         response = self.request_handler.post(
             url='%s/oauth/token' % settings.API_BASE_URL,
@@ -214,7 +215,7 @@ class Client(object):
             refresh_token=data['refresh_token'],
             expires_in=data['expires_in'],
         )
-        return response
+        return data
 
     def revoke_authorization(self):
         """Revokes Oauth authorization.
