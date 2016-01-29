@@ -70,7 +70,7 @@ class Client(object):
 
         :param string code: Authorization code to pass to Cronofy.
         :param string redirect_uri: Optionally override redirect uri obtained from user_auth_link.
-        :return: Dictionary containing auth tokens and response status.
+        :return: Dictionary containing auth tokens, expiration info, and response status.
         :rtype: ``dict``
         """
         response = self.request_handler.post(
@@ -89,9 +89,12 @@ class Client(object):
             refresh_token=data['refresh_token'],
             expires_in=data['expires_in'],
         )
+        token_expiration = (self.auth.authorization_datetime +
+            datetime.timedelta(seconds=self.auth.expires_in)).replace(tzinfo=UTC())
         return {
             'access_token': self.auth.access_token,
             'refresh_token': self.auth.refresh_token,
+            'token_expiration': get_iso8601_string(token_expiration),
             'expires_in': self.auth.expires_in,
             'response_status': response.status_code,
         }
@@ -196,7 +199,7 @@ class Client(object):
     def refresh_authorization(self):
         """Refreshes the authorization tokens.
 
-        :return: JSON response dictionary + token_expiration.
+        :return: Dictionary containing auth tokens, expiration info, and response status.
         :rtype: ``dict``
         """
         response = self.request_handler.post(
@@ -215,10 +218,15 @@ class Client(object):
             refresh_token=data['refresh_token'],
             expires_in=data['expires_in'],
         )
-        token_expiration = (self.auth.authorization_datetime + 
+        token_expiration = (self.auth.authorization_datetime +
             datetime.timedelta(seconds=self.auth.expires_in)).replace(tzinfo=UTC())
-        data['token_expiration'] = get_iso8601_string(token_expiration)
-        return data
+        return {
+            'access_token': self.auth.access_token,
+            'refresh_token': self.auth.refresh_token,
+            'token_expiration': get_iso8601_string(token_expiration),
+            'expires_in': self.auth.expires_in,
+            'response_status': response.status_code,
+        }
 
     def revoke_authorization(self):
         """Revokes Oauth authorization.
