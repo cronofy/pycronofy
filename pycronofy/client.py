@@ -32,7 +32,7 @@ class Client(object):
         :return: Account data.
         :rtype: ``dict``
         """
-        return self.request_handler.get(endpoint='account')['account']
+        return self.request_handler.get(endpoint='account').json()['account']
 
     def close_notification_channel(self, channel_id):
         """Close a notification channel to stop push notifications from being sent.
@@ -105,7 +105,7 @@ class Client(object):
         :return: List of calendars (dictionaries).
         :rtype: ``list``
         """
-        return self.request_handler.get(endpoint='calendars')['calendars']
+        return self.request_handler.get(endpoint='calendars').json()['calendars']
 
     def list_profiles(self):
         """Get list of active user's calendar profiles.
@@ -113,7 +113,7 @@ class Client(object):
         :return: Calendar profiles.
         :rtype: ``list``
         """
-        return self.request_handler.get(endpoint='profiles')['profiles']
+        return self.request_handler.get(endpoint='profiles').json()['profiles']
 
     def list_notification_channels(self):
         """Return a list of notification channels available for the active account.
@@ -121,7 +121,7 @@ class Client(object):
         :return: List of notification channels (dictionaries).
         :rtype: ``list``
         """
-        return self.request_handler.get(endpoint='channels')['channels']
+        return self.request_handler.get(endpoint='channels').json()['channels']
 
     def read_events(self,
         calendar_ids=(),
@@ -162,7 +162,7 @@ class Client(object):
             'include_deleted': include_deleted,
             'include_moved': include_moved,
             'localized_times': localized_times,
-        })
+        }).json()
         return Pages(self.request_handler, results, 'events', automatic_pagination)
 
     def read_free_busy(self,
@@ -193,7 +193,7 @@ class Client(object):
             'to': get_iso8601_string(to_date),
             'include_managed': include_managed,
             'localized_times': localized_times,
-        })
+        }).json()
         return Pages(self.request_handler, results, 'free_busy', automatic_pagination)
 
     def refresh_authorization(self):
@@ -278,7 +278,7 @@ class Client(object):
         if not scope:
             scope = ' '.join(settings.DEFAULT_OAUTH_SCOPE)
         self.auth.update(redirect_uri=redirect_uri)
-        data = self.request_handler.get(
+        response = self.request_handler.get(
             url='%s/oauth/authorize' % settings.APP_BASE_URL,
             params={
                 'response_type': 'code',
@@ -286,7 +286,6 @@ class Client(object):
                 'redirect_uri': redirect_uri,
                 'scope': scope,
                 'state': state,
-            },
-            return_json=False
+            }
         )
-        return data.url
+        return response.url

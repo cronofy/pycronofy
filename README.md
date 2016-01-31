@@ -195,6 +195,19 @@ except requests.exceptions.HTTPError as e:
     print(e.request.url) # URL and Get Data
     print(e.request.body) # Post Data
 
+# pycronofy provides a "set_request_hook" argument to make use of requests' event hooks.
+
+def on_request(response, *args, **kwargs):
+    """
+        "If the callback function returns a value, 
+        it is assumed that it is to replace the data that was passed in. 
+        If the function doesn’t return anything, nothing else is effected."
+        http://docs.python-requests.org/en/latest/user/advanced/#event-hooks
+    """
+    print('%s %s' % (response.request.method, response.url))
+    print(kwargs)
+
+cronofy.set_request_hook(on_request)
 ```
 
 **Tests:**

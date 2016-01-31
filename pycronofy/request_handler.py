@@ -10,7 +10,7 @@ class RequestHandler(object):
         """
         self.auth = auth
 
-    def get(self, endpoint='', url='', params={}, return_json=True):
+    def get(self, endpoint='', url='', params={}):
         """Perform a get for a json API endpoint.
 
         :param string endpoint: Target endpoint. (Optional).
@@ -19,7 +19,7 @@ class RequestHandler(object):
         :return: Response json.
         :rtype: ``dict``
         """
-        return self._request('get', endpoint, url, params=params, return_json=return_json)
+        return self._request('get', endpoint, url, params=params)
 
     def delete(self, endpoint='', url='', params={}):
         """Perform a get for a json API endpoint.
@@ -43,31 +43,25 @@ class RequestHandler(object):
         """
         return self._request('post', endpoint, url, data=data)
 
-    def _request(self, request_method, endpoint='', url='', data={}, params={}, return_json=False):
+    def _request(self, request_method, endpoint='', url='', data={}, params={}):
         """Perform a http request via the specified method to an API endpoint.
 
         :param string endpoint: Target endpoint. (Optional).
         :param string url: Override the endpoint and provide the full url (eg for pagination). (Optional).
         :param dict params: Provide parameters to pass to the request. (Optional).
         :param dict data: Data to pass to the post. (Optional).
-        :param bool return_json: Return json instead of the Response object. (Optional, default False).
         :return: Response or Response json
         :rtype: ``Response`` or ``dict``
         """
         if endpoint and not url:
             url = '%s/%s/%s' % (settings.API_BASE_URL, settings.API_VERSION, endpoint)
-        if data:
-            response = requests.__getattribute__(request_method)(url, 
-                headers={'Authorization': self.auth.get_authorization()}, 
-                json=data
-            )
-        else:
-            response = requests.__getattribute__(request_method)(url, 
-                headers={'Authorization': self.auth.get_authorization()}, 
-                params=params
-            )
+        response = requests.__getattribute__(request_method)(
+            url=url, 
+            hooks=settings.REQUEST_HOOK,
+            headers={'Authorization': self.auth.get_authorization()}, 
+            json=data,
+            params=params
+        )
         if response.status_code not in (requests.codes.ok, requests.codes.accepted):
             response.raise_for_status()
-        if return_json:
-            return response.json()
         return response

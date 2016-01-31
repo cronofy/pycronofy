@@ -46,7 +46,7 @@ class Pages(object):
 
     def fetch_next_page(self):
         """Retrieves the next page of data and refreshes Pages instance."""
-        result = self.request_handler.get(url=self.next_page_url)
+        result = self.request_handler.get(url=self.next_page_url).json()
         self.__init__(self.request_handler, result, self.data_type, self.automatic_pagination)
 
     def json(self):

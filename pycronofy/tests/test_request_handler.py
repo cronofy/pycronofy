@@ -2,7 +2,7 @@ from copy import deepcopy
 import pytest
 import requests
 import responses
-from pycronofy import Client, set_debug
+from pycronofy import Client
 from pycronofy import settings
 import common_data
 
@@ -28,7 +28,8 @@ def test_accepted(request_handler):
     args['status'] = 202
     responses.add(method=responses.GET, **args)
     response = request_handler.get(endpoint='events')
-    assert response['example'] == 1
+    assert response.status_code == requests.codes.accepted
+    assert response.json()['example'] == 1
 
 @responses.activate
 def test_get(request_handler):
@@ -38,7 +39,8 @@ def test_get(request_handler):
     """
     responses.add(method=responses.GET, **TEST_EVENTS_ARGS)
     response = request_handler.get(endpoint='events')
-    assert response['example'] == 1
+    assert response.status_code == requests.codes.ok
+    assert response.json()['example'] == 1
 
 @responses.activate
 def test_delete(request_handler):

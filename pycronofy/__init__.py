@@ -12,9 +12,15 @@ https://www.cronofy.com/developers/
 https://github.com/venuebook/pycronofy
 """
 
-def set_debug(debug):
-    """Sets DEBUG mode.
+def set_request_hook(func):
+    """Sets a function to execute on requests made by pycronofy
+    via the requests model.
 
-    :param bool debug: Set debug to True or False.
+    Accepts arguments (response, *args, **kwargs).
+
+    :param function func: Function to execute on request.
     """
-    settings.DEBUG = debug
+    if func:
+        settings.REQUEST_HOOK = {'response':func}
+    else:
+        settings.REQUEST_HOOK = {}

@@ -21,3 +21,6 @@ DEFAULT_TIMEZONE_ID = 'Etc/UTC'
 # Tuple of params required by the "events" endpoint.
 # tzid isn't technically required, but should be specified to avoid subtle timezone bugs.
 EVENTS_REQUIRED_FIELDS = ('event_id', 'summary', 'description', 'start', 'end', 'tzid')
+
+# Dictionary for request event hooks. Either empty or {'response': function}
+REQUEST_HOOK = {}
