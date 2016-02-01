@@ -35,7 +35,7 @@ def get_iso8601_string(date_time):
         return date_time.strftime(ISO_8601_DATE_FORMAT)
     elif date_time_type != type(datetime.datetime.now()):
         # If passed anything other than a datetime, date, string, or None, raise an Exception.
-        raise Exception('Unsupported type for get_datetime_string.\nSupported types: ``datetime.datetime``, ``datetime.date``, or ``string``.')
+        raise Exception('Unsupported type for get_iso8601_string.\nSupported types: ``datetime.datetime``, ``datetime.date``, or ``string``.')
     elif not date_time.tzinfo:
         # If there is a date/datetime object ensure there tzinfo has been set.
         raise Exception('tzinfo is None')
