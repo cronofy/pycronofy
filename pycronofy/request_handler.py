@@ -10,7 +10,7 @@ class RequestHandler(object):
         """
         self.auth = auth
 
-    def get(self, endpoint='', url='', params={}):
+    def get(self, endpoint='', url='', params=None):
         """Perform a get for a json API endpoint.
 
         :param string endpoint: Target endpoint. (Optional).
@@ -21,7 +21,7 @@ class RequestHandler(object):
         """
         return self._request('get', endpoint, url, params=params)
 
-    def delete(self, endpoint='', url='', params={}):
+    def delete(self, endpoint='', url='', params=None):
         """Perform a get for a json API endpoint.
 
         :param string endpoint: Target endpoint. (Optional).
@@ -32,7 +32,7 @@ class RequestHandler(object):
         """
         return self._request('delete', endpoint, url, params=params)
 
-    def post(self, endpoint='', url='', data={}):
+    def post(self, endpoint='', url='', data=None):
         """Perform a post to an API endpoint.
 
         :param string endpoint: Target endpoint. (Optional).
@@ -43,7 +43,7 @@ class RequestHandler(object):
         """
         return self._request('post', endpoint, url, data=data)
 
-    def _request(self, request_method, endpoint='', url='', data={}, params={}):
+    def _request(self, request_method, endpoint='', url='', data=None, params=None):
         """Perform a http request via the specified method to an API endpoint.
 
         :param string endpoint: Target endpoint. (Optional).
@@ -53,6 +53,10 @@ class RequestHandler(object):
         :return: Response or Response json
         :rtype: ``Response`` or ``dict``
         """
+        if not data:
+            data = {}
+        if not params:
+            params = {}
         if endpoint and not url:
             url = '%s/%s/%s' % (settings.API_BASE_URL, settings.API_VERSION, endpoint)
         response = requests.__getattribute__(request_method)(
