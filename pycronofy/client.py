@@ -10,20 +10,21 @@ class Client(object):
     Performs authentication, and wraps API: https://www.cronofy.com/developers/api/
     """
 
-    def __init__(self, client_id=None, client_secret=None, access_token=None, refresh_token=None):
+    def __init__(self, client_id=None, client_secret=None, access_token=None, refresh_token=None, token_expiration=None):
         """
         Example Usage:
 
         pycronofy.Client(access_token='')
         pycronofy.Client(client_id='', client_secret='')
 
-        :param string client_id: OAuth Client ID.
-        :param string client_secret: OAuth Client Secret.
-        :param string access_token: Access Token for User's Account.
-        :param string refresh_token: Existing Refresh Token for User's Account.
+        :param string client_id: OAuth Client ID. (Optional, default None)
+        :param string client_secret: OAuth Client Secret. (Optional, default None)
+        :param string access_token: Access Token for User's Account. (Optional, default None)
+        :param string refresh_token: Existing Refresh Token for User's Account. (Optional, default None)
+        :param string token_expiration: Datetime token expires. (Optional, default None)
         :param bool debug: Instantiate in debug mode. (Optional, default False).
         """
-        self.auth = Auth(client_id, client_secret, access_token, refresh_token)
+        self.auth = Auth(client_id, client_secret, access_token, refresh_token, token_expiration)
         self.request_handler = RequestHandler(self.auth)
 
     def account(self):
@@ -83,19 +84,17 @@ class Client(object):
                 'redirect_uri': redirect_uri if redirect_uri else self.auth.redirect_uri,
         })
         data = response.json()
+        token_expiration = (datetime.datetime.now() +
+            datetime.timedelta(seconds=data['expires_in'])).replace(tzinfo=UTC())
         self.auth.update(
-            authorization_datetime=datetime.datetime.now(),
+            token_expiration=token_expiration,
             access_token=data['access_token'],
             refresh_token=data['refresh_token'],
-            expires_in=data['expires_in'],
         )
-        token_expiration = (self.auth.authorization_datetime +
-            datetime.timedelta(seconds=self.auth.expires_in)).replace(tzinfo=UTC())
         return {
             'access_token': self.auth.access_token,
             'refresh_token': self.auth.refresh_token,
-            'token_expiration': get_iso8601_string(token_expiration),
-            'expires_in': self.auth.expires_in,
+            'token_expiration': get_iso8601_string(self.auth.token_expiration),
             'response_status': response.status_code,
         }
 
@@ -212,19 +211,19 @@ class Client(object):
             }
         )
         data = response.json()
+        token_expiration = (datetime.datetime.now() +
+            datetime.timedelta(seconds=data['expires_in'])).replace(tzinfo=UTC())
         self.auth.update(
-            authorization_datetime=datetime.datetime.now(),
+            token_expiration=token_expiration,
             access_token=data['access_token'],
             refresh_token=data['refresh_token'],
-            expires_in=data['expires_in'],
         )
-        token_expiration = (self.auth.authorization_datetime +
-            datetime.timedelta(seconds=self.auth.expires_in)).replace(tzinfo=UTC())
+        token_expiration = (datetime.datetime.now() +
+            datetime.timedelta(seconds=data['expires_in'])).replace(tzinfo=UTC())
         return {
             'access_token': self.auth.access_token,
             'refresh_token': self.auth.refresh_token,
-            'token_expiration': get_iso8601_string(token_expiration),
-            'expires_in': self.auth.expires_in,
+            'token_expiration': get_iso8601_string(self.auth.token_expiration),
             'response_status': response.status_code,
         }
 
@@ -243,10 +242,9 @@ class Client(object):
             }
         )
         self.auth.update(
-            authorization_datetime=None,
+            token_expiration=None,
             access_token=None,
             refresh_token=None,
-            expires_in=0,
         )
         return response
 
