@@ -70,7 +70,7 @@ class Client(object):
         """Updates the authorization tokens from the user provided code.
 
         :param string code: Authorization code to pass to Cronofy.
-        :param string redirect_uri: Optionally override redirect uri obtained from user_auth_link.
+        :param string redirect_uri: Optionally override redirect uri obtained from user_auth_link. (They must match however).
         :return: Dictionary containing auth tokens, expiration info, and response status.
         :rtype: ``dict``
         """
