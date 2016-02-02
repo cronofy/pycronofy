@@ -1,16 +1,9 @@
 import datetime
 
+from exceptions import PyCronofyDateTimeError
+
 ISO_8601_DATE_FORMAT = '%Y-%m-%d'
 ISO_8601_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S%z'
-
-class PyCronofyDateTimeError(Exception):
-    def __init__(self, message, argument):
-        """
-        :param string message: Exception message.
-        :param object argument: Value passed into get_iso8601_string.
-        """
-        super(PyCronofyDateTimeError, self).__init__(message)
-        self.argument = argument
 
 class UTC(datetime.tzinfo):
     """UTC tzinfo class to remove pytz dependency."""
@@ -39,10 +32,10 @@ def get_iso8601_string(date_time):
     if date_time_type in (type(''), type(u'')):
         # If passed a string, return the string.
         return date_time
-    elif date_time_type == type(datetime.date.today()):
+    elif date_time_type == datetime.date:
         # If passed a date, return an iso8601 formatted date string.
         return date_time.strftime(ISO_8601_DATE_FORMAT)
-    elif date_time_type != type(datetime.datetime.now()):
+    elif date_time_type != datetime.datetime:
         # If passed anything other than a datetime, date, string, or None, raise an Exception.
         error_message = 'Unsupported type: ``%s``.\nSupported types: ``<datetime.datetime>``, ``<datetime.date>``, or ``<str>``.'
         raise PyCronofyDateTimeError(error_message % (repr(type(date_time))), date_time)

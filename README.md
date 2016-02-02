@@ -179,6 +179,25 @@ response = cronofy.create_notification_channel('http://example.com',
 print(response)
 
 #######################
+# Validation
+#######################
+
+# You can validate any pycronofy client call for:
+# Authentication, required arguments, datetime/date string formatt.
+# A PyCronofyValidationError will be thrown if there is an error.
+# Some examples:
+
+try:
+    cronofy.validate('create_notification_channel', 'http://example.com', 
+        calendar_ids=(cal['calendar_id'],)
+    )
+    cronofy.validate('upsert_event', calendar_id=cal['calendar_id'], event=event)
+except pycronofy.exceptions.PyCronofyValidationError as e:
+    print(e.message)
+    print(e.fields)
+    print(e.method)
+
+#######################
 # Debugging
 #######################
 

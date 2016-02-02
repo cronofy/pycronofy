@@ -4,6 +4,7 @@ from pycronofy.auth import Auth
 from pycronofy.datetime_utils import get_iso8601_string, UTC
 from pycronofy.pagination import Pages
 from pycronofy.request_handler import RequestHandler
+from pycronofy.validation import validate
 
 class Client(object):
     """Client for cronofy web service.
@@ -284,3 +285,13 @@ class Client(object):
             }
         )
         return response.url
+
+    def validate(self, method, *args, **kwargs):
+        """Validate authentication and values passed to the specified method.
+        Raises a PyCronofyValidationError on error.
+
+        :param string method: Method name to check.
+        :param *args: Arguments for "Method".
+        :param **kwargs: Keyword arguments for "Method".
+        """
+        validate(method, self.auth, *args, **kwargs)
