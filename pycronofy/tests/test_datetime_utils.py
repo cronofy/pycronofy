@@ -29,4 +29,9 @@ def test_unsupported():
     """Test get_iso8601_string throws an exception when passed an unsupported type"""
     with pytest.raises(Exception) as exception_info:
         get_iso8601_string(1)
-    assert exception_info.value.message == 'Unsupported type for get_iso8601_string.\nSupported types: ``datetime.datetime``, ``datetime.date``, or ``string``.'
+    print('----')
+    print(exception_info.value.message)
+    print('Unsupported type: ``%s``.\nSupported types: ``<datetime.datetime>``, ``<datetime.date>``, or ``<str>``.' % repr(type(1)))
+    print('----')
+    assert exception_info.value.message == 'Unsupported type: ``%s``.\nSupported types: ``<datetime.datetime>``, ``<datetime.date>``, or ``<str>``.' % repr(type(1))
+    assert exception_info.value.argument == 1

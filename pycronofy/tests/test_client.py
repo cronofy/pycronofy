@@ -107,9 +107,6 @@ def test_upsert_event(client):
     responses.add(**TEST_UPSERT_EVENT_ARGS)
     response = client.upsert_event('1', TEST_EVENT)
     assert response.status_code == requests.codes.ok
-    with pytest.raises(Exception) as exception_info:
-        response = client.upsert_event('1', {})
-    assert 'not found in event' in exception_info.value.message
 
 @responses.activate
 def test_user_auth_link(client):

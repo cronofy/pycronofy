@@ -256,9 +256,6 @@ class Client(object):
         :return: Response from _post
         :rtype: ``Response``
         """
-        for key in settings.EVENTS_REQUIRED_FIELDS:
-            if not key in event:
-                raise Exception('%s not found in event.' % key)
         event['start'] = get_iso8601_string(event['start'])
         event['end'] = get_iso8601_string(event['end'])
         return self.request_handler.post(endpoint='calendars/%s/events' % calendar_id, data=event)
