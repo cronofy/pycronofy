@@ -100,7 +100,8 @@ def check_attr(method, obj, required_fields):
     if missing:
         raise PyCronofyValidationError('Method: %s. Missing auth fields: %s' % (method, missing),
             method,
-            missing)
+            missing
+        )
 
 def check_datetime(method, dictionary, fields, label=None):
     """Checks if the specified fields are formatted correctly if they have a value.
@@ -111,15 +112,20 @@ def check_datetime(method, dictionary, fields, label=None):
     :param string label: Dictionary name.
     """
     improperly_formatted = []
+    values = []
     for field in fields:
         if field in dictionary and dictionary[field] is not None:
             if type(dictionary[field]) not in (datetime.datetime, datetime.date) and not ISO_8601_REGEX.match(dictionary[field]):
                 improperly_formatted.append(field)
+                values.append(dictionary[field])
     if improperly_formatted:
         error_label = ' for "%s"' % label if label else ''
-        raise PyCronofyValidationError('Method: %s. Improperly formatted datetime/date fields%s: %s' % (method, error_label, improperly_formatted), 
+        raise PyCronofyValidationError(
+            'Method: %s. Improperly formatted datetime/date fields%s: %s\n%s' % (method, error_label, improperly_formatted, values), 
             method,
-            improperly_formatted)
+            improperly_formatted,
+            values
+        )
 
 def check_dict(method, dictionary, required_fields, label=None):
     """Checks if required fields have a value in the object instance.
@@ -137,7 +143,8 @@ def check_dict(method, dictionary, required_fields, label=None):
         error_label = ' for "%s"' % label if label else ''
         raise PyCronofyValidationError('Method: %s. Missing required fields%s: %s' % (method, error_label, missing), 
             method,
-            missing)
+            missing
+        )
 
 def validate(method, auth, *args, **kwargs):
     """Validate a method based on the METHOD_RULES above.
@@ -150,7 +157,7 @@ def validate(method, auth, *args, **kwargs):
     :param **kwargs: Keyword arguments for method.
     """
     if not method in METHOD_RULES:
-        raise PyCronofyValidationError('Method "%s" not found.' % method, None)
+        raise PyCronofyValidationError('Method "%s" not found.' % method)
     m = METHOD_RULES[method]
     arguments = {}
     number_of_args = len(args)
