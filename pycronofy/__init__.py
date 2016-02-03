@@ -20,7 +20,4 @@ def set_request_hook(func):
 
     :param function func: Function to execute on request.
     """
-    if func:
-        settings.REQUEST_HOOK = {'response':func}
-    else:
-        settings.REQUEST_HOOK = {}
+    settings.REQUEST_HOOK = {'response':func} if func else {}
