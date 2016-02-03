@@ -90,7 +90,7 @@ METHOD_RULES = {
     },
 }
 
-def check_attr(method, obj, required_fields):
+def check_exists_in_object(method, obj, required_fields):
     """Checks if required fields have a value in the object instance.
     Throws an exception with the missing fields.
 
@@ -131,7 +131,7 @@ def check_datetime(method, dictionary, fields, label=None):
             values
         )
 
-def check_dict(method, dictionary, required_fields, label=None):
+def check_exists_in_dictionary(method, dictionary, required_fields, label=None):
     """Checks if required fields have a value in the object instance.
     Throws an exception with the missing fields.
 
@@ -172,14 +172,14 @@ def validate(method, auth, *args, **kwargs):
             arguments[key] = kwargs[key]
         else:
             arguments[key] = None
-    check_attr(method, auth, m['auth'])
+    check_exists_in_object(method, auth, m['auth'])
     if 'required' in m:
-        check_dict(method, arguments, m['required'])
+        check_exists_in_dictionary(method, arguments, m['required'])
     if 'datetime' in m:
         check_datetime(method, arguments, m['datetime'])
     if 'dicts' in m:
         for d in m['dicts']:
-            check_dict(method, arguments[d], m['dicts'][d], d)
+            check_exists_in_dictionary(method, arguments[d], m['dicts'][d], d)
     if 'dicts_datetime' in m:
         for d in m['dicts_datetime']:
             check_datetime(method, arguments[d], m['dicts_datetime'][d], d)
