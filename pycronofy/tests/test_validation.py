@@ -58,3 +58,6 @@ def test_validate():
             calendar_ids=('id',)
         )
     assert 'access_token' in exception_info.value.fields
+    with pytest.raises(PyCronofyValidationError) as exception_info:
+        validate('ask_for_cats', Auth(), 'http://example.com')
+    assert exception_info.value.message == 'Method "ask_for_cats" not found.'

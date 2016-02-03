@@ -161,7 +161,7 @@ def validate(method, auth, *args, **kwargs):
     :param **kwargs: Keyword arguments for method.
     """
     if not method in METHOD_RULES:
-        raise PyCronofyValidationError('Method "%s" not found.' % method)
+        raise PyCronofyValidationError('Method "%s" not found.' % method, method)
     m = METHOD_RULES[method]
     arguments = {}
     number_of_args = len(args)
