@@ -1,6 +1,6 @@
 import datetime
 import pytest
-from pycronofy.datetime_utils import get_iso8601_string, UTC
+from pycronofy.datetime_utils import get_iso8601_string
 
 def test_date():
     """Test get_iso8601_string returns an ISO8601 formatted date string when passed a datetime.date object"""
@@ -11,7 +11,6 @@ def test_datetime():
     and throws an exception when tzinfo is not set."""
     target_datetime = '2016-01-15T09:08:00'
     d = datetime.datetime.strptime(target_datetime, '%Y-%m-%dT%H:%M:%S')
-    d = d.replace(tzinfo=UTC())
     assert get_iso8601_string(d) == ('%sZ' % target_datetime)
 
 def test_iso8601_string():

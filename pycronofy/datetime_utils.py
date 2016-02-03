@@ -5,15 +5,6 @@ from exceptions import PyCronofyDateTimeError
 ISO_8601_DATE_FORMAT = '%Y-%m-%d'
 ISO_8601_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ' # UTC
 
-class UTC(datetime.tzinfo):
-    """UTC tzinfo class to remove pytz dependency."""
-    def utcoffset(self, dt):
-        return datetime.timedelta(0)
-    def tzname(self, dt):
-        return "UTC"
-    def dst(self, dt):
-        return datetime.timedelta(0)
-
 def get_iso8601_string(date_time):
     """
         Accepts either an ISO 8601 string OR a datetime object.

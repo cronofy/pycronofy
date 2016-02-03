@@ -1,7 +1,7 @@
 import datetime
 from pycronofy import settings
 from pycronofy.auth import Auth
-from pycronofy.datetime_utils import get_iso8601_string, UTC
+from pycronofy.datetime_utils import get_iso8601_string
 from pycronofy.pagination import Pages
 from pycronofy.request_handler import RequestHandler
 from pycronofy.validation import validate
@@ -85,8 +85,7 @@ class Client(object):
                 'redirect_uri': redirect_uri if redirect_uri else self.auth.redirect_uri,
         })
         data = response.json()
-        token_expiration = (datetime.datetime.now() +
-            datetime.timedelta(seconds=data['expires_in'])).replace(tzinfo=UTC())
+        token_expiration = (datetime.datetime.utcnow() + datetime.timedelta(seconds=data['expires_in']))
         self.auth.update(
             token_expiration=token_expiration,
             access_token=data['access_token'],
@@ -212,15 +211,12 @@ class Client(object):
             }
         )
         data = response.json()
-        token_expiration = (datetime.datetime.now() +
-            datetime.timedelta(seconds=data['expires_in'])).replace(tzinfo=UTC())
+        token_expiration = (datetime.datetime.utcnow() + datetime.timedelta(seconds=data['expires_in']))
         self.auth.update(
             token_expiration=token_expiration,
             access_token=data['access_token'],
             refresh_token=data['refresh_token'],
         )
-        token_expiration = (datetime.datetime.now() +
-            datetime.timedelta(seconds=data['expires_in'])).replace(tzinfo=UTC())
         return {
             'access_token': self.auth.access_token,
             'refresh_token': self.auth.refresh_token,
