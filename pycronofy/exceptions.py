@@ -18,6 +18,9 @@ class PyCronofyRequestError(Exception):
         body = ''
         if request.method in ('POST', 'PUT') and request.body:
             body = '\nPOST data: %s' % request.body
+        # Message leaves out request.headers for security reasons.
+        # This can be accessed via the exception:
+        # exception_instance.request.headers
         message = 'Response: %(status_code)s: %(reason)s\nRequest: %(method)s %(url)s%(body)s%(text)s' % {
             'status_code': response.status_code,
             'reason': response.reason,
