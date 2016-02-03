@@ -3,7 +3,7 @@ import datetime
 from exceptions import PyCronofyDateTimeError
 
 ISO_8601_DATE_FORMAT = '%Y-%m-%d'
-ISO_8601_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S%z'
+ISO_8601_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ' # UTC
 
 class UTC(datetime.tzinfo):
     """UTC tzinfo class to remove pytz dependency."""
@@ -17,7 +17,11 @@ class UTC(datetime.tzinfo):
 def get_iso8601_string(date_time):
     """
         Accepts either an ISO 8601 string OR a datetime object.
-        DateTime objects must have a tzinfo defined.
+        Must be in UTC format:
+
+        2016-01-31T12:33:00Z
+        2016-01-31T12:33:00UTC
+        2016-01-31T12:33:00+00:00
 
         https://en.wikipedia.org/wiki/ISO_8601
 
@@ -39,7 +43,4 @@ def get_iso8601_string(date_time):
         # If passed anything other than a datetime, date, string, or None, raise an Exception.
         error_message = 'Unsupported type: ``%s``.\nSupported types: ``<datetime.datetime>``, ``<datetime.date>``, or ``<str>``.'
         raise PyCronofyDateTimeError(error_message % (repr(type(date_time))), date_time)
-    elif not date_time.tzinfo:
-        # If there is a date/datetime object ensure there tzinfo has been set.
-        raise PyCronofyDateTimeError('tzinfo is None', date_time)
     return date_time.strftime(ISO_8601_DATETIME_FORMAT)

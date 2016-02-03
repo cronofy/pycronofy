@@ -11,11 +11,8 @@ def test_datetime():
     and throws an exception when tzinfo is not set."""
     target_datetime = '2016-01-15T09:08:00'
     d = datetime.datetime.strptime(target_datetime, '%Y-%m-%dT%H:%M:%S')
-    with pytest.raises(Exception) as exception_info:
-        get_iso8601_string(d)
-    assert exception_info.value.message == 'tzinfo is None'
     d = d.replace(tzinfo=UTC())
-    assert get_iso8601_string(d) == ('%s+0000' % target_datetime)
+    assert get_iso8601_string(d) == ('%sZ' % target_datetime)
 
 def test_iso8601_string():
     """Test get_iso8601_string returns a string when passed a string"""
@@ -29,9 +26,5 @@ def test_unsupported():
     """Test get_iso8601_string throws an exception when passed an unsupported type"""
     with pytest.raises(Exception) as exception_info:
         get_iso8601_string(1)
-    print('----')
-    print(exception_info.value.message)
-    print('Unsupported type: ``%s``.\nSupported types: ``<datetime.datetime>``, ``<datetime.date>``, or ``<str>``.' % repr(type(1)))
-    print('----')
     assert exception_info.value.message == 'Unsupported type: ``%s``.\nSupported types: ``<datetime.datetime>``, ``<datetime.date>``, or ``<str>``.' % repr(type(1))
     assert exception_info.value.argument == 1

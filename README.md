@@ -70,27 +70,19 @@ print(cronofy.list_calendars()[0])
 # Getting events
 #######################
 
+# Dates/Datetimes must be in UTC
 # For from_date, to_date, start, end, you can pass in a datetime object
-# or an ISO 8601 datetime string with the offset included.
+# or an ISO 8601 datetime string.
 # For example:
-example_datetime_string = '2016-01-06T16:49:37-0456' #ISO 8601 with offset.
+example_datetime_string = '2016-01-06T16:49:37Z' #ISO 8601.
 
-# Getting events with UTC
+# To set to local time, pass in the tzid argument.
 from_date = (datetime.datetime.utcnow() - datetime.timedelta(days=2))
 to_date = datetime.datetime.utcnow()
 events = cronofy.read_events(calendar_ids=(YOUR_CAL_ID,), 
     from_date=from_date, 
-    to_date=to_date
-)
-
-# Getting events with local timezone
-from_date = datetime.datetime.now() - datetime.timedelta(days=2)
-from_date = from_date.replace(tzinfo=pytz.timezone(timezone_id)
-to_date = datetime.datetime.now().replace(tzinfo=pytz.timezone(timezone_id))
-events = cronofy.read_events(calendar_ids=(YOUR_CAL_ID,), 
-    from_date=from_date, 
-    to_date=to_date, 
-    tzid=timezone_id
+    to_date=to_date,
+    tzid=timezone_id # This argument sets the timezone to local, vs utc.
 )
 
 # Automatic pagination through an iterator
@@ -145,16 +137,16 @@ for block in free_busy_blocks:
 # Creating a test event
 #######################
 
-# Create a test event with local timezone
+# Create a test event with local timezone. 
+# (Note datetime objects or datetime strings must be UTC)
 # You need to supply a uuid, most likely from your system.
 test_event_id = 'example-%s' % uuid.uuid4(), 
 event = {
     'event_id': test_event_id,
     'summary': 'Test Event', # The event title
     'description': 'Discuss proactive strategies for a reactive world.',
-    'start': datetime.datetime.now().replace(tzinfo=pytz.timezone(timezone_id)),
-    'end': (datetime.datetime.now() + 
-        datetime.timedelta(hours=1)).replace(tzinfo=pytz.timezone(timezone_id)),
+    'start': datetime.datetime.utcnow(),
+    'end': (datetime.datetime.utcnow() + datetime.timedelta(hours=1)),
     'tzid': timezone_id,
     'location': {
         'description': 'My Desk!',

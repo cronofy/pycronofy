@@ -3,10 +3,14 @@ import re
 
 from exceptions import PyCronofyValidationError
 
-# Matches ISO_8601 Cronofy accepts:
-# 2016-01-31T16:45:46+00:00
-# Not 2016-01-31T16:45:46Z
-ISO_8601_REGEX = re.compile('(^\d\d\d\-\d\d-\dT\d\d\:\d\d\:\d\d\+\d\d\:\d\d$)|(\d\d\d\-\d\d-\d)')
+# Matches ISO_8601 Cronofy accepts. Must be UTC if datetime.
+ISO_8601_FORMATS = (
+    '(^\d\d\d\-\d\d-\d$)',
+    '(^\d\d\d\-\d\d-\dT\d\d\:\d\d\:\d\d\Z$)',
+    '(^\d\d\d\-\d\d-\dT\d\d\:\d\d\:\d\d\UTC)',
+    '(^\d\d\d\-\d\d-\dT\d\d\:\d\d\:\d\d\+00:00$)',
+)
+ISO_8601_REGEX = re.compile('|'.join(ISO_8601_FORMATS))
 
 METHOD_RULES = {
     'account': {
