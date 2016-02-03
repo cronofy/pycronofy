@@ -88,6 +88,10 @@ METHOD_RULES = {
         'auth': ('client_id',),
         'required': ('redirect_uri',),
     },
+    'validate': {
+        'args': ('method',),
+        'required': ('method',),
+    },
 }
 
 def check_exists_in_object(method, obj, required_fields):
@@ -102,7 +106,7 @@ def check_exists_in_object(method, obj, required_fields):
         if getattr(obj, field) is None:
             missing.append(field)
     if missing:
-        raise PyCronofyValidationError('Method: %s. Missing auth fields: %s' % (method, missing),
+        raise PyCronofyValidationError('Method: %s. Missing auth field(s): %s' % (method, missing),
             method,
             missing
         )
@@ -125,7 +129,7 @@ def check_datetime(method, dictionary, fields, label=None):
     if improperly_formatted:
         error_label = ' for "%s"' % label if label else ''
         raise PyCronofyValidationError(
-            'Method: %s. Improperly formatted datetime/date fields%s: %s\n%s' % (method, error_label, improperly_formatted, values), 
+            'Method: %s. Improperly formatted datetime/date field(s)%s: %s\n%s' % (method, error_label, improperly_formatted, values), 
             method,
             improperly_formatted,
             values
@@ -145,7 +149,7 @@ def check_exists_in_dictionary(method, dictionary, required_fields, label=None):
             missing.append(field)
     if missing:
         error_label = ' for "%s"' % label if label else ''
-        raise PyCronofyValidationError('Method: %s. Missing required fields%s: %s' % (method, error_label, missing), 
+        raise PyCronofyValidationError('Method: %s. Missing required field(s)%s: %s' % (method, error_label, missing), 
             method,
             missing
         )

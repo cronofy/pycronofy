@@ -1,5 +1,6 @@
 import requests
 from pycronofy import settings
+from pycronofy.exceptions import PyCronofyRequestError
 
 class RequestHandler(object):
     """Wrap all request handling."""
@@ -67,5 +68,11 @@ class RequestHandler(object):
             params=params
         )
         if response.status_code not in (requests.codes.ok, requests.codes.accepted):
-            response.raise_for_status()
+            try:
+                response.raise_for_status()
+            except requests.exceptions.HTTPError as e:
+                raise PyCronofyRequestError(
+                        request=e.request,
+                        response=e.response,
+                )
         return response

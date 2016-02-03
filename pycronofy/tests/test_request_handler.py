@@ -4,6 +4,7 @@ import requests
 import responses
 from pycronofy import Client
 from pycronofy import settings
+from pycronofy.exceptions import PyCronofyRequestError
 import common_data
 
 TEST_EVENTS_ARGS = { 
@@ -80,4 +81,4 @@ def test_unauthorized(request_handler):
     responses.add(method=responses.GET, **args)
     with pytest.raises(Exception) as exception_info:
         response = request_handler.get(endpoint='events')
-    assert exception_info.typename == 'HTTPError'
+    assert exception_info.typename == 'PyCronofyRequestError'

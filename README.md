@@ -197,7 +197,7 @@ except pycronofy.exceptions.PyCronofyValidationError as e:
 
 try:
     cronofy.upsert(event(calendar_id='ABC', event=malformed_event))
-except requests.exceptions.HTTPError as e:
+except pycronofy.exceptions.PyCronofyRequestError as e:
     print(e.response.reason) # Error Message
     print(e.response.text) # Response Body
     print(e.request.method) # HTTP Method
