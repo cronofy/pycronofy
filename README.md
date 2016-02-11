@@ -217,7 +217,7 @@ def on_request(response, *args, **kwargs):
     print('%s %s' % (response.request.method, response.url))
     print(kwargs)
 
-cronofy.set_request_hook(on_request)
+pycronofy.set_request_hook(on_request)
 ```
 
 **Tests:**
