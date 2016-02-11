@@ -58,8 +58,17 @@ class Client(object):
             data['filters'] = {'calendar_ids':calendar_ids}
         return self.request_handler.post('channels', data=data)
 
+    def delete_all_events(self):
+        """Deletes all events managed through Cronofy from the all of the user's calendars.
+
+        :return: Response from _delete
+        :rtype: ``Response``
+        """
+        return self.request_handler.delete(endpoint='calendars/%s/events' % calendar_id, params={'delete_all': True})
+
     def delete_event(self, calendar_id, event_id):
         """Delete an event from the specified calendar.
+
         :param string calendar_id: ID of calendar to insert/update event into.
         :param string event_id: ID of event to delete.
         :return: Response from _delete
