@@ -25,11 +25,10 @@ python setup.py install
 ```python
 import datetime
 import uuid
-import pytz
 import pycronofy
 
 # Example timezone id
-timezone_id = 'America/New_York'
+timezone_id = 'US/Eastern'
 
 #######################
 # Authorization:
