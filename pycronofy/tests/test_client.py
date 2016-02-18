@@ -17,14 +17,6 @@ TEST_EVENT = {
     },
 }
 
-TEST_CREATE_NOTIFICATION_ARGS = {
-    'method': responses.POST,
-    'url': '%s/%s/channels' % (settings.API_BASE_URL, settings.API_VERSION),
-    'body': '{"example": 1}',
-    'status': 200,
-    'content_type':'application/json'
-}
-
 TEST_UPSERT_EVENT_ARGS = {
     'method': responses.POST,
     'url': '%s/%s/calendars/1/events' % (settings.API_BASE_URL, settings.API_VERSION),
@@ -44,9 +36,14 @@ def test_create_notification_channel(client):
 
     :param Client client: Client instance with test data.
     """
-    responses.add(**TEST_CREATE_NOTIFICATION_ARGS)
-    response = client.create_notification_channel('http://example.com', calendar_ids=('1',))
-    assert response.status_code == requests.codes.ok
+    responses.add(responses.POST,
+        url='%s/%s/channels' % (settings.API_BASE_URL, settings.API_VERSION),
+        body='{"channel": {"channel_id": "chn_54cf7c7cb4ad4c1027000002", "callback_url": "http://example.com"}}',
+        status=200,
+        content_type='application/json',
+    )
+    channel = client.create_notification_channel('http://example.com', calendar_ids=('1',))
+    assert channel['channel_id'] == 'chn_54cf7c7cb4ad4c1027000002'
 
 @responses.activate
 def test_get_authorization_from_code(client):
@@ -60,9 +57,10 @@ def test_get_authorization_from_code(client):
         status=200,
         content_type='application/json'
     )
-    response = client.get_authorization_from_code('code')
-    assert client.auth.access_token == 'tail'
-    assert client.auth.refresh_token == 'meow'
+    authorization = client.get_authorization_from_code('code')
+    assert authorization['access_token'] == 'tail'
+    assert authorization['refresh_token'] == 'meow'
+    assert 'token_expiration' in authorization
 
 @responses.activate
 def test_refresh(client):
@@ -92,8 +90,7 @@ def test_revoke(client):
         status=200,
         content_type='application/json'
     )
-    response = client.revoke_authorization()
-    assert response.status_code == requests.codes.ok
+    client.revoke_authorization()
     assert client.auth.access_token == None
     assert client.auth.refresh_token == None
     assert client.auth.token_expiration == None
@@ -106,7 +103,6 @@ def test_upsert_event(client):
     """
     responses.add(**TEST_UPSERT_EVENT_ARGS)
     response = client.upsert_event('1', TEST_EVENT)
-    assert response.status_code == requests.codes.ok
 
 @responses.activate
 def test_user_auth_link(client):

@@ -40,18 +40,16 @@ class Client(object):
         """Close a notification channel to stop push notifications from being sent.
 
         :param string channel_id: The id of the notification channel.
-        :return: Response
-        :rtype: ``response``
         """
-        return self.request_handler.delete(endpoint='channels/%s' % channel_id)
+        self.request_handler.delete(endpoint='channels/%s' % channel_id)
 
     def create_notification_channel(self, callback_url, calendar_ids=()):
         """Create a new channel for receiving push notifications.
 
         :param string callback_url: The url that will receive push notifications.
         Must not be longer than 128 characters and should be HTTPS.
-        :return: Response
-        :rtype: ``response``
+        :return: Channel id and channel callback
+        :rtype: ``dict``
         """
         data = {'callback_url': callback_url}
         if calendar_ids:
@@ -59,22 +57,16 @@ class Client(object):
         return self.request_handler.post('channels', data=data).json()['channel']
 
     def delete_all_events(self):
-        """Deletes all events managed through Cronofy from the all of the user's calendars.
-
-        :return: Response from _delete
-        :rtype: ``Response``
-        """
-        return self.request_handler.delete(endpoint='calendars/%s/events' % calendar_id, params={'delete_all': True})
+        """Deletes all events managed through Cronofy from the all of the user's calendars."""
+        self.request_handler.delete(endpoint='calendars/%s/events' % calendar_id, params={'delete_all': True})
 
     def delete_event(self, calendar_id, event_id):
         """Delete an event from the specified calendar.
 
         :param string calendar_id: ID of calendar to insert/update event into.
         :param string event_id: ID of event to delete.
-        :return: Response from _delete
-        :rtype: ``Response``
         """
-        return self.request_handler.delete(endpoint='calendars/%s/events' % calendar_id, params={'event_id': event_id})
+        self.request_handler.delete(endpoint='calendars/%s/events' % calendar_id, params={'event_id': event_id})
 
     def get_authorization_from_code(self, code, redirect_uri=''):
         """Updates the authorization tokens from the user provided code.
@@ -234,11 +226,7 @@ class Client(object):
         }
 
     def revoke_authorization(self):
-        """Revokes Oauth authorization.
-
-        :return: Response.
-        :rtype: ``response``
-        """
+        """Revokes Oauth authorization."""
         response = self.request_handler.post(
             url='%s/oauth/token/revoke' % settings.API_BASE_URL,
             data={
@@ -252,19 +240,16 @@ class Client(object):
             access_token=None,
             refresh_token=None,
         )
-        return response
 
     def upsert_event(self, calendar_id, event):
         """Inserts or updates an event for the specified calendar.
 
         :param string calendar_id: ID of calendar to insert/update event into.
         :param dict event: Dictionary of event data to send to cronofy.
-        :return: Response from _post
-        :rtype: ``Response``
         """
         event['start'] = get_iso8601_string(event['start'])
         event['end'] = get_iso8601_string(event['end'])
-        return self.request_handler.post(endpoint='calendars/%s/events' % calendar_id, data=event)
+        self.request_handler.post(endpoint='calendars/%s/events' % calendar_id, data=event)
 
     def user_auth_link(self, redirect_uri, scope='', state=''):
         """Generates a URL to send the user for OAuth 2.0

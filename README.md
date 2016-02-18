@@ -151,23 +151,23 @@ event = {
         'description': 'My Desk!',
     },
 }
-print(cronofy.upsert_event(calendar_id=cal['calendar_id'], event=event))
+cronofy.upsert_event(calendar_id=cal['calendar_id'], event=event)
 
 #######################
 # Deleting a test event
 #######################
 
-print(cronofy.delete_event(calendar_id=cal['calendar_id'], event_id=test_event_id))
+cronofy.delete_event(calendar_id=cal['calendar_id'], event_id=test_event_id)
 
 #######################
 # Creating a notification channel
 #######################
 
 # Note this will only work with Oauth, not with a personal access token.
-response = cronofy.create_notification_channel('http://example.com', 
+channel = cronofy.create_notification_channel('http://example.com', 
     calendar_ids=(cal['calendar_id'],)
 )
-print(response)
+print(channel)
 
 #######################
 # Validation
