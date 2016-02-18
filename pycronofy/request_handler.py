@@ -67,7 +67,8 @@ class RequestHandler(object):
             json=data,
             params=params
         )
-        if (response.status_code != (200 or 202)):
+        if ((response.status_code != 200) and 
+            (response.status_code != 202)):
             try:
                 response.raise_for_status()
             except requests.exceptions.HTTPError as e:
