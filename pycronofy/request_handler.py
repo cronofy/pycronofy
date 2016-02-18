@@ -67,11 +67,13 @@ class RequestHandler(object):
             json=data,
             params=params
         )
-        try:
-            response.raise_for_status()
-        except requests.exceptions.HTTPError as e:
-            raise PyCronofyRequestError(
-                    request=e.request,
-                    response=e.response,
-            )
+        if ((response.status_code != requests.codes.ok) and 
+            (response.status_code != requests.codes.accepted)):
+            try:
+                response.raise_for_status()
+            except requests.exceptions.HTTPError as e:
+                raise PyCronofyRequestError(
+                        request=e.request,
+                        response=e.response,
+                )
         return response

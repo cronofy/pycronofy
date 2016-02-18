@@ -38,12 +38,12 @@ def test_create_notification_channel(client):
     """
     responses.add(responses.POST,
         url='%s/%s/channels' % (settings.API_BASE_URL, settings.API_VERSION),
-        body='{"channel": {"channel_id": "chn_54cf7c7cb4ad4c1027000002", "callback_url": "http://example.com"}}',
+        body='{"channel": {"channel_id": "chn_123example", "callback_url": "http://example.com"}}',
         status=200,
         content_type='application/json',
     )
     channel = client.create_notification_channel('http://example.com', calendar_ids=('1',))
-    assert channel['channel_id'] == 'chn_54cf7c7cb4ad4c1027000002'
+    assert channel['channel_id'] == 'chn_123example'
 
 @responses.activate
 def test_get_authorization_from_code(client):
