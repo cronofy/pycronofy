@@ -221,7 +221,6 @@ class Client(object):
             'access_token': self.auth.access_token,
             'refresh_token': self.auth.refresh_token,
             'token_expiration': get_iso8601_string(self.auth.token_expiration),
-            'response_status': response.status_code,
         }
 
     def revoke_authorization(self):
