@@ -38,6 +38,7 @@ timezone_id = 'US/Eastern'
 cronofy = pycronofy.Client(access_token=YOUR_TOKEN) # Using a personal token for testing.
 
 ### With OAuth
+# Initial authorization
 cronofy = pycronofy.Client(client_id=YOUR_CLIENT_ID, client_secret=YOUR_CLIENT_SECRET)
 
 url = cronofy.user_auth_link('http://yourwebsite.com')
@@ -45,6 +46,12 @@ print('Go to this url in your browser, and paste the code below')
 print(url)
 code = input('Paste Code Here: ') # raw_input() for python 2.
 cronofy.authorize_from_code(code)
+
+# Refresh
+cronofy.refresh_authorization()
+
+# Revoke
+cronofy.revoke_authorization()
 
 #######################
 # Getting account info
@@ -60,10 +67,10 @@ for profile in cronofy.list_profiles():
     print(profile)
 
 #######################
-# Getting a calendar
+# Getting calendars
 #######################
 
-print(cronofy.list_calendars()[0])
+print(cronofy.list_calendars())
 
 #######################
 # Getting events
@@ -78,15 +85,15 @@ example_datetime_string = '2016-01-06T16:49:37Z' #ISO 8601.
 # To set to local time, pass in the tzid argument.
 from_date = (datetime.datetime.utcnow() - datetime.timedelta(days=2))
 to_date = datetime.datetime.utcnow()
-events = cronofy.read_events(calendar_ids=(YOUR_CAL_ID,), 
-    from_date=from_date, 
+events = cronofy.read_events(calendar_ids=(YOUR_CAL_ID,),
+    from_date=from_date,
     to_date=to_date,
     tzid=timezone_id # This argument sets the timezone to local, vs utc.
 )
 
 # Automatic pagination through an iterator
 for event in events:
-    print('%s (From %s to %s, %i attending)' % 
+    print('%s (From %s to %s, %i attending)' %
         (event['summary'], event['start'], event['end'], len(event['attendees'])))
 
 # Treat the events as a list (holding the current page only).
@@ -105,27 +112,27 @@ events.json()
 
 # Retrieve all data in a list:
 # Option 1:
-all_events = [event for event in cronofy.read_events(calendar_ids=(YOUR_CAL_ID,), 
-    from_date=from_date, 
-    to_date=to_date, 
+all_events = [event for event in cronofy.read_events(calendar_ids=(YOUR_CAL_ID,),
+    from_date=from_date,
+    to_date=to_date,
     tzid=timezone_id)
 ]
 
 # Option 2:
-all_events = cronofy.read_events(calendar_ids=(YOUR_CAL_ID,), 
-    from_date=from_date, 
-    to_date=to_date, 
+all_events = cronofy.read_events(calendar_ids=(YOUR_CAL_ID,),
+    from_date=from_date,
+    to_date=to_date,
     tzid=timezone_id
 ).all()
 
 #######################
-# Getting free/busy blocks
+# Free/Busy blocks
 #######################
 
 # Essentially the same as reading events.
 
-free_busy_blocks = cronofy.read_free_busy(calendar_ids=(YOUR_CAL_ID,), 
-    from_date=from_date, 
+free_busy_blocks = cronofy.read_free_busy(calendar_ids=(YOUR_CAL_ID,),
+    from_date=from_date,
     to_date=to_date
 )
 
@@ -136,10 +143,10 @@ for block in free_busy_blocks:
 # Creating a test event
 #######################
 
-# Create a test event with local timezone. 
+# Create a test event with local timezone.
 # (Note datetime objects or datetime strings must be UTC)
 # You need to supply a uuid, most likely from your system.
-test_event_id = 'example-%s' % uuid.uuid4(), 
+test_event_id = 'example-%s' % uuid.uuid4(),
 event = {
     'event_id': test_event_id,
     'summary': 'Test Event', # The event title
@@ -154,20 +161,26 @@ event = {
 cronofy.upsert_event(calendar_id=cal['calendar_id'], event=event)
 
 #######################
-# Deleting a test event
+# Deletion
 #######################
 
 cronofy.delete_event(calendar_id=cal['calendar_id'], event_id=test_event_id)
 
+# Deletes all managed events (events inserted via Cronofy) for all user calendars.
+cronofy.delete_all_events()
+
 #######################
-# Creating a notification channel
+# Notification channels
 #######################
 
 # Note this will only work with Oauth, not with a personal access token.
-channel = cronofy.create_notification_channel('http://example.com', 
+
+channel = cronofy.create_notification_channel('http://example.com',
     calendar_ids=(cal['calendar_id'],)
 )
 print(channel)
+print(cronofy.list_notification_channels())
+cronofy.close_notification_channel(channel['channel_id'])
 
 #######################
 # Validation
@@ -179,7 +192,7 @@ print(channel)
 # Some examples:
 
 try:
-    cronofy.validate('create_notification_channel', 'http://example.com', 
+    cronofy.validate('create_notification_channel', 'http://example.com',
         calendar_ids=(cal['calendar_id'],)
     )
 except pycronofy.exceptions.PyCronofyValidationError as e:
@@ -208,8 +221,8 @@ except pycronofy.exceptions.PyCronofyRequestError as e:
 
 def on_request(response, *args, **kwargs):
     """
-        "If the callback function returns a value, 
-        it is assumed that it is to replace the data that was passed in. 
+        "If the callback function returns a value,
+        it is assumed that it is to replace the data that was passed in.
         If the function doesn’t return anything, nothing else is effected."
         http://docs.python-requests.org/en/latest/user/advanced/#event-hooks
     """
