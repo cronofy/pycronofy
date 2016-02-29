@@ -58,7 +58,7 @@ class Client(object):
 
     def delete_all_events(self):
         """Deletes all events managed through Cronofy from the all of the user's calendars."""
-        self.request_handler.delete(endpoint='calendars/%s/events', params={'delete_all': True})
+        self.request_handler.delete(endpoint='events', params={'delete_all': True})
 
     def delete_event(self, calendar_id, event_id):
         """Delete an event from the specified calendar.
