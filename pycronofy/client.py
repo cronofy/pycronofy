@@ -56,7 +56,7 @@ class Client(object):
             data['filters'] = {'calendar_ids':calendar_ids}
         return self.request_handler.post('channels', data=data).json()['channel']
 
-    def delete_all_events(self,):
+    def delete_all_events(self):
         """Deletes all events managed through Cronofy from the all of the user's calendars."""
         self.request_handler.delete(endpoint='calendars/%s/events', params={'delete_all': True})
 
