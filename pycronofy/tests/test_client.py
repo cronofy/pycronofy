@@ -119,6 +119,6 @@ def test_user_auth_link(client):
         content_type='application/json'
     )
     url = client.user_auth_link(redirect_uri='http://example.com', scope='felines', state='NY')
-    assert url == auth_url
+    assert 'client_id=%s' % common_data.AUTH_ARGS['client_id'] in url
     url = client.user_auth_link(redirect_uri='http://example.com', state='NY')
     assert settings.APP_BASE_URL in url
