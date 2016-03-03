@@ -249,13 +249,14 @@ class Client(object):
         event['end'] = get_iso8601_string(event['end'])
         self.request_handler.post(endpoint='calendars/%s/events' % calendar_id, data=event)
 
-    def user_auth_link(self, redirect_uri, scope='', state=''):
+    def user_auth_link(self, redirect_uri, scope='', state='', avoid_linking=False):
         """Generates a URL to send the user for OAuth 2.0
 
         :param string redirect_uri: URL to redirect the user to after auth.
         :param string scope: The scope of the privileges you want the eventual access_token to grant.
         :param string state: A value that will be returned to you unaltered along with the user's authorization request decision.
         (The OAuth 2.0 RFC recommends using this to prevent cross-site request forgery.)
+        :param bool avoid_linking: Avoid linking calendar accounts together under one set of credentials. (Optional, default: false).
         :return: authorization link
         :rtype: ``string``
         """
@@ -270,6 +271,7 @@ class Client(object):
                 'redirect_uri': redirect_uri,
                 'scope': scope,
                 'state': state,
+                'avoid_linking': avoid_linking,
             }
         )
         return response.url
