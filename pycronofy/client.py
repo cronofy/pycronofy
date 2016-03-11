@@ -48,6 +48,7 @@ class Client(object):
 
         :param string callback_url: The url that will receive push notifications.
         Must not be longer than 128 characters and should be HTTPS.
+        :param tuple calendar_ids: List of calendar ids to create notification channels for. (Optional. Default empty tuple)
         :return: Channel id and channel callback
         :rtype: ``dict``
         """
@@ -56,9 +57,15 @@ class Client(object):
             data['filters'] = {'calendar_ids':calendar_ids}
         return self.request_handler.post('channels', data=data).json()['channel']
 
-    def delete_all_events(self):
-        """Deletes all events managed through Cronofy from the all of the user's calendars."""
-        self.request_handler.delete(endpoint='events', params={'delete_all': True})
+    def delete_all_events(self, calendar_ids=()):
+        """Deletes all events managed through Cronofy from the all of the user's calendars.
+
+        :param tuple calendar_ids: List of calendar ids to delete events for. (Optional. Default empty tuple)
+        """
+        params={'delete_all': True}
+        if calendar_ids:
+            params = {'calendar_ids': calendar_ids}
+        self.request_handler.delete(endpoint='events', params=params)
 
     def delete_event(self, calendar_id, event_id):
         """Delete an event from the specified calendar.

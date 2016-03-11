@@ -171,6 +171,9 @@ cronofy.delete_event(calendar_id=cal['calendar_id'], event_id=test_event_id)
 # Deletes all managed events (events inserted via Cronofy) for all user calendars.
 cronofy.delete_all_events()
 
+# Deletes all managed events for the specified user calendars.
+cronofy.delete_all_events(calendar_ids=(CAL_ID,))
+
 #######################
 # Notification channels
 #######################
