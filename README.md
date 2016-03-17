@@ -53,6 +53,8 @@ print(auth)
 # the authorization tokens (and expiration) in case you need to store them.
 # If that is the case, you will want to initiate the client as follows:
 cronofy = pycronofy.Client(
+    client_id=YOUR_CLIENT_ID, 
+    client_secret=YOUR_CLIENT_SECRET,
     access_token=auth['access_token'], 
     refresh_token=auth['refresh_token'],
     token_expiration=auth['token_expiration']
@@ -62,6 +64,7 @@ cronofy = pycronofy.Client(
 cronofy.is_authorization_expired()
 
 # Refresh
+# Refresh requires the client id and client secret be set.
 auth = cronofy.refresh_authorization()
 print(auth)
 
