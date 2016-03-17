@@ -105,6 +105,16 @@ class Client(object):
             'token_expiration': get_iso8601_string(self.auth.token_expiration),
         }
 
+    def is_authorization_expired(self):
+        """Checks if the authorization token (access_token) has expired.
+
+        :return: If expired.
+        :rtype: ``bool``
+        """
+        if not self.auth.token_expiration:
+            return True
+        return (datetime.datetime.utcnow() > self.auth.token_expiration)
+
     def list_calendars(self):
         """Return a list of calendars available for the active account.
 

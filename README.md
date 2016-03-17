@@ -47,10 +47,23 @@ url = cronofy.user_auth_link('http://yourwebsite.com')
 print('Go to this url in your browser, and paste the code below')
 print(url)
 code = input('Paste Code Here: ') # raw_input() for python 2.
-cronofy.get_authorization_from_code(code)
+auth = cronofy.get_authorization_from_code(code)
+print(auth)
+# get_authorization_from_code updates the state of the cronofy client. It also returns
+# the authorization tokens (and expiration) in case you need to store them.
+# If that is the case, you will want to initiate the client as follows:
+cronofy = pycronofy.Client(
+    access_token=auth['access_token'], 
+    refresh_token=auth['refresh_token'],
+    token_expiration=auth['token_expiration']
+)
+
+# Check if authorization is expired:
+cronofy.is_authorization_expired()
 
 # Refresh
-cronofy.refresh_authorization()
+auth = cronofy.refresh_authorization()
+print(auth)
 
 # Revoke
 cronofy.revoke_authorization()

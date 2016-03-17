@@ -1,3 +1,4 @@
+import datetime
 import pytest
 import responses
 import requests
@@ -49,7 +50,7 @@ def test_create_notification_channel(client):
 def test_get_authorization_from_code(client):
     """Test update_tokens_from code updates access_token, refresh_token, token_expiration and expires_in.
 
-    :param Auth auth: Auth instance with test data.
+    :param Client client: Client instance with test data.
     """
     responses.add(responses.POST,
         '%s/oauth/token' % settings.API_BASE_URL,
@@ -62,11 +63,21 @@ def test_get_authorization_from_code(client):
     assert authorization['refresh_token'] == 'meow'
     assert 'token_expiration' in authorization
 
+def test_is_authorization_expired(client):
+    """Test is_authorization_expired.
+
+    :param Client client: Client instance with test data.
+    """
+    client.auth.token_expiration = datetime.datetime.utcnow() + datetime.timedelta(seconds=60)
+    assert client.is_authorization_expired() == False
+    client.auth.token_expiration = datetime.datetime.utcnow() - datetime.timedelta(seconds=60)
+    assert client.is_authorization_expired() == True
+
 @responses.activate
 def test_refresh(client):
     """Test refresh updates the access_token, expires_in, and token_expiration.
 
-    :param Auth auth: Auth instance with test data.
+    :param Client client: Client instance with test data.
     """
     responses.add(responses.POST,
         '%s/oauth/token' % settings.API_BASE_URL,
@@ -83,7 +94,7 @@ def test_refresh(client):
 def test_revoke(client):
     """Test revoke sets the access_token, refresh_token and token_expiration to None and the expires_in to 0.
 
-    :param Auth auth: Auth instance with test data.
+    :param Client client: Client instance with test data.
     """
     responses.add(responses.POST,
         '%s/oauth/token/revoke' % settings.API_BASE_URL,
@@ -108,7 +119,7 @@ def test_upsert_event(client):
 def test_user_auth_link(client):
     """Test user auth link returns a properly formatted user auth url.
 
-    :param Auth auth: Auth instance with test data.
+    :param Client client: Client instance with test data.
     """
     querystring = 'scope=felines&state=NY&redirect_uri=http%%3A%%2F%%2Fexample.com&response_type=code&client_id=%s' % common_data.AUTH_ARGS['client_id']
     auth_url = '%s/oauth/authorize?%s' % (settings.APP_BASE_URL, querystring)
