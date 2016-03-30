@@ -1,5 +1,5 @@
-from .client import Client
-import settings
+from pycronofy.client import Client
+from pycronofy import settings
 __version__ = '0.0.0'
 __name__ = 'PyCronofy'
 

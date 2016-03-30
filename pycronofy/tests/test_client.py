@@ -4,7 +4,7 @@ import responses
 import requests
 from pycronofy import Client
 from pycronofy import settings
-import common_data
+from pycronofy.tests import common_data
 
 TEST_EVENT = {
     'event_id': 'test-1',

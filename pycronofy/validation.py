@@ -1,7 +1,7 @@
 import datetime
 import re
 
-from exceptions import PyCronofyValidationError
+from pycronofy.exceptions import PyCronofyValidationError
 
 # Matches ISO_8601 Cronofy accepts. Must be UTC if datetime.
 ISO_8601_FORMATS = (

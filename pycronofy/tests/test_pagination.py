@@ -6,7 +6,7 @@ import requests
 from pycronofy import Client
 from pycronofy.pagination import Pages
 from pycronofy import settings
-import common_data
+from pycronofy.tests import common_data
 
 TEST_DATA_PAGE_ONE = {
     "pages": {

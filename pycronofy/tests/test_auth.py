@@ -3,7 +3,7 @@ import responses
 import requests
 from pycronofy.auth import Auth
 from pycronofy import settings
-import common_data
+from pycronofy.tests import common_data
 
 @pytest.fixture(scope="module")
 def auth():

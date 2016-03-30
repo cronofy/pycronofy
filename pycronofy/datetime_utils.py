@@ -1,6 +1,6 @@
 import datetime
 
-from exceptions import PyCronofyDateTimeError
+from pycronofy.exceptions import PyCronofyDateTimeError
 
 ISO_8601_DATE_FORMAT = '%Y-%m-%d'
 ISO_8601_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ' # UTC

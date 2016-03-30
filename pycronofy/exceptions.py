@@ -7,6 +7,7 @@ class PyCronofyDateTimeError(Exception):
         """
         super(PyCronofyDateTimeError, self).__init__(message)
         self.argument = argument
+        self.message = message
 
 class PyCronofyRequestError(Exception):
     """Wraps requests.exceptions.HTTPError for convenience and give a little more info in the message."""
@@ -44,6 +45,7 @@ class PyCronofyValidationError(Exception):
         :param string values: Invalid field values (will be None if error fields do not exist). (Optional, None by default).
         """
         super(PyCronofyValidationError, self).__init__(message)
+        self.message = message
         self.method = method
         self.fields = fields
         self.values = values

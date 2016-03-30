@@ -5,7 +5,7 @@ import responses
 from pycronofy import Client
 from pycronofy import settings
 from pycronofy.exceptions import PyCronofyRequestError
-import common_data
+from pycronofy.tests import common_data
 
 TEST_EVENTS_ARGS = { 
     'url': '%s/%s/events' % (settings.API_BASE_URL, settings.API_VERSION),
