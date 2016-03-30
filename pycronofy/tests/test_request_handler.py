@@ -2,8 +2,8 @@ from copy import deepcopy
 import pytest
 import requests
 import responses
-from pycronofy import Client
-from pycronofy import settings
+import pycronofy
+from pycronofy import Client, settings
 from pycronofy.exceptions import PyCronofyRequestError
 from pycronofy.tests import common_data
 
@@ -59,6 +59,19 @@ def test_delete(request_handler):
     )
     response = request_handler.delete(endpoint='calendars/%s/events' % calendar_id, params={'event_id': event_id})
     assert response.status_code == requests.codes.ok
+
+@responses.activate
+def test_headers(request_handler):
+    """Test headers sent using RequestHandler._request().
+
+    :param RequestHandler request_handler: RequestHandler instance with test data.
+    """
+    responses.add(method=responses.POST, **TEST_EVENTS_ARGS)
+    response = request_handler._request('post', url=TEST_EVENTS_ARGS['url'])
+    assert ('Authorization' in response.request.headers)
+    assert ('User-Agent' in response.request.headers)
+    assert response.request.headers['Authorization'] == 'Bearer %s' % common_data.AUTH_ARGS['access_token']
+    assert response.request.headers['User-Agent'] == '%s %s' % (pycronofy.__name__, pycronofy.__version__)
 
 @responses.activate
 def test_post(request_handler):

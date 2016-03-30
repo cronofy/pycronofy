@@ -1,5 +1,5 @@
 import requests
-from pycronofy import settings
+import pycronofy
 from pycronofy.exceptions import PyCronofyRequestError
 
 class RequestHandler(object):
@@ -10,6 +10,7 @@ class RequestHandler(object):
         :param Auth auth: Auth instance.
         """
         self.auth = auth
+        self.user_agent = '%s %s' % (pycronofy.__name__, pycronofy.__version__)
 
     def get(self, endpoint='', url='', params=None):
         """Perform a get for a json API endpoint.
@@ -59,11 +60,14 @@ class RequestHandler(object):
         if not params:
             params = {}
         if endpoint and not url:
-            url = '%s/%s/%s' % (settings.API_BASE_URL, settings.API_VERSION, endpoint)
+            url = '%s/%s/%s' % (pycronofy.settings.API_BASE_URL, pycronofy.settings.API_VERSION, endpoint)
         response = requests.__getattribute__(request_method)(
             url=url, 
-            hooks=settings.REQUEST_HOOK,
-            headers={'Authorization': self.auth.get_authorization()}, 
+            hooks=pycronofy.settings.REQUEST_HOOK,
+            headers={
+                'Authorization': self.auth.get_authorization(),
+                'User-Agent': self.user_agent,
+            }, 
             json=data,
             params=params
         )
