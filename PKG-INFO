@@ -1,5 +1,5 @@
 Metadata-Version: 1.0
-Name: pycronify
+Name: pycronofy
 Version: 0.0.0
 Summary: Python wrapper for Cronofy
 Home-page: https://github.com/venuebook/pycronofy
@@ -24,10 +24,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
-Download-URL: http://cheeseshop.python.org/pypi/pycronify
-Description: Python wrapper for Cronify calendaring services.
+Download-URL: http://cheeseshop.python.org/pypi/pycronofy
+Description: Python wrapper for Cronofy calendaring services.
         
-Keywords: cronify,calendar
+Keywords: cronofy,calendar
 Platform: Independant
 Classifier: Development Status :: 3 - Alpha
 Classifier: Intended Audience :: Developers
