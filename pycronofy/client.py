@@ -54,7 +54,7 @@ class Client(object):
         """
         data = {'callback_url': callback_url}
         if calendar_ids:
-            data['filters'] = {'calendar_ids':calendar_ids}
+            data['filters'] = {'calendar_ids[]':calendar_ids}
         return self.request_handler.post('channels', data=data).json()['channel']
 
     def delete_all_events(self, calendar_ids=()):
@@ -64,7 +64,7 @@ class Client(object):
         """
         params={'delete_all': True}
         if calendar_ids:
-            params = {'calendar_ids': calendar_ids}
+            params = {'calendar_ids[]': calendar_ids}
         self.request_handler.delete(endpoint='events', params=params)
 
     def delete_event(self, calendar_id, event_id):
@@ -169,7 +169,7 @@ class Client(object):
         """
         results = self.request_handler.get(endpoint='events', params={
             'tzid': tzid,
-            'calendar_ids':calendar_ids,
+            'calendar_ids[]':calendar_ids,
             'from': get_iso8601_string(from_date),
             'to': get_iso8601_string(to_date),
             'last_modified': get_iso8601_string(last_modified),
@@ -204,7 +204,7 @@ class Client(object):
         """
         results = self.request_handler.get(endpoint='free_busy', params={
             'tzid': tzid,
-            'calendar_ids':calendar_ids,
+            'calendar_ids[]':calendar_ids,
             'from': get_iso8601_string(from_date),
             'to': get_iso8601_string(to_date),
             'include_managed': include_managed,
