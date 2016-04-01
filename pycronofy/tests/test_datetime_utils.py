@@ -1,5 +1,6 @@
 import datetime
 import pytest
+import pytz
 from pycronofy.datetime_utils import get_iso8601_string
 
 def test_date():
@@ -20,6 +21,12 @@ def test_iso8601_string():
 def test_none():
     """Test get_iso8601_string returns None when passed None"""
     assert get_iso8601_string(None) == None
+
+def test_tz_aware_datetime():
+    """Test get_iso8601_string returns an ISO8601 formatted datetime string with UTC timezone
+    when passed a datetime.date object that's set to another timezone."""
+    d = datetime.datetime(2016, 1, 15, 14, 20, 15, tzinfo=pytz.timezone('EST'))
+    assert get_iso8601_string(d) == '2016-01-15T19:20:15Z'
 
 def test_unsupported():
     """Test get_iso8601_string throws an exception when passed an unsupported type"""

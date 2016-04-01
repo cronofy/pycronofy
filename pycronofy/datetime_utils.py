@@ -1,4 +1,5 @@
 import datetime
+import pytz
 
 from pycronofy.exceptions import PyCronofyDateTimeError
 
@@ -34,4 +35,6 @@ def get_iso8601_string(date_time):
         # If passed anything other than a datetime, date, string, or None, raise an Exception.
         error_message = 'Unsupported type: ``%s``.\nSupported types: ``<datetime.datetime>``, ``<datetime.date>``, or ``<str>``.'
         raise PyCronofyDateTimeError(error_message % (repr(type(date_time))), date_time)
+    if date_time.tzinfo and date_time.tzinfo != pytz.utc:
+        date_time = date_time.astimezone(pytz.utc)
     return date_time.strftime(ISO_8601_DATETIME_FORMAT)
