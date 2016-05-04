@@ -49,6 +49,7 @@ class RequestHandler(object):
     def _request(self, request_method, endpoint='', url='', data=None, params=None):
         """Perform a http request via the specified method to an API endpoint.
 
+        :param string request_method: Request method.
         :param string endpoint: Target endpoint. (Optional).
         :param string url: Override the endpoint and provide the full url (eg for pagination). (Optional).
         :param dict params: Provide parameters to pass to the request. (Optional).
