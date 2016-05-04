@@ -23,7 +23,6 @@ class Client(object):
         :param string access_token: Access Token for User's Account. (Optional, default None)
         :param string refresh_token: Existing Refresh Token for User's Account. (Optional, default None)
         :param string token_expiration: Datetime token expires. (Optional, default None)
-        :param bool debug: Instantiate in debug mode. (Optional, default False).
         """
         self.auth = Auth(client_id, client_secret, access_token, refresh_token, token_expiration)
         self.request_handler = RequestHandler(self.auth)
