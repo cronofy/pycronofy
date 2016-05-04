@@ -53,8 +53,8 @@ class RequestHandler(object):
         :param string url: Override the endpoint and provide the full url (eg for pagination). (Optional).
         :param dict params: Provide parameters to pass to the request. (Optional).
         :param dict data: Data to pass to the post. (Optional).
-        :return: Response or Response json
-        :rtype: ``Response`` or ``dict``
+        :return: Response
+        :rtype: ``Response``
         """
         if not data:
             data = {}
@@ -63,16 +63,16 @@ class RequestHandler(object):
         if endpoint and not url:
             url = '%s/%s/%s' % (settings.API_BASE_URL, settings.API_VERSION, endpoint)
         response = requests.__getattribute__(request_method)(
-            url=url, 
+            url=url,
             hooks=settings.REQUEST_HOOK,
             headers={
                 'Authorization': self.auth.get_authorization(),
                 'User-Agent': self.user_agent,
-            }, 
+            },
             json=data,
             params=params
         )
-        if ((response.status_code != 200) and 
+        if ((response.status_code != 200) and
             (response.status_code != 202)):
             try:
                 response.raise_for_status()
