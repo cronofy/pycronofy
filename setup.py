@@ -6,6 +6,6 @@ setup(
     description='Python library for Cronofy',
     author='VenueBook',
     author_email='dev@venuebook.com',
-    url='',
+    url='https://github.com/venuebook/pycronofy',
     packages=['pycronofy']
     )
