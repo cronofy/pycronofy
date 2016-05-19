@@ -19,7 +19,7 @@ class PyCronofyRequestError(Exception):
         :param Response response: responses.Response.
         """
         body = ''
-        if request.body:
+        if request.method in ('POST', 'PUT', 'PATCH') and request.body:
             body = '\nRequest Body: %s' % request.body
         headers = request.headers
         headers.pop('Authorization')
