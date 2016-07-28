@@ -1,6 +1,6 @@
 from pycronofy.client import Client
 from pycronofy import settings
-__version__ = '0.0.0'
+__version__ = '1.0.0'
 __name__ = 'PyCronofy'
 
 """
