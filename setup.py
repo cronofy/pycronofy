@@ -4,7 +4,7 @@ setup(
     name='PyCronofy',
     version='1.0.0',
     description='Python library for Cronofy',
-    author='VenueBook',
+    author='Venuebook Dev Team (Dan Pozmanter et al)',
     author_email='dev@venuebook.com',
     url='https://github.com/venuebook/pycronofy',
     packages=['pycronofy']
