@@ -13,12 +13,12 @@ Inspired by [Cronofy-Ruby](https://github.com/cronofy/cronofy-ruby)
 (unless performing a system wide install, it's recommended to install inside of a virtualenv)
 
 ```bash
-# Install dependencies:
-pip install -r requirements.txt # Install core & tests
-pip install -r requirements/core.txt # Just install core dependencies
-pip install -r requirements/tests.txt # Install test dependencies
 
-# Install pycronofy
+# Install via pip:
+pip install pycronofy
+
+# Install via setup.py:
+pip install -r requirements.txt # Install core & dependencies for tests
 python setup.py install
 ```
 
