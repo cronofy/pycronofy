@@ -1,6 +1,6 @@
 ## pycronofy ##
 
-[![Build Status](https://travis-ci.com/venuebook/pycronofy.svg?token=j1A1J2RZ8nCwcqmzbYLx&branch=master)](https://travis-ci.com/venuebook/pycronofy)
+[![Build Status](https://travis-ci.org/venuebook/pycronofy.svg?branch=master)](https://travis-ci.com/venuebook/pycronofy)
 
 A python library for [Cronofy](http://www.cronofy.com)
 
