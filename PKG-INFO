@@ -1,11 +1,11 @@
 Metadata-Version: 1.0
 Name: pycronofy
-Version: 1.0.0
+Version: 1.0.1
 Summary: Python wrapper for Cronofy
 Home-page: https://github.com/venuebook/pycronofy
-Author: Venuebook Dev Team (Dan Pozmanter et al)
+Author: VenueBook
 Author-email: dev@venuebook.com
-License: Copyright (c) 2016-2016 Venuebook <dev@venuebook.com>
+License: Copyright (c) 2016-2017 VenueBook <dev@venuebook.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -26,7 +26,7 @@ DEALINGS IN THE SOFTWARE.
 
 Download-URL: http://cheeseshop.python.org/pypi/pycronofy
 Description: Python wrapper for Cronofy calendaring services.
-        
+
 Keywords: cronofy,calendar
 Platform: Independant
 Classifier: Development Status :: 5 - Production/Stable
