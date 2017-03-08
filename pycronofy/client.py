@@ -200,7 +200,7 @@ class Client(object):
         :param string tzid: Timezone ID for query. (Optional, default settings.DEFAULT_TIMEZONE_ID). Should match tzinfo on datetime objects.
         :param bool include_managed: Include pages created through the API. (Optional, default True)
         :param bool localized_times: Return time values for event start/end with localization information. This varies across providers. (Optional, default False).
-        :param bool automatic_pagination: Autonatically fetch next page when iterating through results (Optional, default True)
+        :param bool automatic_pagination: Automatically fetch next page when iterating through results (Optional, default True)
         :return: Wrapped results (Containing first page of free/busy blocks).
         :rtype: ``Pages``
         """
