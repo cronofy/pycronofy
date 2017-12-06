@@ -1,4 +1,9 @@
 import datetime
+from future.standard_library import hooks
+
+with hooks():
+    from urllib.parse import urlencode
+
 from pycronofy import settings
 from pycronofy.auth import Auth
 from pycronofy.datetime_utils import get_iso8601_string
@@ -282,18 +287,18 @@ class Client(object):
         if not scope:
             scope = ' '.join(settings.DEFAULT_OAUTH_SCOPE)
         self.auth.update(redirect_uri=redirect_uri)
-        response = self.request_handler.get(
-            url='%s/oauth/authorize' % settings.APP_BASE_URL,
-            params={
-                'response_type': 'code',
-                'client_id': self.auth.client_id,
-                'redirect_uri': redirect_uri,
-                'scope': scope,
-                'state': state,
-                'avoid_linking': avoid_linking,
-            }
-        )
-        return response.url
+
+        url = '%s/oauth/authorize' % settings.APP_BASE_URL
+        params = {
+            'response_type': 'code',
+            'client_id': self.auth.client_id,
+            'redirect_uri': redirect_uri,
+            'scope': scope,
+            'state': state,
+            'avoid_linking': avoid_linking,
+        }
+        urlencoded_params = urlencode(params)
+        return "{url}?{params}".format(url=url, params=urlencoded_params)
 
     def validate(self, method, *args, **kwargs):
         """Validate authentication and values passed to the specified method.
