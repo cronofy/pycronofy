@@ -194,13 +194,20 @@ def test_user_auth_link(client):
     """
     querystring = 'scope=felines&state=NY&redirect_uri=http%%3A%%2F%%2Fexample.com&response_type=code&client_id=%s' % common_data.AUTH_ARGS['client_id']
     auth_url = '%s/oauth/authorize?%s' % (settings.APP_BASE_URL, querystring)
-    responses.add(responses.GET,
-        '%s/oauth/authorize' % settings.APP_BASE_URL,
-        status=200,
-        body='{"url": "%s"}' % auth_url,
-        content_type='application/json'
-    )
     url = client.user_auth_link(redirect_uri='http://example.com', scope='felines', state='NY')
     assert 'client_id=%s' % common_data.AUTH_ARGS['client_id'] in url
     url = client.user_auth_link(redirect_uri='http://example.com', state='NY')
     assert settings.APP_BASE_URL in url
+
+@responses.activate
+def test_authorize_with_service_account(client):
+    """Test authorize_with_service_account with correct dat
+
+    :param Client client: Client instance with test data.
+    """
+    responses.add(responses.POST,
+        '%s/v1/service_account_authorizations' % settings.API_BASE_URL,
+        status=202,
+        content_type='application/json',
+    )
+    client.authorize_with_service_account("example@example.com", "felines", "http://www.example.com/callback")
