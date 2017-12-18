@@ -178,6 +178,14 @@ class Client(object):
         """
         return self.request_handler.get(endpoint='channels').json()['channels']
 
+    def resources(self):
+        """ Lists all the resources for the service account.
+
+        :return: List of Resources (dictionaries).
+        :rtype: ``list``
+        """
+        return self.request_handler.get("resources").json()["resources"]
+
     def read_events(self,
         calendar_ids=(),
         from_date=None,

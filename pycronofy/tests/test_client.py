@@ -211,3 +211,20 @@ def test_authorize_with_service_account(client):
         content_type='application/json',
     )
     client.authorize_with_service_account("example@example.com", "felines", "http://www.example.com/callback")
+
+@responses.activate
+def test_list_resources(client):
+    """Test resources listing
+
+    :param Client client: Client instance with test data.
+    """
+    responses.add(responses.GET,
+        '%s/v1/resources' % settings.API_BASE_URL,
+        body='{"resources":[{"email":"board-room-london@example.com","name":"Board room (London)"},{"email":"3dprinter@example.com","name":"3D Printer"},{"email":"vr-headset@example.com","name":"Oculus Rift"}]}',
+        status=200,
+        content_type='application/json'
+    )
+    response = client.resources()
+    assert len(response) == 3
+    assert response[0]['email'] == "board-room-london@example.com"
+    assert response[0]['name'] == "Board room (London)"
