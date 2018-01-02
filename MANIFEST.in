@@ -1,2 +1,2 @@
 include *.md *.txt setup.py
-recursive-include pycronify *.py
+recursive-include pycronofy *.py
