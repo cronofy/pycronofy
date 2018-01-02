@@ -1,3 +1,5 @@
+all: test
+
 install_dependencies:
 	pip install --requirement requirements.txt --quiet
 
