@@ -74,10 +74,18 @@ class Client(object):
     def delete_event(self, calendar_id, event_id):
         """Delete an event from the specified calendar.
 
-        :param string calendar_id: ID of calendar to insert/update event into.
+        :param string calendar_id: ID of calendar to delete from.
         :param string event_id: ID of event to delete.
         """
-        self.request_handler.delete(endpoint='calendars/%s/events' % calendar_id, params={'event_id': event_id})
+        self.request_handler.delete(endpoint='calendars/%s/events' % calendar_id, data={'event_id': event_id})
+
+    def delete_external_event(self, calendar_id, event_uid):
+        """Delete an external event from the specified calendar.
+
+        :param string calendar_id: ID of calendar to delete from.
+        :param string event_uid: ID of event to delete.
+        """
+        self.request_handler.delete(endpoint='calendars/%s/events' % calendar_id, data={'event_uid': event_uid})
 
     def get_authorization_from_code(self, code, redirect_uri=''):
         """Updates the authorization tokens from the user provided code.

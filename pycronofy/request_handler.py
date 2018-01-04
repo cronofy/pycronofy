@@ -24,16 +24,17 @@ class RequestHandler(object):
         """
         return self._request('get', endpoint, url, params=params)
 
-    def delete(self, endpoint='', url='', params=None):
+    def delete(self, endpoint='', url='', params=None, data=None):
         """Perform a get for a json API endpoint.
 
         :param string endpoint: Target endpoint. (Optional).
         :param string url: Override the endpoint and provide the full url (eg for pagination). (Optional).
         :param dict params: Provide parameters to pass to the request. (Optional).
+        :param dict data: Data to pass to the request. (Optional).
         :return: Response json.
         :rtype: ``dict``
         """
-        return self._request('delete', endpoint, url, params=params)
+        return self._request('delete', endpoint, url, params=params, data=data)
 
     def post(self, endpoint='', url='', data=None):
         """Perform a post to an API endpoint.

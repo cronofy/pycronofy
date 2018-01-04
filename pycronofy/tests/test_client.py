@@ -2,6 +2,7 @@ import datetime
 import pytest
 import responses
 import requests
+import json
 from pycronofy import Client
 from pycronofy import settings
 from pycronofy.tests import common_data
@@ -30,6 +31,54 @@ TEST_UPSERT_EVENT_ARGS = {
 def client():
     """Setup Client instance with test values."""
     return Client(**common_data.AUTH_ARGS)
+
+@responses.activate
+def test_delete_event(client):
+    """Test Client.delete_event().
+
+    :param Client client: Client instance with test data.
+    """
+    calendar_id = "cal_123"
+    event_id = "example_event_id"
+
+    def request_callback(request):
+        payload = json.loads(request.body)
+        assert payload['event_id'] == event_id
+
+        return (202, {}, None)
+
+    responses.add_callback(
+        responses.DELETE,
+        url='%s/%s/calendars/%s/events' % (settings.API_BASE_URL, settings.API_VERSION, calendar_id),
+        callback=request_callback,
+        content_type='application/json',
+    )
+    result = client.delete_event(calendar_id, event_id)
+    assert result == None
+
+@responses.activate
+def test_delete_external_event(client):
+    """Test Client.delete_external_event().
+
+    :param Client client: Client instance with test data.
+    """
+    calendar_id = "cal_123"
+    event_uid = "evt_external_98343844983"
+
+    def request_callback(request):
+        payload = json.loads(request.body)
+        assert payload['event_uid'] == event_uid
+
+        return (202, {}, None)
+
+    responses.add_callback(
+        responses.DELETE,
+        url='%s/%s/calendars/%s/events' % (settings.API_BASE_URL, settings.API_VERSION, calendar_id),
+        callback=request_callback,
+        content_type='application/json',
+    )
+    result = client.delete_external_event(calendar_id, event_uid)
+    assert result == None
 
 @responses.activate
 def test_create_notification_channel(client):
