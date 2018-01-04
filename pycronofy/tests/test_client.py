@@ -106,6 +106,46 @@ def test_delete_external_event(client):
     assert result == None
 
 @responses.activate
+def test_account(client):
+    """Test Client.account().
+
+    :param Client client: Client instance with test data.
+    """
+    responses.add(
+        responses.GET,
+        url='%s/%s/account' % (settings.API_BASE_URL, settings.API_VERSION),
+        body="""{ "account": {
+          "account_id": "acc_567236000909002",
+          "email": "janed@company.com",
+          "name": "Jane Doe",
+          "scope": "read_events create_event delete_event",
+          "default_tzid": "Europe/London"
+        } }
+        """,
+        status=200,
+        content_type='application/json',
+    )
+    account = client.account()
+    assert account['account_id'] == 'acc_567236000909002'
+    assert account['email'] == 'janed@company.com'
+
+@responses.activate
+def test_userinfo(client):
+    """Test Client.userinfo().
+
+    :param Client client: Client instance with test data.
+    """
+    responses.add(responses.GET,
+        url='%s/%s/userinfo' % (settings.API_BASE_URL, settings.API_VERSION),
+        body='{"sub": "acc_5700a00eb0ccd07000000000", "cronofy.type": "userinfo"}',
+        status=200,
+        content_type='application/json',
+    )
+    userinfo = client.userinfo()
+    assert userinfo['sub'] == 'acc_5700a00eb0ccd07000000000'
+    assert userinfo['cronofy.type'] == 'userinfo'
+
+@responses.activate
 def test_create_notification_channel(client):
     """Test Client.create_notification_channel().
 
@@ -159,6 +199,7 @@ def test_get_authorization_from_code(client):
     assert authorization['refresh_token'] == 'meow'
     assert 'token_expiration' in authorization
 
+@responses.activate
 def test_is_authorization_expired(client):
     """Test is_authorization_expired.
 

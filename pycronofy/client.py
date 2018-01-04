@@ -40,6 +40,17 @@ class Client(object):
         """
         return self.request_handler.get(endpoint='account').json()['account']
 
+    def userinfo(self):
+        """Retrieves the userinfo for the account
+
+        See http://openid.net/specs/openid-connect-core-1_0.html#UserInfo for
+        reference
+
+        :return: Userinfo data.
+        :rtype: ``dict``
+        """
+        return self.request_handler.get(endpoint='userinfo').json()
+
     def close_notification_channel(self, channel_id):
         """Close a notification channel to stop push notifications from being sent.
 
