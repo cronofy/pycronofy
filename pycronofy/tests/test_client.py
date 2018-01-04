@@ -96,6 +96,28 @@ def test_create_notification_channel(client):
     assert channel['channel_id'] == 'chn_123example'
 
 @responses.activate
+def test_elevated_permissions(client):
+    """Test Client.elevated_permissions().
+
+    :param Client client: Client instance with test data.
+    """
+    def request_callback(request):
+        payload = json.loads(request.body)
+        assert payload['redirect_uri'] == 'http://www.example.com'
+        assert payload['permissions'] == ({'calendar_id': 'cal_123', 'permission_level': 'unrestricted'})
+
+        body ='{"permissions_request": {"url": "http://app.cronofy.com/permissions/"}}'
+        return (200, {}, body)
+
+    responses.add_callback(responses.POST,
+                           url='%s/%s/permissions' % (settings.API_BASE_URL, settings.API_VERSION),
+                           callback=request_callback,
+                           content_type='application/json',
+                           )
+    permissions = client.elevated_permissions(({'calendar_id': 'cal_123', 'permission_level': 'unrestricted'}), 'http://www.example.com')
+    assert permissions['url'] == 'http://app.cronofy.com/permissions/'
+
+@responses.activate
 def test_get_authorization_from_code(client):
     """Test update_tokens_from code updates access_token, refresh_token, token_expiration and expires_in.
 
