@@ -1,4 +1,5 @@
 import datetime
+import collections
 from future.standard_library import hooks
 
 with hooks():
@@ -286,6 +287,27 @@ class Client(object):
         }).json()
         return Pages(self.request_handler, results, 'free_busy', automatic_pagination)
 
+    # Public: Performs an availability query.
+    #
+    # options - The Hash options used to refine the selection (default: {}):
+    #           :participants      - An Array of participant groups or a Hash
+    #                                for a single participant group.
+    #           :required_duration - An Integer representing the minimum number
+    #                                of minutes of availability required.
+    #           :available_periods - An Array of available time periods Hashes,
+    #                                each must specify a start and end Time.
+    #
+    # Returns an Array of AvailablePeriods.
+    def availability(self, participants = (), required_duration = (), available_periods = ()):
+        options = {}
+        options['participants'] = self.map_availability_participants(participants)
+        options['required_duration'] = self.map_availability_required_duration(required_duration)
+
+        self.translate_available_periods(available_periods)
+        options['available_periods'] = available_periods
+
+        return self.request_handler.post(endpoint='availability', data=options).json()['available_periods']
+
     def refresh_authorization(self):
         """Refreshes the authorization tokens.
 
@@ -396,3 +418,47 @@ class Client(object):
         :param **kwargs: Keyword arguments for "Method".
         """
         validate(method, self.auth, *args, **kwargs)
+
+    def translate_available_periods(self, periods):
+        for params in periods:
+            for tp in ['start', 'end']:
+                if params[tp]:
+                    params[tp] = get_iso8601_string(params[tp])
+
+    def map_availability_participants(self, participants):
+        if type(participants) is dict:
+            # Allow one group to be specified without being nested
+            return [self.map_availability_participants_group(participants)]
+        elif isinstance(participants, collections.Iterable):
+            return map(lambda group: self.map_availability_participants(group), participants)
+        else:
+            return participants
+
+    def map_availability_participants_group(self, participants):
+        if type(participants) is dict:
+            for member in participants['members']:
+                self.map_availability_member(member)
+
+            if participants['required'] == None:
+                participants['required'] = 'all'
+
+            return participants
+        elif isinstance(participants, collections.Iterable):
+            return map(lambda group: self.map_availability_participants(group), participants)
+        else:
+            participants
+
+    def map_availability_member(self, member):
+        if type(member) is str:
+            return { 'sub': member }
+        elif type(member) is dict:
+            if member.get('available_periods', None):
+                self.translate_available_periods(member['available_periods'])
+
+        return member
+
+    def map_availability_required_duration(self, required_duration):
+        if type(required_duration) is int:
+            return { 'minutes': required_duration }
+        else:
+            return required_duration

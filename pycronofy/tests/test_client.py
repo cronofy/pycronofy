@@ -145,6 +145,81 @@ def test_userinfo(client):
     assert userinfo['sub'] == 'acc_5700a00eb0ccd07000000000'
     assert userinfo['cronofy.type'] == 'userinfo'
 
+
+@responses.activate
+def test_availablity(client):
+    """Test Client.availability().
+
+    :param Client client: Client instance with test data.
+    """
+
+    def request_callback(request):
+        payload = json.loads(request.body)
+        assert payload['required_duration'] == {'minutes': 30}
+        assert payload['available_periods'] == [
+            {'start': '2017-01-03T09:00:00Z', 'end': '2017-01-03T18:00:00Z'},
+            {'start': '2017-01-04T09:00:00Z', 'end': '2017-01-04T18:00:00Z'}
+        ]
+        assert payload['participants'] == [
+            {
+                'required': 'all',
+                'members': [
+                    {'sub': 'acc_567236000909002'},
+                    {'sub': 'acc_678347111010113'}
+                ]
+             }
+        ]
+
+        body="""{"available_periods": [
+            {
+              "start": "2017-01-03T09:00:00Z",
+              "end": "2017-01-03T11:00:00Z",
+              "participants": [
+                { "sub": "acc_567236000909002" },
+                { "sub": "acc_678347111010113" }
+              ]
+            },
+            {
+              "start": "2017-01-03T14 :00:00Z",
+              "end": "2017-01-03T16:00:00Z",
+              "participants": [
+                { "sub": "acc_567236000909002" },
+                { "sub": "acc_678347111010113" }
+              ]
+            },
+            {
+              "start": "2017-01-04T11:00:00Z",
+              "end": "2017-01-04T17:00:00Z",
+              "participants": [
+                { "sub": "acc_567236000909002" },
+                { "sub": "acc_678347111010113" }
+              ]
+            }
+        ]}"""
+
+        return (200, {}, body)
+
+    responses.add_callback(
+        responses.POST,
+        url='%s/%s/availability' % (settings.API_BASE_URL, settings.API_VERSION),
+        callback=request_callback,
+        content_type='application/json',
+    )
+
+    periods = (
+        { 'start': "2017-01-03T09:00:00Z", 'end': "2017-01-03T18:00:00Z" },
+        { 'start': "2017-01-04T09:00:00Z", 'end': "2017-01-04T18:00:00Z" }
+    )
+    example_participants = ({
+        'members': [
+            { 'sub': "acc_567236000909002" },
+            { 'sub': "acc_678347111010113" },
+        ],
+        'required': 'all'
+    })
+
+    result = client.availability(required_duration = 30, available_periods = periods, participants = example_participants)
+
 @responses.activate
 def test_create_notification_channel(client):
     """Test Client.create_notification_channel().
