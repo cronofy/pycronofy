@@ -6,12 +6,16 @@ from pycronofy.exceptions import PyCronofyRequestError
 class RequestHandler(object):
     """Wrap all request handling."""
 
-    def __init__(self, auth):
+    def __init__(self, auth, data_center = None):
         """
         :param Auth auth: Auth instance.
         """
         self.auth = auth
         self.user_agent = '%s %s' % (pycronofy.__name__, pycronofy.__version__)
+        if data_center == None or data_center == 'us':
+            self.base_url = settings.API_BASE_URL
+        else:
+            self.base_url = settings.API_REGION_FORMAT % data_center
 
     def get(self, endpoint='', url='', params=None):
         """Perform a get for a json API endpoint.
@@ -63,7 +67,7 @@ class RequestHandler(object):
         if not params:
             params = {}
         if endpoint and not url:
-            url = '%s/%s/%s' % (settings.API_BASE_URL, settings.API_VERSION, endpoint)
+            url = '%s/%s/%s' % (self.base_url, settings.API_VERSION, endpoint)
         response = requests.__getattribute__(request_method)(
             url=url,
             hooks=settings.REQUEST_HOOK,

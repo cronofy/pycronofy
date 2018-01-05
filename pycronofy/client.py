@@ -17,7 +17,7 @@ class Client(object):
     Performs authentication, and wraps API: https://www.cronofy.com/developers/api/
     """
 
-    def __init__(self, client_id=None, client_secret=None, access_token=None, refresh_token=None, token_expiration=None):
+    def __init__(self, client_id=None, client_secret=None, access_token=None, refresh_token=None, token_expiration=None, data_center=None):
         """
         Example Usage:
 
@@ -29,9 +29,15 @@ class Client(object):
         :param string access_token: Access Token for User's Account. (Optional, default None)
         :param string refresh_token: Existing Refresh Token for User's Account. (Optional, default None)
         :param string token_expiration: Datetime token expires. (Optional, default None)
+        :param string data_center: The name of the data_center to use. (Optional, default None)
         """
         self.auth = Auth(client_id, client_secret, access_token, refresh_token, token_expiration)
-        self.request_handler = RequestHandler(self.auth)
+        self.request_handler = RequestHandler(self.auth, data_center)
+
+        if data_center == None or data_center == 'us':
+            self.app_base_url = settings.APP_BASE_URL
+        else:
+            self.app_base_url = settings.APP_REGION_FORMAT % data_center
 
     def account(self):
         """Get identifying information for the active account.
@@ -393,7 +399,7 @@ class Client(object):
             scope = ' '.join(settings.DEFAULT_OAUTH_SCOPE)
         self.auth.update(redirect_uri=redirect_uri)
 
-        url = '%s/oauth/authorize' % settings.APP_BASE_URL
+        url = '%s/oauth/authorize' % self.app_base_url
         params = {
             'response_type': 'code',
             'client_id': self.auth.client_id,
