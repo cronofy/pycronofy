@@ -1,6 +1,6 @@
 ## pycronofy ##
 
-[![Build Status](https://travis-ci.org/cronofy/pycronofy.svg?branch=master)](https://travis-ci.com/cronofy/pycronofy)
+[![Build Status](https://travis-ci.org/cronofy/pycronofy.svg?branch=master)](https://travis-ci.org/cronofy/pycronofy)
 
 A python library for [Cronofy](http://www.cronofy.com)
 
