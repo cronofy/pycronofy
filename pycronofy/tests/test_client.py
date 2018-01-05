@@ -33,6 +33,31 @@ def client():
     return Client(**common_data.AUTH_ARGS)
 
 @responses.activate
+def test_change_participation_status(client):
+    """Test Client.change_participation_status().
+
+    :param Client client: Client instance with test data.
+    """
+    calendar_id = "cal_123"
+    event_uid = "evt_external_439559854"
+    status = "accepted"
+
+    def request_callback(request):
+        payload = json.loads(request.body)
+        assert payload['status'] == status
+
+        return (202, {}, None)
+
+    responses.add_callback(
+        responses.POST,
+        url='%s/%s/calendars/%s/events/%s/participation_status' % (settings.API_BASE_URL, settings.API_VERSION, calendar_id, event_uid),
+        callback=request_callback,
+        content_type='application/json',
+    )
+    result = client.change_participation_status(calendar_id, event_uid, status)
+    assert result == None
+
+@responses.activate
 def test_delete_event(client):
     """Test Client.delete_event().
 
