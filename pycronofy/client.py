@@ -316,7 +316,7 @@ class Client(object):
         event['end'] = get_iso8601_string(event['end'])
         self.request_handler.post(endpoint='calendars/%s/events' % calendar_id, data=event)
 
-    def authorize_with_service_account(self, email, scope, callback_url):
+    def authorize_with_service_account(self, email, scope, callback_url, state = None):
         """ Attempts to authorize the email with impersonation from a service account
 
         :param string email: the email address to impersonate
@@ -329,6 +329,10 @@ class Client(object):
             'scope': scope,
             'callback_url': callback_url
         }
+
+        if state != None:
+            params['state'] = state
+
         self.request_handler.post(endpoint="service_account_authorizations", data=params)
         None
 

@@ -205,12 +205,23 @@ def test_authorize_with_service_account(client):
 
     :param Client client: Client instance with test data.
     """
-    responses.add(responses.POST,
+
+    def request_callback(request):
+        payload = json.loads(request.body)
+        assert payload['email'] == "example@example.com"
+        assert payload['scope'] == "felines"
+        assert payload['state'] == "state example"
+        assert payload['callback_url'] == "http://www.example.com/callback"
+
+        return (202, {}, None)
+
+    responses.add_callback(
+        responses.POST,
         '%s/v1/service_account_authorizations' % settings.API_BASE_URL,
-        status=202,
+        callback=request_callback,
         content_type='application/json',
     )
-    client.authorize_with_service_account("example@example.com", "felines", "http://www.example.com/callback")
+    client.authorize_with_service_account("example@example.com", "felines", "http://www.example.com/callback", state= "state example")
 
 @responses.activate
 def test_list_resources(client):
