@@ -426,13 +426,13 @@ class Client(object):
             # Allow one group to be specified without being nested
             return [self.map_availability_participants_group(participants)]
         elif isinstance(participants, collections.Iterable):
-            return map(lambda group: self.map_availability_participants_group(group), participants)
+            return list(map(lambda group: self.map_availability_participants_group(group), participants))
         else:
             return participants
 
     def map_availability_participants_group(self, participants):
         if type(participants) is dict:
-            mapped_participants = map(lambda member: self.map_availability_member(member), participants.get('members', ()))
+            mapped_participants = list(map(lambda member: self.map_availability_member(member), participants.get('members', ())))
             participants['members'] = mapped_participants
 
             if participants.get('required', None) == None:
@@ -440,7 +440,7 @@ class Client(object):
 
             return participants
         elif isinstance(participants, collections.Iterable):
-            return map(lambda group: self.map_availability_participants(group), participants)
+            return list(map(lambda group: self.map_availability_participants(group), participants))
         else:
             participants
 
