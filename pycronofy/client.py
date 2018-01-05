@@ -1,4 +1,5 @@
 import datetime
+import collections
 from future.standard_library import hooks
 
 with hooks():
@@ -39,6 +40,17 @@ class Client(object):
         :rtype: ``dict``
         """
         return self.request_handler.get(endpoint='account').json()['account']
+
+    def userinfo(self):
+        """Retrieves the userinfo for the account
+
+        See http://openid.net/specs/openid-connect-core-1_0.html#UserInfo for
+        reference
+
+        :return: Userinfo data.
+        :rtype: ``dict``
+        """
+        return self.request_handler.get(endpoint='userinfo').json()
 
     def close_notification_channel(self, channel_id):
         """Close a notification channel to stop push notifications from being sent.
@@ -275,6 +287,23 @@ class Client(object):
         }).json()
         return Pages(self.request_handler, results, 'free_busy', automatic_pagination)
 
+    def availability(self, participants = (), required_duration = (), available_periods = ()):
+        """ Performs an availability query.
+        :param list participants: An Array of participant groups or a dict for a single participant group.
+        :param dict or int required_duration - An Integer representing the minimum number of minutes of availability required.
+        :param list available_periods - An Array of available time periods dicts, each must specify a start and end Time.
+
+        :rtype: ``list``
+        """
+        options = {}
+        options['participants'] = self.map_availability_participants(participants)
+        options['required_duration'] = self.map_availability_required_duration(required_duration)
+
+        self.translate_available_periods(available_periods)
+        options['available_periods'] = available_periods
+
+        return self.request_handler.post(endpoint='availability', data=options).json()['available_periods']
+
     def refresh_authorization(self):
         """Refreshes the authorization tokens.
 
@@ -385,3 +414,49 @@ class Client(object):
         :param **kwargs: Keyword arguments for "Method".
         """
         validate(method, self.auth, *args, **kwargs)
+
+    def translate_available_periods(self, periods):
+        for params in periods:
+            for tp in ['start', 'end']:
+                if params[tp]:
+                    params[tp] = get_iso8601_string(params[tp])
+
+    def map_availability_participants(self, participants):
+        if type(participants) is dict:
+            # Allow one group to be specified without being nested
+            return [self.map_availability_participants_group(participants)]
+        elif isinstance(participants, collections.Iterable):
+            return list(map(lambda group: self.map_availability_participants_group(group), participants))
+        else:
+            return participants
+
+    def map_availability_participants_group(self, participants):
+        if type(participants) is dict:
+            mapped_participants = list(map(lambda member: self.map_availability_member(member), participants.get('members', ())))
+            participants['members'] = mapped_participants
+
+            if participants.get('required', None) == None:
+                participants['required'] = 'all'
+
+            return participants
+        elif isinstance(participants, collections.Iterable):
+            return list(map(lambda group: self.map_availability_participants(group), participants))
+        else:
+            participants
+
+    def map_availability_member(self, member):
+        member_type = type(member)
+
+        if member_type in (type(''), type(u'')):
+            return { 'sub': member }
+        elif member_type is dict:
+            if member.get('available_periods', None):
+                self.translate_available_periods(member['available_periods'])
+
+        return member
+
+    def map_availability_required_duration(self, required_duration):
+        if type(required_duration) is int:
+            return { 'minutes': required_duration }
+        else:
+            return required_duration
