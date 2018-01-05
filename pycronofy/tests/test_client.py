@@ -159,7 +159,6 @@ def test_availablity_with_groups(client):
             {'start': '2017-01-03T09:00:00Z', 'end': '2017-01-03T18:00:00Z'},
             {'start': '2017-01-04T09:00:00Z', 'end': '2017-01-04T18:00:00Z'}
         ]
-        print request.body
         assert payload['participants'] == [
             {
                 'required': 'all',
