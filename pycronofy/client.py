@@ -287,18 +287,14 @@ class Client(object):
         }).json()
         return Pages(self.request_handler, results, 'free_busy', automatic_pagination)
 
-    # Public: Performs an availability query.
-    #
-    # options - The Hash options used to refine the selection (default: {}):
-    #           :participants      - An Array of participant groups or a Hash
-    #                                for a single participant group.
-    #           :required_duration - An Integer representing the minimum number
-    #                                of minutes of availability required.
-    #           :available_periods - An Array of available time periods Hashes,
-    #                                each must specify a start and end Time.
-    #
-    # Returns an Array of AvailablePeriods.
     def availability(self, participants = (), required_duration = (), available_periods = ()):
+        """ Performs an availability query.
+        :param list participants: An Array of participant groups or a dict for a single participant group.
+        :param dict or int required_duration - An Integer representing the minimum number of minutes of availability required.
+        :param list available_periods - An Array of available time periods dicts, each must specify a start and end Time.
+
+        :rtype: ``list``
+        """
         options = {}
         options['participants'] = self.map_availability_participants(participants)
         options['required_duration'] = self.map_availability_required_duration(required_duration)
@@ -436,10 +432,10 @@ class Client(object):
 
     def map_availability_participants_group(self, participants):
         if type(participants) is dict:
-            for member in participants['members']:
-                self.map_availability_member(member)
+            mapped_participants = map(lambda member: self.map_availability_member(member), participants.get('members', ()))
+            participants['members'] = mapped_participants
 
-            if participants['required'] == None:
+            if participants.get('required', None) == None:
                 participants['required'] = 'all'
 
             return participants
@@ -449,9 +445,11 @@ class Client(object):
             participants
 
     def map_availability_member(self, member):
-        if type(member) is str:
+        member_type = type(member)
+
+        if member_type in (type(''), type(u'')):
             return { 'sub': member }
-        elif type(member) is dict:
+        elif member_type is dict:
             if member.get('available_periods', None):
                 self.translate_available_periods(member['available_periods'])
 
