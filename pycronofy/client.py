@@ -384,6 +384,45 @@ class Client(object):
         self.request_handler.post(endpoint="service_account_authorizations", data=params)
         None
 
+    def real_time_scheduling(self, availability, oauth, event, target_calendars = ()):
+        """Generates an real time scheduling link to start the OAuth process with
+        an event to be automatically upserted
+
+        :param dict availability:  - A dict describing the availability details for the event:
+            :participants      - A dict stating who is required for the availability
+                                 call
+            :required_duration - A dict stating the length of time the event will
+                                 last for
+            :available_periods - A dict stating the available periods for the event
+        :param dict oauth:   - A dict describing the OAuth flow required:
+            :scope             - A String representing the scopes to ask for
+                                 within the OAuth flow
+            :redirect_uri      - A String containing a url to redirect the
+                                 user to after completing the OAuth flow.
+            :scope             - A String representing additional state to
+                                 be passed within the OAuth flow.
+        :param dict event:     - A dict describing the event
+        :param list target_calendars: - An list of dics stating into which calendars
+                                        to insert the created event
+        See http://www.cronofy.com/developers/api#upsert-event for reference.
+        """
+        args = {
+            'oauth': oauth,
+            'event': event,
+            'target_calendars': target_calendars
+        }
+
+        if availability:
+            options = {}
+            options['participants'] = self.map_availability_participants(availability.get('participants', None))
+            options['required_duration'] = self.map_availability_required_duration(availability.get('required_duration', None))
+
+            self.translate_available_periods(availability['available_periods'])
+            options['available_periods'] = availability['available_periods']
+            args['availability'] = options
+
+        return self.request_handler.post(endpoint='real_time_scheduling', data=args, use_api_key=True).json()
+
     def user_auth_link(self, redirect_uri, scope='', state='', avoid_linking=False):
         """Generates a URL to send the user for OAuth 2.0
 

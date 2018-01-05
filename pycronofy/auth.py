@@ -32,6 +32,14 @@ class Auth(object):
         """
         return 'Bearer %s' % self.access_token
 
+    def get_api_key(self):
+        """Get the authorization header with the api key token
+
+        :return: 'Authorization' header
+        :rtype: ``string``
+        """
+        return 'Bearer %s' % self.client_secret
+
     def update(self, **kwargs):
         """Update fields
 
