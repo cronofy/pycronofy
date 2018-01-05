@@ -426,7 +426,7 @@ class Client(object):
             # Allow one group to be specified without being nested
             return [self.map_availability_participants_group(participants)]
         elif isinstance(participants, collections.Iterable):
-            return map(lambda group: self.map_availability_participants(group), participants)
+            return map(lambda group: self.map_availability_participants_group(group), participants)
         else:
             return participants
 

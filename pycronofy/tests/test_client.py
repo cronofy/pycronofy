@@ -146,7 +146,7 @@ def test_userinfo(client):
     assert userinfo['cronofy.type'] == 'userinfo'
 
 @responses.activate
-def test_availablity_with_simple_values(client):
+def test_availablity_with_groups(client):
     """Test Client.availability().
 
     :param Client client: Client instance with test data.
@@ -159,11 +159,74 @@ def test_availablity_with_simple_values(client):
             {'start': '2017-01-03T09:00:00Z', 'end': '2017-01-03T18:00:00Z'},
             {'start': '2017-01-04T09:00:00Z', 'end': '2017-01-04T18:00:00Z'}
         ]
+        print request.body
         assert payload['participants'] == [
             {
                 'required': 'all',
                 'members': [
                     {'sub': 'acc_567236000909002'},
+                ]
+            },
+            {
+                'required': 'all',
+                'members': [
+                    {'sub': 'acc_678347111010113'},
+                ]
+            }
+        ]
+
+        body="""{"available_periods": [
+            {
+              "start": "2017-01-03T09:00:00Z",
+              "end": "2017-01-03T11:00:00Z",
+              "participants": [
+                { "sub": "acc_567236000909002" },
+                { "sub": "acc_678347111010113" }
+              ]
+            }
+            ]}"""
+
+        return (200, {}, body)
+
+    responses.add_callback(
+        responses.POST,
+        url='%s/%s/availability' % (settings.API_BASE_URL, settings.API_VERSION),
+        callback=request_callback,
+        content_type='application/json',
+    )
+
+    periods = (
+        { 'start': "2017-01-03T09:00:00Z", 'end': "2017-01-03T18:00:00Z" },
+        { 'start': "2017-01-04T09:00:00Z", 'end': "2017-01-04T18:00:00Z" }
+    )
+    example_participants = (
+        { 'members': [ "acc_567236000909002" ] },
+        { 'members': [ "acc_678347111010113" ] }
+    )
+
+    result = client.availability(required_duration = 30, available_periods = periods, participants = example_participants)
+
+@responses.activate
+def test_availablity_with_simple_values(client):
+    """Test Client.availability().
+
+    :param Client client: Client instance with test data.
+    """
+
+    def request_callback(request):
+        payload = json.loads(request.body)
+        expected_periods = [
+            {'start': '2017-01-03T09:00:00Z', 'end': '2017-01-03T18:00:00Z'},
+            {'start': '2017-01-04T09:00:00Z', 'end': '2017-01-04T18:00:00Z'}
+        ]
+
+        assert payload['required_duration'] == {'minutes': 30}
+        assert payload['available_periods'] == expected_periods
+        assert payload['participants'] == [
+            {
+                'required': 'all',
+                'members': [
+                    {'sub': 'acc_567236000909002', "available_periods": expected_periods},
                     {'sub': 'acc_678347111010113'}
                 ]
              }
@@ -252,7 +315,7 @@ def test_availablity_with_fully_specified_options(client):
     )
     example_participants = ({
         'members': [
-            { 'sub': "acc_567236000909002" },
+            { 'sub': "acc_567236000909002", "available_periods": periods },
             { 'sub': "acc_678347111010113" },
         ],
         'required': 'all'
