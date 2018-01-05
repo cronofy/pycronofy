@@ -214,18 +214,16 @@ def test_availablity_with_simple_values(client):
 
     def request_callback(request):
         payload = json.loads(request.body)
-        expected_periods = [
+        assert payload['required_duration'] == {'minutes': 30}
+        assert payload['available_periods'] == [
             {'start': '2017-01-03T09:00:00Z', 'end': '2017-01-03T18:00:00Z'},
             {'start': '2017-01-04T09:00:00Z', 'end': '2017-01-04T18:00:00Z'}
         ]
-
-        assert payload['required_duration'] == {'minutes': 30}
-        assert payload['available_periods'] == expected_periods
         assert payload['participants'] == [
             {
                 'required': 'all',
                 'members': [
-                    {'sub': 'acc_567236000909002', "available_periods": expected_periods},
+                    {'sub': 'acc_567236000909002'},
                     {'sub': 'acc_678347111010113'}
                 ]
              }
@@ -273,16 +271,18 @@ def test_availablity_with_fully_specified_options(client):
 
     def request_callback(request):
         payload = json.loads(request.body)
-        assert payload['required_duration'] == {'minutes': 30}
-        assert payload['available_periods'] == [
+        expected_periods = [
             {'start': '2017-01-03T09:00:00Z', 'end': '2017-01-03T18:00:00Z'},
             {'start': '2017-01-04T09:00:00Z', 'end': '2017-01-04T18:00:00Z'}
         ]
+
+        assert payload['required_duration'] == {'minutes': 30}
+        assert payload['available_periods'] == expected_periods
         assert payload['participants'] == [
             {
                 'required': 'all',
                 'members': [
-                    {'sub': 'acc_567236000909002'},
+                    {'sub': 'acc_567236000909002', "available_periods": expected_periods},
                     {'sub': 'acc_678347111010113'}
                 ]
              }
