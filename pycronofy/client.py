@@ -74,10 +74,45 @@ class Client(object):
     def delete_event(self, calendar_id, event_id):
         """Delete an event from the specified calendar.
 
-        :param string calendar_id: ID of calendar to insert/update event into.
+        :param string calendar_id: ID of calendar to delete from.
         :param string event_id: ID of event to delete.
         """
-        self.request_handler.delete(endpoint='calendars/%s/events' % calendar_id, params={'event_id': event_id})
+        self.request_handler.delete(endpoint='calendars/%s/events' % calendar_id, data={'event_id': event_id})
+
+    def delete_external_event(self, calendar_id, event_uid):
+        """Delete an external event from the specified calendar.
+
+        :param string calendar_id: ID of calendar to delete from.
+        :param string event_uid: ID of event to delete.
+        """
+        self.request_handler.delete(endpoint='calendars/%s/events' % calendar_id, data={'event_uid': event_uid})
+
+    def elevated_permissions(self, permissions, redirect_uri=None):
+        """Requests elevated permissions for a set of calendars.
+
+        :param tuple permissions  - calendar permission dicts set each dict
+        must contain values for both `calendar_id` and `permission_level`
+        :param string redirect_uri - A uri to redirect the end user back to after they
+        have either granted or rejected the request for elevated permission.
+
+        In the case of normal accounts:
+        After making this call the end user will have to grant the extended
+        permissions to their calendar via rhe url returned from the response.
+
+        In the case of service accounts:
+        After making this call the exteneded permissions will be granted provided
+        the relevant scope has been granted to the account
+
+        :return: a extended permissions response.
+        :rtype: ``dict``
+        """
+
+        body = {'permissions': permissions}
+
+        if redirect_uri:
+            body['redirect_uri'] = redirect_uri
+
+        return self.request_handler.post('permissions', data=body).json()['permissions_request']
 
     def get_authorization_from_code(self, code, redirect_uri=''):
         """Updates the authorization tokens from the user provided code.

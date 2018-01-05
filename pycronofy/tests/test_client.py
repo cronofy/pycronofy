@@ -2,6 +2,7 @@ import datetime
 import pytest
 import responses
 import requests
+import json
 from pycronofy import Client
 from pycronofy import settings
 from pycronofy.tests import common_data
@@ -32,6 +33,54 @@ def client():
     return Client(**common_data.AUTH_ARGS)
 
 @responses.activate
+def test_delete_event(client):
+    """Test Client.delete_event().
+
+    :param Client client: Client instance with test data.
+    """
+    calendar_id = "cal_123"
+    event_id = "example_event_id"
+
+    def request_callback(request):
+        payload = json.loads(request.body)
+        assert payload['event_id'] == event_id
+
+        return (202, {}, None)
+
+    responses.add_callback(
+        responses.DELETE,
+        url='%s/%s/calendars/%s/events' % (settings.API_BASE_URL, settings.API_VERSION, calendar_id),
+        callback=request_callback,
+        content_type='application/json',
+    )
+    result = client.delete_event(calendar_id, event_id)
+    assert result == None
+
+@responses.activate
+def test_delete_external_event(client):
+    """Test Client.delete_external_event().
+
+    :param Client client: Client instance with test data.
+    """
+    calendar_id = "cal_123"
+    event_uid = "evt_external_98343844983"
+
+    def request_callback(request):
+        payload = json.loads(request.body)
+        assert payload['event_uid'] == event_uid
+
+        return (202, {}, None)
+
+    responses.add_callback(
+        responses.DELETE,
+        url='%s/%s/calendars/%s/events' % (settings.API_BASE_URL, settings.API_VERSION, calendar_id),
+        callback=request_callback,
+        content_type='application/json',
+    )
+    result = client.delete_external_event(calendar_id, event_uid)
+    assert result == None
+
+@responses.activate
 def test_create_notification_channel(client):
     """Test Client.create_notification_channel().
 
@@ -45,6 +94,28 @@ def test_create_notification_channel(client):
     )
     channel = client.create_notification_channel('http://example.com', calendar_ids=('1',))
     assert channel['channel_id'] == 'chn_123example'
+
+@responses.activate
+def test_elevated_permissions(client):
+    """Test Client.elevated_permissions().
+
+    :param Client client: Client instance with test data.
+    """
+    def request_callback(request):
+        payload = json.loads(request.body)
+        assert payload['redirect_uri'] == 'http://www.example.com'
+        assert payload['permissions'] == ({'calendar_id': 'cal_123', 'permission_level': 'unrestricted'})
+
+        body ='{"permissions_request": {"url": "http://app.cronofy.com/permissions/"}}'
+        return (200, {}, body)
+
+    responses.add_callback(responses.POST,
+                           url='%s/%s/permissions' % (settings.API_BASE_URL, settings.API_VERSION),
+                           callback=request_callback,
+                           content_type='application/json',
+                           )
+    permissions = client.elevated_permissions(({'calendar_id': 'cal_123', 'permission_level': 'unrestricted'}), 'http://www.example.com')
+    assert permissions['url'] == 'http://app.cronofy.com/permissions/'
 
 @responses.activate
 def test_get_authorization_from_code(client):
