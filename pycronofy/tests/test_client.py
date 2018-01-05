@@ -194,13 +194,48 @@ def test_user_auth_link(client):
     """
     querystring = 'scope=felines&state=NY&redirect_uri=http%%3A%%2F%%2Fexample.com&response_type=code&client_id=%s' % common_data.AUTH_ARGS['client_id']
     auth_url = '%s/oauth/authorize?%s' % (settings.APP_BASE_URL, querystring)
-    responses.add(responses.GET,
-        '%s/oauth/authorize' % settings.APP_BASE_URL,
-        status=200,
-        body='{"url": "%s"}' % auth_url,
-        content_type='application/json'
-    )
     url = client.user_auth_link(redirect_uri='http://example.com', scope='felines', state='NY')
     assert 'client_id=%s' % common_data.AUTH_ARGS['client_id'] in url
     url = client.user_auth_link(redirect_uri='http://example.com', state='NY')
     assert settings.APP_BASE_URL in url
+
+@responses.activate
+def test_authorize_with_service_account(client):
+    """Test authorize_with_service_account with correct dat
+
+    :param Client client: Client instance with test data.
+    """
+
+    def request_callback(request):
+        payload = json.loads(request.body)
+        assert payload['email'] == "example@example.com"
+        assert payload['scope'] == "felines"
+        assert payload['state'] == "state example"
+        assert payload['callback_url'] == "http://www.example.com/callback"
+
+        return (202, {}, None)
+
+    responses.add_callback(
+        responses.POST,
+        '%s/v1/service_account_authorizations' % settings.API_BASE_URL,
+        callback=request_callback,
+        content_type='application/json',
+    )
+    client.authorize_with_service_account("example@example.com", "felines", "http://www.example.com/callback", state= "state example")
+
+@responses.activate
+def test_list_resources(client):
+    """Test resources listing
+
+    :param Client client: Client instance with test data.
+    """
+    responses.add(responses.GET,
+        '%s/v1/resources' % settings.API_BASE_URL,
+        body='{"resources":[{"email":"board-room-london@example.com","name":"Board room (London)"},{"email":"3dprinter@example.com","name":"3D Printer"},{"email":"vr-headset@example.com","name":"Oculus Rift"}]}',
+        status=200,
+        content_type='application/json'
+    )
+    response = client.resources()
+    assert len(response) == 3
+    assert response[0]['email'] == "board-room-london@example.com"
+    assert response[0]['name'] == "Board room (London)"

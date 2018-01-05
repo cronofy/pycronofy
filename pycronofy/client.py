@@ -178,6 +178,14 @@ class Client(object):
         """
         return self.request_handler.get(endpoint='channels').json()['channels']
 
+    def resources(self):
+        """ Lists all the resources for the service account.
+
+        :return: List of Resources (dictionaries).
+        :rtype: ``list``
+        """
+        return self.request_handler.get("resources").json()["resources"]
+
     def read_events(self,
         calendar_ids=(),
         from_date=None,
@@ -307,6 +315,26 @@ class Client(object):
         event['start'] = get_iso8601_string(event['start'])
         event['end'] = get_iso8601_string(event['end'])
         self.request_handler.post(endpoint='calendars/%s/events' % calendar_id, data=event)
+
+    def authorize_with_service_account(self, email, scope, callback_url, state = None):
+        """ Attempts to authorize the email with impersonation from a service account
+
+        :param string email: the email address to impersonate
+        :param string callback_url: URL to callback with the OAuth code.
+        :param string scope: The scope of the privileges you want the eventual access_token to grant.
+        :return: nothing
+        """
+        params = {
+            'email': email,
+            'scope': scope,
+            'callback_url': callback_url
+        }
+
+        if state != None:
+            params['state'] = state
+
+        self.request_handler.post(endpoint="service_account_authorizations", data=params)
+        None
 
     def user_auth_link(self, redirect_uri, scope='', state='', avoid_linking=False):
         """Generates a URL to send the user for OAuth 2.0
