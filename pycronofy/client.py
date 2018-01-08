@@ -148,6 +148,61 @@ class Client(object):
 
         return self.request_handler.post('permissions', data=body).json()['permissions_request']
 
+    def upsert_smart_invite(self, smart_invite_id, recipient, event, callback_url = None):
+        """ Creates or updates smart invite.
+        :param string smart_invite_id - A String uniquely identifying the event for your
+              application (note: this is NOT an ID generated
+              by Cronofy).
+        :param string callback_url - The URL within your application you want Cronofy to
+             send notifications to about user interactions with
+             the Smart Invite.
+        :param dict recipient - A Dict containing the intended recipient of the invite
+             :email      - A String for the email address you are
+                           going to send the Smart Invite to.
+        :param dict event - A Dict describing the event with symbolized keys:
+             :summary      - A String to use as the summary, sometimes
+                             referred to as the name or title, of the
+                             event.
+             :description  - A String to use as the description, sometimes
+                             referred to as the notes or body, of the
+                             event.
+             :start        - The Time or Date the event starts.
+             :end          - The Time or Date the event ends.
+             :url          - The URL associated with the event.
+             :location     - A Dict describing the location of the event
+                             with keys (optional):
+                             :description - A String describing the
+                                            location.
+                             :lat - A String of the location's latitude.
+                             :long - A String of the location's longitude.
+             :reminders    - An Array of Dicts describing the desired
+                             reminders for the event. Reminders should be
+                             specified in priority order as, for example,
+                             when the underlying provider only supports a
+                             single reminder then the first reminder will
+                             be used.
+                             :minutes - An Integer specifying the number
+                                        of minutes before the start of the
+                                        event that the reminder should
+                                        occur.
+             :transparency - The transparency state for the event (optional).
+                             Accepted values are "transparent" and "opaque".
+             :color        - The color of the event (optional).
+        """
+        event['start'] = get_iso8601_string(event['start'])
+        event['end'] = get_iso8601_string(event['end'])
+
+        body = {
+            'smart_invite_id': smart_invite_id,
+            'recipient': recipient,
+            'event': event
+        }
+
+        if callback_url:
+            body['callback_url'] = callback_url
+
+        return self.request_handler.post('smart_invites', data=body, use_api_key=True).json()
+
     def get_authorization_from_code(self, code, redirect_uri=''):
         """Updates the authorization tokens from the user provided code.
 
