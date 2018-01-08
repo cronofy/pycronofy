@@ -40,7 +40,7 @@ class RequestHandler(object):
         """
         return self._request('delete', endpoint, url, params=params, data=data)
 
-    def post(self, endpoint='', url='', data=None):
+    def post(self, endpoint='', url='', data=None, use_api_key=False):
         """Perform a post to an API endpoint.
 
         :param string endpoint: Target endpoint. (Optional).
@@ -49,9 +49,9 @@ class RequestHandler(object):
         :return: Response.
         :rtype: ``Response``
         """
-        return self._request('post', endpoint, url, data=data)
+        return self._request('post', endpoint, url, data=data, use_api_key=use_api_key)
 
-    def _request(self, request_method, endpoint='', url='', data=None, params=None):
+    def _request(self, request_method, endpoint='', url='', data=None, params=None, use_api_key=False):
         """Perform a http request via the specified method to an API endpoint.
 
         :param string request_method: Request method.
@@ -68,13 +68,22 @@ class RequestHandler(object):
             params = {}
         if endpoint and not url:
             url = '%s/%s/%s' % (self.base_url, settings.API_VERSION, endpoint)
+
+        if use_api_key:
+            headers = {
+                'Authorization': self.auth.get_api_key(),
+                'User-Agent': self.user_agent,
+            }
+        else:
+            headers = {
+                'Authorization': self.auth.get_authorization(),
+                'User-Agent': self.user_agent,
+            }
+
         response = requests.__getattribute__(request_method)(
             url=url,
             hooks=settings.REQUEST_HOOK,
-            headers={
-                'Authorization': self.auth.get_authorization(),
-                'User-Agent': self.user_agent,
-            },
+            headers=headers,
             json=data,
             params=params
         )
