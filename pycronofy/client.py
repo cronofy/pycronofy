@@ -7,7 +7,10 @@ with hooks():
 
 from pycronofy import settings
 from pycronofy.auth import Auth
+from pycronofy.batch import BatchEntry
+from pycronofy.batch import BatchResponse
 from pycronofy.datetime_utils import get_iso8601_string
+from pycronofy.exceptions import PyCronofyPartialSuccessError
 from pycronofy.pagination import Pages
 from pycronofy.request_handler import RequestHandler
 from pycronofy.validation import validate
@@ -459,6 +462,23 @@ class Client(object):
         :param **kwargs: Keyword arguments for "Method".
         """
         validate(method, self.auth, *args, **kwargs)
+
+    def batch(self, builder):
+        requests = builder.build()
+
+        responses = self.request_handler.post(endpoint="batch", data=requests).json().get('batch', [])
+
+        entries = list()
+        for (request, response) in zip(requests, responses):
+            entries.append(BatchEntry(request, response))
+
+        result = BatchResponse(entries)
+
+        if result.has_errors():
+            msg = "Batch contains %i errors" % len(result.errors())
+            raise PyCronofyPartialSuccessError(msg, result)
+
+        return result
 
     def translate_available_periods(self, periods):
         for params in periods:
