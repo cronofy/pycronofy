@@ -55,3 +55,9 @@ class PyCronofyValidationError(Exception):
         self.method = method
         self.fields = fields
         self.values = values
+
+class PyCronofyPartialSuccessError(Exception):
+    def __init__(self, message, batch_response):
+        super(PyCronofyPartialSuccessError, self).__init__(message)
+        self.message = message
+        self.batch_response = batch_response
