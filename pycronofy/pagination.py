@@ -47,7 +47,8 @@ class Pages(object):
     def fetch_next_page(self):
         """Retrieves the next page of data and refreshes Pages instance."""
         result = self.request_handler.get(url=self.next_page_url).json()
-        self.__init__(self.request_handler, result, self.data_type, self.automatic_pagination)
+        self.__init__(self.request_handler, result,
+                      self.data_type, self.automatic_pagination)
 
     def json(self):
         """Get the raw json data of the response
@@ -99,7 +100,7 @@ class Pages(object):
         """
         if self.index < self.length:
             self.index += 1
-            return self.data[self.data_type][self.index-1]
+            return self.data[self.data_type][self.index - 1]
         else:
             if self.automatic_pagination and (self.current < self.total):
                 self.fetch_next_page()

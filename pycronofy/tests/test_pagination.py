@@ -2,7 +2,6 @@ from copy import deepcopy
 import json
 import pytest
 import responses
-import requests
 from pycronofy import Client
 from pycronofy.pagination import Pages
 from pycronofy import settings
@@ -79,17 +78,19 @@ TEST_DATA_PAGE_TWO = {
 }
 
 NEXT_PAGE_GET_ARGS = {
-    'method': responses.GET, 
+    'method': responses.GET,
     'url': '%s/%s/events/pages/08a07b034306679e' % (settings.API_BASE_URL, settings.API_VERSION),
     'body': json.dumps(TEST_DATA_PAGE_TWO),
     'status': 200,
-    'content_type':'application/json'
+    'content_type': 'application/json'
 }
+
 
 @pytest.fixture(scope="module")
 def client():
     """Setup Client instance with test values."""
     return Client(**common_data.AUTH_ARGS)
+
 
 @responses.activate
 def test_all(client):
@@ -104,6 +105,7 @@ def test_all(client):
     assert results[0]['summary'] == TEST_DATA_PAGE_ONE['events'][0]['summary']
     assert results[1]['summary'] == TEST_DATA_PAGE_TWO['events'][0]['summary']
 
+
 def test_current_page(client):
     """Test Pages.current_page() returns current page.
 
@@ -111,6 +113,7 @@ def test_current_page(client):
     """
     pages = Pages(request_handler=client.request_handler, data=deepcopy(TEST_DATA_PAGE_ONE), data_type='events')
     assert pages.current_page() == TEST_DATA_PAGE_ONE['events']
+
 
 @responses.activate
 def test_fetch_next_page(client):
@@ -123,6 +126,7 @@ def test_fetch_next_page(client):
     pages.fetch_next_page()
     assert pages[0]['summary'] == TEST_DATA_PAGE_TWO['events'][0]['summary']
 
+
 def test_json(client):
     """Test Pages.json() returns raw json for page one.
 
@@ -130,6 +134,7 @@ def test_json(client):
     """
     pages = Pages(request_handler=client.request_handler, data=deepcopy(TEST_DATA_PAGE_ONE), data_type='events')
     assert pages.json() == TEST_DATA_PAGE_ONE
+
 
 @responses.activate
 def test_next(client):
@@ -146,6 +151,7 @@ def test_next(client):
     assert results[0]['summary'] == TEST_DATA_PAGE_ONE['events'][0]['summary']
     assert results[1]['summary'] == TEST_DATA_PAGE_TWO['events'][0]['summary']
 
+
 def test___getitem__(client):
     """Test Pages.__getitem__() returns the item at the specified index.
 
@@ -153,6 +159,7 @@ def test___getitem__(client):
     """
     pages = Pages(request_handler=client.request_handler, data=deepcopy(TEST_DATA_PAGE_ONE), data_type='events')
     assert pages[0]['summary'] == TEST_DATA_PAGE_ONE['events'][0]['summary']
+
 
 def test___len__(client):
     """Test Pages.__len__() returns the length of the current page of data.

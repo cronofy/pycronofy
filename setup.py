@@ -8,4 +8,4 @@ setup(
     author_email='dev@venuebook.com',
     url='https://github.com/venuebook/pycronofy',
     packages=['pycronofy']
-    )
+)

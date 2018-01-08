@@ -1,7 +1,6 @@
 import datetime
 import pytest
 import responses
-import requests
 import json
 from pycronofy import Client
 from pycronofy import settings
@@ -24,13 +23,28 @@ TEST_UPSERT_EVENT_ARGS = {
     'url': '%s/%s/calendars/1/events' % (settings.API_BASE_URL, settings.API_VERSION),
     'body': '{"example": 1}',
     'status': 200,
-    'content_type':'application/json'
+    'content_type': 'application/json'
 }
+
+TEST_AVAILABLITY_RESPONSE = {
+    "available_periods": [
+        {
+            "start": "2017-01-03T09:00:00Z",
+            "end": "2017-01-03T11:00:00Z",
+            "participants": [
+                {"sub": "acc_567236000909002"},
+                {"sub": "acc_678347111010113"}
+            ]
+        }
+    ]
+}
+
 
 @pytest.fixture(scope="module")
 def client():
     """Setup Client instance with test values."""
     return Client(**common_data.AUTH_ARGS)
+
 
 @responses.activate
 def test_change_participation_status(client):
@@ -55,7 +69,8 @@ def test_change_participation_status(client):
         content_type='application/json',
     )
     result = client.change_participation_status(calendar_id, event_uid, status)
-    assert result == None
+    assert result is None
+
 
 @responses.activate
 def test_delete_event(client):
@@ -79,7 +94,8 @@ def test_delete_event(client):
         content_type='application/json',
     )
     result = client.delete_event(calendar_id, event_id)
-    assert result == None
+    assert result is None
+
 
 @responses.activate
 def test_delete_external_event(client):
@@ -103,7 +119,8 @@ def test_delete_external_event(client):
         content_type='application/json',
     )
     result = client.delete_external_event(calendar_id, event_uid)
-    assert result == None
+    assert result is None
+
 
 @responses.activate
 def test_account(client):
@@ -129,6 +146,7 @@ def test_account(client):
     assert account['account_id'] == 'acc_567236000909002'
     assert account['email'] == 'janed@company.com'
 
+
 @responses.activate
 def test_userinfo(client):
     """Test Client.userinfo().
@@ -136,14 +154,15 @@ def test_userinfo(client):
     :param Client client: Client instance with test data.
     """
     responses.add(responses.GET,
-        url='%s/%s/userinfo' % (settings.API_BASE_URL, settings.API_VERSION),
-        body='{"sub": "acc_5700a00eb0ccd07000000000", "cronofy.type": "userinfo"}',
-        status=200,
-        content_type='application/json',
-    )
+                  url='%s/%s/userinfo' % (settings.API_BASE_URL, settings.API_VERSION),
+                  body='{"sub": "acc_5700a00eb0ccd07000000000", "cronofy.type": "userinfo"}',
+                  status=200,
+                  content_type='application/json',
+                  )
     userinfo = client.userinfo()
     assert userinfo['sub'] == 'acc_5700a00eb0ccd07000000000'
     assert userinfo['cronofy.type'] == 'userinfo'
+
 
 @responses.activate
 def test_availablity_with_groups(client):
@@ -174,18 +193,7 @@ def test_availablity_with_groups(client):
             }
         ]
 
-        body="""{"available_periods": [
-            {
-              "start": "2017-01-03T09:00:00Z",
-              "end": "2017-01-03T11:00:00Z",
-              "participants": [
-                { "sub": "acc_567236000909002" },
-                { "sub": "acc_678347111010113" }
-              ]
-            }
-            ]}"""
-
-        return (200, {}, body)
+        return (200, {}, json.dumps(TEST_AVAILABLITY_RESPONSE))
 
     responses.add_callback(
         responses.POST,
@@ -195,15 +203,17 @@ def test_availablity_with_groups(client):
     )
 
     periods = (
-        { 'start': "2017-01-03T09:00:00Z", 'end': "2017-01-03T18:00:00Z" },
-        { 'start': "2017-01-04T09:00:00Z", 'end': "2017-01-04T18:00:00Z" }
+        {'start': "2017-01-03T09:00:00Z", 'end': "2017-01-03T18:00:00Z"},
+        {'start': "2017-01-04T09:00:00Z", 'end': "2017-01-04T18:00:00Z"}
     )
     example_participants = (
-        { 'members': [ "acc_567236000909002" ] },
-        { 'members': [ "acc_678347111010113" ] }
+        {'members': ["acc_567236000909002"]},
+        {'members': ["acc_678347111010113"]}
     )
 
-    result = client.availability(required_duration = 30, available_periods = periods, participants = example_participants)
+    result = client.availability(required_duration=30, available_periods=periods, participants=example_participants)
+    assert len(result) == 1
+
 
 @responses.activate
 def test_availablity_with_simple_values(client):
@@ -226,21 +236,10 @@ def test_availablity_with_simple_values(client):
                     {'sub': 'acc_567236000909002'},
                     {'sub': 'acc_678347111010113'}
                 ]
-             }
+            }
         ]
 
-        body="""{"available_periods": [
-            {
-              "start": "2017-01-03T09:00:00Z",
-              "end": "2017-01-03T11:00:00Z",
-              "participants": [
-                { "sub": "acc_567236000909002" },
-                { "sub": "acc_678347111010113" }
-              ]
-            }
-            ]}"""
-
-        return (200, {}, body)
+        return (200, {}, json.dumps(TEST_AVAILABLITY_RESPONSE))
 
     responses.add_callback(
         responses.POST,
@@ -250,8 +249,8 @@ def test_availablity_with_simple_values(client):
     )
 
     periods = (
-        { 'start': "2017-01-03T09:00:00Z", 'end': "2017-01-03T18:00:00Z" },
-        { 'start': "2017-01-04T09:00:00Z", 'end': "2017-01-04T18:00:00Z" }
+        {'start': "2017-01-03T09:00:00Z", 'end': "2017-01-03T18:00:00Z"},
+        {'start': "2017-01-04T09:00:00Z", 'end': "2017-01-04T18:00:00Z"}
     )
     example_participants = ({
         'members': [
@@ -260,7 +259,9 @@ def test_availablity_with_simple_values(client):
         ],
     })
 
-    result = client.availability(required_duration = 30, available_periods = periods, participants = example_participants)
+    result = client.availability(required_duration=30, available_periods=periods, participants=example_participants)
+    assert len(result) == 1
+
 
 @responses.activate
 def test_availablity_with_fully_specified_options(client):
@@ -285,21 +286,9 @@ def test_availablity_with_fully_specified_options(client):
                     {'sub': 'acc_567236000909002', "available_periods": expected_periods},
                     {'sub': 'acc_678347111010113'}
                 ]
-             }
-        ]
-
-        body="""{"available_periods": [
-            {
-              "start": "2017-01-03T09:00:00Z",
-              "end": "2017-01-03T11:00:00Z",
-              "participants": [
-                { "sub": "acc_567236000909002" },
-                { "sub": "acc_678347111010113" }
-              ]
             }
-            ]}"""
-
-        return (200, {}, body)
+        ]
+        return (200, {}, json.dumps(TEST_AVAILABLITY_RESPONSE))
 
     responses.add_callback(
         responses.POST,
@@ -309,18 +298,20 @@ def test_availablity_with_fully_specified_options(client):
     )
 
     periods = (
-        { 'start': "2017-01-03T09:00:00Z", 'end': "2017-01-03T18:00:00Z" },
-        { 'start': "2017-01-04T09:00:00Z", 'end': "2017-01-04T18:00:00Z" }
+        {'start': "2017-01-03T09:00:00Z", 'end': "2017-01-03T18:00:00Z"},
+        {'start': "2017-01-04T09:00:00Z", 'end': "2017-01-04T18:00:00Z"}
     )
     example_participants = ({
         'members': [
-            { 'sub': "acc_567236000909002", "available_periods": periods },
-            { 'sub': "acc_678347111010113" },
+            {'sub': "acc_567236000909002", "available_periods": periods},
+            {'sub': "acc_678347111010113"},
         ],
         'required': 'all'
     })
 
-    result = client.availability(required_duration = { 'minutes': 30 }, available_periods = periods, participants = example_participants)
+    result = client.availability(required_duration={'minutes': 30}, available_periods=periods, participants=example_participants)
+    assert(len(result)) == 1
+
 
 @responses.activate
 def test_create_notification_channel(client):
@@ -329,13 +320,14 @@ def test_create_notification_channel(client):
     :param Client client: Client instance with test data.
     """
     responses.add(responses.POST,
-        url='%s/%s/channels' % (settings.API_BASE_URL, settings.API_VERSION),
-        body='{"channel": {"channel_id": "chn_123example", "callback_url": "http://example.com"}}',
-        status=200,
-        content_type='application/json',
-    )
+                  url='%s/%s/channels' % (settings.API_BASE_URL, settings.API_VERSION),
+                  body='{"channel": {"channel_id": "chn_123example", "callback_url": "http://example.com"}}',
+                  status=200,
+                  content_type='application/json',
+                  )
     channel = client.create_notification_channel('http://example.com', calendar_ids=('1',))
     assert channel['channel_id'] == 'chn_123example'
+
 
 @responses.activate
 def test_elevated_permissions(client):
@@ -348,7 +340,7 @@ def test_elevated_permissions(client):
         assert payload['redirect_uri'] == 'http://www.example.com'
         assert payload['permissions'] == ({'calendar_id': 'cal_123', 'permission_level': 'unrestricted'})
 
-        body ='{"permissions_request": {"url": "http://app.cronofy.com/permissions/"}}'
+        body = '{"permissions_request": {"url": "http://app.cronofy.com/permissions/"}}'
         return (200, {}, body)
 
     responses.add_callback(responses.POST,
@@ -359,6 +351,7 @@ def test_elevated_permissions(client):
     permissions = client.elevated_permissions(({'calendar_id': 'cal_123', 'permission_level': 'unrestricted'}), 'http://www.example.com')
     assert permissions['url'] == 'http://app.cronofy.com/permissions/'
 
+
 @responses.activate
 def test_get_authorization_from_code(client):
     """Test update_tokens_from code updates access_token, refresh_token, token_expiration and expires_in.
@@ -366,15 +359,16 @@ def test_get_authorization_from_code(client):
     :param Client client: Client instance with test data.
     """
     responses.add(responses.POST,
-        '%s/oauth/token' % settings.API_BASE_URL,
-        body='{"access_token": "tail", "refresh_token": "meow", "expires_in": 3600}',
-        status=200,
-        content_type='application/json'
-    )
+                  '%s/oauth/token' % settings.API_BASE_URL,
+                  body='{"access_token": "tail", "refresh_token": "meow", "expires_in": 3600}',
+                  status=200,
+                  content_type='application/json'
+                  )
     authorization = client.get_authorization_from_code('code')
     assert authorization['access_token'] == 'tail'
     assert authorization['refresh_token'] == 'meow'
     assert 'token_expiration' in authorization
+
 
 @responses.activate
 def test_is_authorization_expired(client):
@@ -383,9 +377,10 @@ def test_is_authorization_expired(client):
     :param Client client: Client instance with test data.
     """
     client.auth.token_expiration = datetime.datetime.utcnow() + datetime.timedelta(seconds=60)
-    assert client.is_authorization_expired() == False
+    assert client.is_authorization_expired() is False
     client.auth.token_expiration = datetime.datetime.utcnow() - datetime.timedelta(seconds=60)
-    assert client.is_authorization_expired() == True
+    assert client.is_authorization_expired() is True
+
 
 @responses.activate
 def test_refresh(client):
@@ -394,15 +389,16 @@ def test_refresh(client):
     :param Client client: Client instance with test data.
     """
     responses.add(responses.POST,
-        '%s/oauth/token' % settings.API_BASE_URL,
-        body='{"access_token": "tail", "refresh_token": "wagging", "expires_in": 3600}',
-        status=200,
-        content_type='application/json'
-    )
+                  '%s/oauth/token' % settings.API_BASE_URL,
+                  body='{"access_token": "tail", "refresh_token": "wagging", "expires_in": 3600}',
+                  status=200,
+                  content_type='application/json'
+                  )
     old_token_expiration = client.auth.token_expiration
-    response = client.refresh_authorization()
+    client.refresh_authorization()
     assert client.auth.access_token == 'tail'
     assert client.auth.token_expiration > old_token_expiration
+
 
 @responses.activate
 def test_revoke(client):
@@ -411,14 +407,15 @@ def test_revoke(client):
     :param Client client: Client instance with test data.
     """
     responses.add(responses.POST,
-        '%s/oauth/token/revoke' % settings.API_BASE_URL,
-        status=200,
-        content_type='application/json'
-    )
+                  '%s/oauth/token/revoke' % settings.API_BASE_URL,
+                  status=200,
+                  content_type='application/json'
+                  )
     client.revoke_authorization()
-    assert client.auth.access_token == None
-    assert client.auth.refresh_token == None
-    assert client.auth.token_expiration == None
+    assert client.auth.access_token is None
+    assert client.auth.refresh_token is None
+    assert client.auth.token_expiration is None
+
 
 @responses.activate
 def test_upsert_event(client):
@@ -428,6 +425,7 @@ def test_upsert_event(client):
     """
     responses.add(**TEST_UPSERT_EVENT_ARGS)
     response = client.upsert_event('1', TEST_EVENT)
+    assert response is None
 
 
 @responses.activate
@@ -480,18 +478,18 @@ def test_upsert_smart_invtes(client):
 
     assert result['attachments']['icalendar'] == "BEGIN:VCALENDAR\nVERSION:2.0..."
 
+
 @responses.activate
 def test_user_auth_link(client):
     """Test user auth link returns a properly formatted user auth url.
 
     :param Client client: Client instance with test data.
     """
-    querystring = 'scope=felines&state=NY&redirect_uri=http%%3A%%2F%%2Fexample.com&response_type=code&client_id=%s' % common_data.AUTH_ARGS['client_id']
-    auth_url = '%s/oauth/authorize?%s' % (settings.APP_BASE_URL, querystring)
     url = client.user_auth_link(redirect_uri='http://example.com', scope='felines', state='NY')
     assert 'client_id=%s' % common_data.AUTH_ARGS['client_id'] in url
     url = client.user_auth_link(redirect_uri='http://example.com', state='NY')
     assert settings.APP_BASE_URL in url
+
 
 @responses.activate
 def test_authorize_with_service_account(client):
@@ -515,7 +513,8 @@ def test_authorize_with_service_account(client):
         callback=request_callback,
         content_type='application/json',
     )
-    client.authorize_with_service_account("example@example.com", "felines", "http://www.example.com/callback", state= "state example")
+    client.authorize_with_service_account("example@example.com", "felines", "http://www.example.com/callback", state="state example")
+
 
 @responses.activate
 def test_list_resources(client):
@@ -524,12 +523,13 @@ def test_list_resources(client):
     :param Client client: Client instance with test data.
     """
     responses.add(responses.GET,
-        '%s/v1/resources' % settings.API_BASE_URL,
-        body='{"resources":[{"email":"board-room-london@example.com","name":"Board room (London)"},{"email":"3dprinter@example.com","name":"3D Printer"},{"email":"vr-headset@example.com","name":"Oculus Rift"}]}',
-        status=200,
-        content_type='application/json'
-    )
+                  '%s/v1/resources' % settings.API_BASE_URL,
+                  body='{"resources":[{"email":"board-room-london@example.com","name":"Board room (London)"},{"email":"3dprinter@example.com","name":"3D Printer"},{"email":"vr-headset@example.com","name":"Oculus Rift"}]}',
+                  status=200,
+                  content_type='application/json'
+                  )
     response = client.resources()
+
     assert len(response) == 3
     assert response[0]['email'] == "board-room-london@example.com"
     assert response[0]['name'] == "Board room (London)"

@@ -3,16 +3,17 @@ import pycronofy
 from pycronofy import settings
 from pycronofy.exceptions import PyCronofyRequestError
 
+
 class RequestHandler(object):
     """Wrap all request handling."""
 
-    def __init__(self, auth, data_center = None):
+    def __init__(self, auth, data_center=None):
         """
         :param Auth auth: Auth instance.
         """
         self.auth = auth
         self.user_agent = '%s %s' % (pycronofy.__name__, pycronofy.__version__)
-        if data_center == None or data_center == 'us':
+        if data_center is None or data_center is 'us':
             self.base_url = settings.API_BASE_URL
         else:
             self.base_url = settings.API_REGION_FORMAT % data_center
@@ -88,12 +89,12 @@ class RequestHandler(object):
             params=params
         )
         if ((response.status_code != 200) and
-            (response.status_code != 202)):
+                (response.status_code != 202)):
             try:
                 response.raise_for_status()
             except requests.exceptions.HTTPError as e:
                 raise PyCronofyRequestError(
-                        request=e.request,
-                        response=e.response,
+                    request=e.request,
+                    response=e.response,
                 )
         return response

@@ -1,7 +1,5 @@
-import datetime
 import pytest
 import responses
-import requests
 import json
 from pycronofy import Client
 from pycronofy import settings
@@ -9,10 +7,12 @@ from pycronofy.tests import common_data
 from pycronofy.batch import BatchBuilder
 from pycronofy.exceptions import PyCronofyPartialSuccessError
 
+
 @pytest.fixture(scope="module")
 def client():
     """Setup Client instance with test values."""
     return Client(**common_data.AUTH_ARGS)
+
 
 @responses.activate
 def test_batch(client):
@@ -61,9 +61,9 @@ def test_batch(client):
 
         response = {
             "batch": [
-                { "status": 202 },
-                { "status": 202 },
-                { "status": 202 },
+                {"status": 202},
+                {"status": 202},
+                {"status": 202},
             ]
         }
 
@@ -79,7 +79,8 @@ def test_batch(client):
     result = client.batch(builder)
     assert len(result.entries) == 3
     assert result.entries[0].request == {'data': {'event_id': 'example_event_id'}, 'method': 'DELETE', 'relative_url': '/v1/calendars/cal_123/events'}
-    assert result.entries[0].response == { 'status': 202 }
+    assert result.entries[0].response == {'status': 202}
+
 
 @responses.activate
 def test_batch_with_errors(client):
@@ -95,14 +96,14 @@ def test_batch_with_errors(client):
     def request_callback(request):
         response = {
             "batch": [
-                { "status": 202 },
-                { "status": 202 },
+                {"status": 202},
+                {"status": 202},
                 {
                     "status": 422,
                     "data": {
                         "errors": {
                             "summary": [
-                                { "key": "errors.required", "description": "summary must be specified" }
+                                {"key": "errors.required", "description": "summary must be specified"}
                             ]
                         }
                     }
@@ -123,6 +124,3 @@ def test_batch_with_errors(client):
         client.batch(builder)
     except PyCronofyPartialSuccessError as e:
         assert e.message == 'Batch contains 1 errors'
-    except Exception as e:
-        fail('PyCronofyPartialSuccessError not raised')
-

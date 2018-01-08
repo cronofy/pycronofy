@@ -2,9 +2,6 @@ import datetime
 import collections
 from future.standard_library import hooks
 
-with hooks():
-    from urllib.parse import urlencode
-
 from pycronofy import settings
 from pycronofy.auth import Auth
 from pycronofy.batch import BatchEntry
@@ -14,6 +11,10 @@ from pycronofy.exceptions import PyCronofyPartialSuccessError
 from pycronofy.pagination import Pages
 from pycronofy.request_handler import RequestHandler
 from pycronofy.validation import validate
+
+with hooks():
+    from urllib.parse import urlencode
+
 
 class Client(object):
     """Client for cronofy web service.
@@ -34,10 +35,11 @@ class Client(object):
         :param string token_expiration: Datetime token expires. (Optional, default None)
         :param string data_center: The name of the data_center to use. (Optional, default None)
         """
-        self.auth = Auth(client_id, client_secret, access_token, refresh_token, token_expiration)
+        self.auth = Auth(client_id, client_secret, access_token,
+                         refresh_token, token_expiration)
         self.request_handler = RequestHandler(self.auth, data_center)
 
-        if data_center == None or data_center == 'us':
+        if data_center is None or data_center is 'us':
             self.app_base_url = settings.APP_BASE_URL
         else:
             self.app_base_url = settings.APP_REGION_FORMAT % data_center
@@ -77,7 +79,7 @@ class Client(object):
         :param string status: A String to set the participation status of the event to
         :return: None
         """
-        data = { 'status': status }
+        data = {'status': status}
 
         self.request_handler.post('calendars/%s/events/%s/participation_status' % (calendar_id, event_uid), data=data)
 
@@ -92,7 +94,8 @@ class Client(object):
         """
         data = {'callback_url': callback_url}
         if calendar_ids:
-            data['filters'] = {'calendar_ids':calendar_ids}
+            data['filters'] = {'calendar_ids': calendar_ids}
+
         return self.request_handler.post('channels', data=data).json()['channel']
 
     def delete_all_events(self, calendar_ids=()):
@@ -100,9 +103,10 @@ class Client(object):
 
         :param tuple calendar_ids: List of calendar ids to delete events for. (Optional. Default empty tuple)
         """
-        params={'delete_all': True}
+        params = {'delete_all': True}
         if calendar_ids:
             params = {'calendar_ids[]': calendar_ids}
+
         self.request_handler.delete(endpoint='events', params=params)
 
     def delete_event(self, calendar_id, event_id):
@@ -148,7 +152,7 @@ class Client(object):
 
         return self.request_handler.post('permissions', data=body).json()['permissions_request']
 
-    def upsert_smart_invite(self, smart_invite_id, recipient, event, callback_url = None):
+    def upsert_smart_invite(self, smart_invite_id, recipient, event, callback_url=None):
         """ Creates or updates smart invite.
         :param string smart_invite_id - A String uniquely identifying the event for your
               application (note: this is NOT an ID generated
@@ -219,9 +223,10 @@ class Client(object):
                 'client_secret': self.auth.client_secret,
                 'code': code,
                 'redirect_uri': redirect_uri if redirect_uri else self.auth.redirect_uri,
-        })
+            })
         data = response.json()
-        token_expiration = (datetime.datetime.utcnow() + datetime.timedelta(seconds=data['expires_in']))
+        token_expiration = (datetime.datetime.utcnow() +
+                            datetime.timedelta(seconds=data['expires_in']))
         self.auth.update(
             token_expiration=token_expiration,
             access_token=data['access_token'],
@@ -276,18 +281,18 @@ class Client(object):
         return self.request_handler.get("resources").json()["resources"]
 
     def read_events(self,
-        calendar_ids=(),
-        from_date=None,
-        to_date=None,
-        last_modified=None,
-        tzid=settings.DEFAULT_TIMEZONE_ID,
-        only_managed=False,
-        include_managed=True,
-        include_deleted=False,
-        include_moved=False,
-        include_geo=False,
-        localized_times=False,
-        automatic_pagination=True):
+                    calendar_ids=(),
+                    from_date=None,
+                    to_date=None,
+                    last_modified=None,
+                    tzid=settings.DEFAULT_TIMEZONE_ID,
+                    only_managed=False,
+                    include_managed=True,
+                    include_deleted=False,
+                    include_moved=False,
+                    include_geo=False,
+                    localized_times=False,
+                    automatic_pagination=True):
         """Read events for linked account (optionally for the specified calendars).
 
         :param tuple calendar_ids: Tuple or list of calendar ids to pass to cronofy. (Optional).
@@ -307,7 +312,7 @@ class Client(object):
         """
         results = self.request_handler.get(endpoint='events', params={
             'tzid': tzid,
-            'calendar_ids[]':calendar_ids,
+            'calendar_ids[]': calendar_ids,
             'from': get_iso8601_string(from_date),
             'to': get_iso8601_string(to_date),
             'last_modified': get_iso8601_string(last_modified),
@@ -318,17 +323,18 @@ class Client(object):
             'include_geo': include_geo,
             'localized_times': localized_times,
         }).json()
+
         return Pages(self.request_handler, results, 'events', automatic_pagination)
 
     def read_free_busy(self,
-        calendar_ids=(),
-        from_date=None,
-        to_date=None,
-        last_modified=None,
-        tzid=settings.DEFAULT_TIMEZONE_ID,
-        include_managed=True,
-        localized_times=False,
-        automatic_pagination=True):
+                       calendar_ids=(),
+                       from_date=None,
+                       to_date=None,
+                       last_modified=None,
+                       tzid=settings.DEFAULT_TIMEZONE_ID,
+                       include_managed=True,
+                       localized_times=False,
+                       automatic_pagination=True):
         """Read free/busy blocks for linked account (optionally for the specified calendars).
 
         :param tuple calendar_ids: Tuple or list of calendar ids to pass to cronofy. (Optional).
@@ -343,15 +349,16 @@ class Client(object):
         """
         results = self.request_handler.get(endpoint='free_busy', params={
             'tzid': tzid,
-            'calendar_ids[]':calendar_ids,
+            'calendar_ids[]': calendar_ids,
             'from': get_iso8601_string(from_date),
             'to': get_iso8601_string(to_date),
             'include_managed': include_managed,
             'localized_times': localized_times,
         }).json()
+
         return Pages(self.request_handler, results, 'free_busy', automatic_pagination)
 
-    def availability(self, participants = (), required_duration = (), available_periods = ()):
+    def availability(self, participants=(), required_duration=(), available_periods=()):
         """ Performs an availability query.
         :param list participants: An Array of participant groups or a dict for a single participant group.
         :param dict or int required_duration - An Integer representing the minimum number of minutes of availability required.
@@ -360,8 +367,10 @@ class Client(object):
         :rtype: ``list``
         """
         options = {}
-        options['participants'] = self.map_availability_participants(participants)
-        options['required_duration'] = self.map_availability_required_duration(required_duration)
+        options['participants'] = self.map_availability_participants(
+            participants)
+        options['required_duration'] = self.map_availability_required_duration(
+            required_duration)
 
         self.translate_available_periods(available_periods)
         options['available_periods'] = available_periods
@@ -384,7 +393,8 @@ class Client(object):
             }
         )
         data = response.json()
-        token_expiration = (datetime.datetime.utcnow() + datetime.timedelta(seconds=data['expires_in']))
+        token_expiration = (datetime.datetime.utcnow() +
+                            datetime.timedelta(seconds=data['expires_in']))
         self.auth.update(
             token_expiration=token_expiration,
             access_token=data['access_token'],
@@ -398,7 +408,7 @@ class Client(object):
 
     def revoke_authorization(self):
         """Revokes Oauth authorization."""
-        response = self.request_handler.post(
+        self.request_handler.post(
             url='%s/oauth/token/revoke' % settings.API_BASE_URL,
             data={
                 'client_id': self.auth.client_id,
@@ -420,9 +430,10 @@ class Client(object):
         """
         event['start'] = get_iso8601_string(event['start'])
         event['end'] = get_iso8601_string(event['end'])
-        self.request_handler.post(endpoint='calendars/%s/events' % calendar_id, data=event)
+        self.request_handler.post(
+            endpoint='calendars/%s/events' % calendar_id, data=event)
 
-    def authorize_with_service_account(self, email, scope, callback_url, state = None):
+    def authorize_with_service_account(self, email, scope, callback_url, state=None):
         """ Attempts to authorize the email with impersonation from a service account
 
         :param string email: the email address to impersonate
@@ -436,13 +447,14 @@ class Client(object):
             'callback_url': callback_url
         }
 
-        if state != None:
+        if state is not None:
             params['state'] = state
 
-        self.request_handler.post(endpoint="service_account_authorizations", data=params)
+        self.request_handler.post(
+            endpoint="service_account_authorizations", data=params)
         None
 
-    def real_time_scheduling(self, availability, oauth, event, target_calendars = ()):
+    def real_time_scheduling(self, availability, oauth, event, target_calendars=()):
         """Generates an real time scheduling link to start the OAuth process with
         an event to be automatically upserted
 
@@ -494,6 +506,7 @@ class Client(object):
         """
         if not scope:
             scope = ' '.join(settings.DEFAULT_OAUTH_SCOPE)
+
         self.auth.update(redirect_uri=redirect_uri)
 
         url = '%s/oauth/authorize' % self.app_base_url
@@ -555,7 +568,7 @@ class Client(object):
             mapped_participants = list(map(lambda member: self.map_availability_member(member), participants.get('members', ())))
             participants['members'] = mapped_participants
 
-            if participants.get('required', None) == None:
+            if participants.get('required', None) is None:
                 participants['required'] = 'all'
 
             return participants
@@ -568,7 +581,7 @@ class Client(object):
         member_type = type(member)
 
         if member_type in (type(''), type(u'')):
-            return { 'sub': member }
+            return {'sub': member}
         elif member_type is dict:
             if member.get('available_periods', None):
                 self.translate_available_periods(member['available_periods'])
@@ -577,6 +590,6 @@ class Client(object):
 
     def map_availability_required_duration(self, required_duration):
         if type(required_duration) is int:
-            return { 'minutes': required_duration }
+            return {'minutes': required_duration}
         else:
             return required_duration

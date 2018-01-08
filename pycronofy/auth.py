@@ -1,6 +1,3 @@
-import datetime
-from pycronofy import settings
-
 class Auth(object):
     """
     Hold OAuth/Access Data, convenience methods.
@@ -47,4 +44,3 @@ class Auth(object):
         """
         for kw in kwargs:
             setattr(self, kw, kwargs[kw])
-

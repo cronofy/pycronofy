@@ -10,6 +10,7 @@ class PyCronofyDateTimeError(Exception):
         self.argument = argument
         self.message = message
 
+
 class PyCronofyRequestError(Exception):
     """Wraps requests.exceptions.HTTPError for convenience and give a little more info in the message."""
 
@@ -40,6 +41,7 @@ class PyCronofyRequestError(Exception):
         self.request = request
         self.response = response
 
+
 class PyCronofyValidationError(Exception):
     """Exception class for validation errors with client.Client methods."""
 
@@ -55,6 +57,7 @@ class PyCronofyValidationError(Exception):
         self.method = method
         self.fields = fields
         self.values = values
+
 
 class PyCronofyPartialSuccessError(Exception):
     def __init__(self, message, batch_response):
