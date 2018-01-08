@@ -56,7 +56,7 @@ class BatchResponse(object):
         self.entries = entries
 
     def errors(self):
-        return filter(lambda entry: (entry.status() % 100) != 2, self.entries)
+        return list(filter(lambda entry: (entry.status() % 100) != 2, self.entries))
 
     def has_errors(self):
         return len(self.errors()) > 0
