@@ -429,6 +429,57 @@ def test_upsert_event(client):
     responses.add(**TEST_UPSERT_EVENT_ARGS)
     response = client.upsert_event('1', TEST_EVENT)
 
+
+@responses.activate
+def test_upsert_smart_invtes(client):
+    url = "http://www.example.com"
+    smart_invite_id = "qTtZdczOccgaPncGJaCiLg"
+    recipient = {
+        'email': "example@example.com"
+    }
+
+    def request_callback(request):
+        payload = json.loads(request.body)
+        assert payload['smart_invite_id'] == smart_invite_id
+        assert payload['recipient'] == recipient
+        assert payload['callback_url'] == url
+        assert payload['event'] == TEST_EVENT
+
+        response = {
+            "recipient": {
+                "email": "cronofy@example.com",
+                "status": "pending"
+            },
+            "smart_invite_id": "your-unique-identifier-for-invite",
+            "callback_url": "https://example.yourapp.com/cronofy/smart_invite/notifications",
+            "event": {
+                "summary": "Board meeting",
+                "description": "Discuss plans for the next quarter.",
+                "start": "2017-10-05T09:30:00Z",
+                "end": "2017-10-05T10:00:00Z",
+                "tzid": "Europe/London",
+                "location": {
+                    "description": "Board room"
+                }
+            },
+            "attachments": {
+                "icalendar": "BEGIN:VCALENDAR\nVERSION:2.0..."
+            }
+        }
+
+        return (202, {}, json.dumps(response))
+
+    responses.add_callback(
+        responses.POST,
+        '%s/v1/smart_invites' % settings.API_BASE_URL,
+        callback=request_callback,
+        content_type='application/json',
+    )
+
+    result = client.upsert_smart_invite(smart_invite_id, recipient, TEST_EVENT, callback_url=url)
+
+    assert result['attachments']['icalendar'] == "BEGIN:VCALENDAR\nVERSION:2.0..."
+
 @responses.activate
 def test_user_auth_link(client):
     """Test user auth link returns a properly formatted user auth url.
