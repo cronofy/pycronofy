@@ -1,5 +1,5 @@
-import collections
 from pycronofy.datetime_utils import get_iso8601_string
+
 
 class BatchBuilder(object):
     def __init__(self):
@@ -15,11 +15,13 @@ class BatchBuilder(object):
         return self
 
     def delete_event(self, calendar_id, event_id):
-        self.delete("/v1/calendars/%s/events" % calendar_id, data = { 'event_id': event_id })
+        self.delete("/v1/calendars/%s/events" %
+                    calendar_id, data={'event_id': event_id})
         return self
 
     def delete_external_event(self, calendar_id, event_uid):
-        self.delete("/v1/calendars/%s/events" % calendar_id, data = { 'event_uid': event_uid })
+        self.delete("/v1/calendars/%s/events" %
+                    calendar_id, data={'event_uid': event_uid})
         return self
 
     def add_entry(self, method, relative_url, data):
@@ -29,10 +31,11 @@ class BatchBuilder(object):
         return list(map(lambda entry: entry.to_dict(), self.entries))
 
     def delete(self, relative_url, data):
-        self.add_entry(method = "DELETE", relative_url = relative_url, data = data)
+        self.add_entry(method="DELETE", relative_url=relative_url, data=data)
 
     def post(self, relative_url, data):
-        self.add_entry(method = "POST", relative_url = relative_url, data = data)
+        self.add_entry(method="POST", relative_url=relative_url, data=data)
+
 
 class BatchEntry(object):
     def __init__(self, request, response):
@@ -42,6 +45,7 @@ class BatchEntry(object):
     def status(self):
         return self.response['status']
 
+
 class BatchEntryRequest(object):
     def __init__(self, method, relative_url, data):
         self.method = method
@@ -49,7 +53,8 @@ class BatchEntryRequest(object):
         self.data = data
 
     def to_dict(self):
-        return {'method': self.method, 'relative_url': self.relative_url, 'data': self.data }
+        return {'method': self.method, 'relative_url': self.relative_url, 'data': self.data}
+
 
 class BatchResponse(object):
     def __init__(self, entries):

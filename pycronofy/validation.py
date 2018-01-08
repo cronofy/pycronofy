@@ -34,7 +34,7 @@ METHOD_RULES = {
     },
     'get_authorization_from_code': {
         'args': ('code', 'redirect_uri'),
-        'auth': ('client_id', 'client_secret'), 
+        'auth': ('client_id', 'client_secret'),
         'required': ('code',),
         'values': (
             ('redirect_uri', {'object': 'auth', 'key': 'redirect_uri'}),
@@ -53,14 +53,14 @@ METHOD_RULES = {
         'auth': ('access_token',),
     },
     'read_events': {
-        'args': ('calendar_ids', 'from_date', 'to_date', 'last_modified', 'tzid', 'only_managed', 
-            'include_managed', 'include_deleted', 'include_moved', 'localized_times', 'automatic_pagination'),
+        'args': ('calendar_ids', 'from_date', 'to_date', 'last_modified', 'tzid', 'only_managed',
+                 'include_managed', 'include_deleted', 'include_moved', 'localized_times', 'automatic_pagination'),
         'auth': ('access_token',),
         'datetime': ('from_date', 'to_date', 'last_modified'),
     },
     'read_free_busy': {
-        'args': ('calendar_ids', 'from_date', 'to_date', 'last_modified', 'tzid', 
-            'include_managed', 'localized_times', 'automatic_pagination'),
+        'args': ('calendar_ids', 'from_date', 'to_date', 'last_modified', 'tzid',
+                 'include_managed', 'localized_times', 'automatic_pagination'),
         'auth': ('access_token',),
         'datetime': ('from_date', 'to_date', 'last_modified'),
     },
@@ -94,6 +94,7 @@ METHOD_RULES = {
     },
 }
 
+
 def check_exists_in_object(method, obj, required_fields):
     """Checks if required fields have a value in the object instance.
     Throws an exception with the missing fields.
@@ -107,9 +108,10 @@ def check_exists_in_object(method, obj, required_fields):
             missing.append(field)
     if missing:
         raise PyCronofyValidationError('Method: %s. Missing auth field(s): %s' % (method, missing),
-            method,
-            missing
-        )
+                                       method,
+                                       missing
+                                       )
+
 
 def check_datetime(method, dictionary, fields, label=None):
     """Checks if the specified fields are formatted correctly if they have a value.
@@ -129,11 +131,13 @@ def check_datetime(method, dictionary, fields, label=None):
     if improperly_formatted:
         error_label = ' for "%s"' % label if label else ''
         raise PyCronofyValidationError(
-            'Method: %s. Improperly formatted datetime/date field(s)%s: %s\n%s' % (method, error_label, improperly_formatted, values), 
+            'Method: %s. Improperly formatted datetime/date field(s)%s: %s\n%s' % (
+                method, error_label, improperly_formatted, values),
             method,
             improperly_formatted,
             values
         )
+
 
 def check_exists_in_dictionary(method, dictionary, required_fields, label=None):
     """Checks if required fields have a value in the object instance.
@@ -149,10 +153,11 @@ def check_exists_in_dictionary(method, dictionary, required_fields, label=None):
             missing.append(field)
     if missing:
         error_label = ' for "%s"' % label if label else ''
-        raise PyCronofyValidationError('Method: %s. Missing required field(s)%s: %s' % (method, error_label, missing), 
-            method,
-            missing
-        )
+        raise PyCronofyValidationError('Method: %s. Missing required field(s)%s: %s' % (method, error_label, missing),
+                                       method,
+                                       missing
+                                       )
+
 
 def validate(method, auth, *args, **kwargs):
     """Validate a method based on the METHOD_RULES above.
@@ -164,8 +169,9 @@ def validate(method, auth, *args, **kwargs):
     :param *args: Positional arguments for method.
     :param **kwargs: Keyword arguments for method.
     """
-    if not method in METHOD_RULES:
+    if method not in METHOD_RULES:
         raise PyCronofyValidationError('Method "%s" not found.' % method, method)
+
     m = METHOD_RULES[method]
     arguments = {}
     number_of_args = len(args)
