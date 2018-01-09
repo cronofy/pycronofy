@@ -18,7 +18,7 @@ class RequestHandler(object):
         else:
             self.base_url = settings.API_REGION_FORMAT % data_center
 
-    def get(self, endpoint='', url='', params=None):
+    def get(self, endpoint='', url='', params=None, use_api_key=False):
         """Perform a get for a json API endpoint.
 
         :param string endpoint: Target endpoint. (Optional).
@@ -27,7 +27,7 @@ class RequestHandler(object):
         :return: Response json.
         :rtype: ``dict``
         """
-        return self._request('get', endpoint, url, params=params)
+        return self._request('get', endpoint, url, params=params, use_api_key=use_api_key)
 
     def delete(self, endpoint='', url='', params=None, data=None):
         """Perform a get for a json API endpoint.
