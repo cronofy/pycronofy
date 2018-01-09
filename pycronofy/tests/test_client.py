@@ -1,7 +1,7 @@
 import datetime
+import json
 import pytest
 import responses
-import json
 from pycronofy import Client
 from pycronofy import settings
 from pycronofy.tests import common_data
@@ -475,6 +475,50 @@ def test_upsert_smart_invtes(client):
     )
 
     result = client.upsert_smart_invite(smart_invite_id, recipient, TEST_EVENT, callback_url=url)
+
+    assert result['attachments']['icalendar'] == "BEGIN:VCALENDAR\nVERSION:2.0..."
+
+
+@responses.activate
+def test_get_smart_invite(client):
+    smart_invite_id = "qTtZdczOccgaPncGJaCiLg"
+    recipient = "example@example.com"
+
+    def request_callback(request):
+        assert request.url == 'https://api.cronofy.com/v1/smart_invites?smart_invite_id=qTtZdczOccgaPncGJaCiLg&recipient_email=example%40example.com'
+
+        response = {
+            "recipient": {
+                "email": "cronofy@example.com",
+                "status": "pending"
+            },
+            "smart_invite_id": "your-unique-identifier-for-invite",
+            "callback_url": "https://example.yourapp.com/cronofy/smart_invite/notifications",
+            "event": {
+                "summary": "Board meeting",
+                "description": "Discuss plans for the next quarter.",
+                "start": "2017-10-05T09:30:00Z",
+                "end": "2017-10-05T10:00:00Z",
+                "tzid": "Europe/London",
+                "location": {
+                    "description": "Board room"
+                }
+            },
+            "attachments": {
+                "icalendar": "BEGIN:VCALENDAR\nVERSION:2.0..."
+            }
+        }
+
+        return (202, {}, json.dumps(response))
+
+    responses.add_callback(
+        responses.GET,
+        '%s/v1/smart_invites' % settings.API_BASE_URL,
+        callback=request_callback,
+        content_type='application/json',
+    )
+
+    result = client.get_smart_invite(smart_invite_id, recipient)
 
     assert result['attachments']['icalendar'] == "BEGIN:VCALENDAR\nVERSION:2.0..."
 
