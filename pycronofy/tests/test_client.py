@@ -429,6 +429,47 @@ def test_upsert_event(client):
 
 
 @responses.activate
+def test_upsert_event_with_tzid(client):
+    """Test Client.upsert_event().
+
+    :param Client client: Client instance with test data.
+    """
+
+    def request_callback(request):
+        payload = json.loads(request.body)
+        assert payload == test_event
+
+        return (202, {}, None)
+
+    test_event = {
+        'event_id': 'test-1',
+        'summary': 'Test Event',
+        'description': 'Talk about how awesome cats are.',
+        'start': {
+            'time': '2014-10-01T08:00:00Z',
+            'tzid': 'Europe/London'
+        },
+        'end': {
+            'time': '2014-10-01T09:00:00Z',
+            'tzid': 'Europe/London'
+        },
+        'location': {
+            'description': 'Location!',
+        }
+    }
+
+    responses.add_callback(
+        responses.POST,
+        '%s/%s/calendars/1/events' % (settings.API_BASE_URL, settings.API_VERSION),
+        callback=request_callback,
+        content_type='application/json',
+    )
+
+    response = client.upsert_event('1', test_event)
+    assert response is None
+
+
+@responses.activate
 def test_upsert_smart_invtes(client):
     url = "http://www.example.com"
     smart_invite_id = "qTtZdczOccgaPncGJaCiLg"
