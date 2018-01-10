@@ -20,13 +20,23 @@ def test_date_nested_in_dict():
 
 
 def test_iso8601_string_in_dict():
-    """Test format_event_time returns an ISO8601 formatted date string in a dict when passed a datetime.date object"""
+    """Test format_event_time returns an ISO8601 formatted date string in a dict when passed a iso8601 string"""
     date = '2016-01-15'
     params = {
         'time': date,
         'tzid': 'Etc/UTC',
     }
     assert format_event_time(params) == {'time': '2016-01-15', 'tzid': 'Etc/UTC'}
+
+
+def test_tz_aware_datetime_in_dict():
+    """Test format_event_time returns an ISO8601 formatted date string in a dict when passed a datetimee object"""
+    date = datetime.datetime(2016, 1, 15, 14, 20, 15, tzinfo=pytz.timezone('EST'))
+    params = {
+        'time': date,
+        'tzid': 'Etc/UTC',
+    }
+    assert format_event_time(params) == {'time': '2016-01-15T19:20:15Z', 'tzid': 'Etc/UTC'}
 
 
 def test_datetime():
