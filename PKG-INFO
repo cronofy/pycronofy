@@ -1,8 +1,8 @@
 Metadata-Version: 1.0
 Name: pycronofy
-Version: 1.0.1
+Version: 1.1.0
 Summary: Python wrapper for Cronofy
-Home-page: https://github.com/venuebook/pycronofy
+Home-page: https://github.com/cronofy/pycronofy
 Author: VenueBook
 Author-email: dev@venuebook.com
 License: Copyright (c) 2016-2017 VenueBook <dev@venuebook.com>
