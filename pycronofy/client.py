@@ -6,7 +6,7 @@ from pycronofy import settings
 from pycronofy.auth import Auth
 from pycronofy.batch import BatchEntry
 from pycronofy.batch import BatchResponse
-from pycronofy.datetime_utils import get_iso8601_string
+from pycronofy.datetime_utils import format_event_time
 from pycronofy.exceptions import PyCronofyPartialSuccessError
 from pycronofy.pagination import Pages
 from pycronofy.request_handler import RequestHandler
@@ -193,8 +193,8 @@ class Client(object):
                              Accepted values are "transparent" and "opaque".
              :color        - The color of the event (optional).
         """
-        event['start'] = get_iso8601_string(event['start'])
-        event['end'] = get_iso8601_string(event['end'])
+        event['start'] = format_event_time(event['start'])
+        event['end'] = format_event_time(event['end'])
 
         body = {
             'smart_invite_id': smart_invite_id,
@@ -249,7 +249,7 @@ class Client(object):
         return {
             'access_token': self.auth.access_token,
             'refresh_token': self.auth.refresh_token,
-            'token_expiration': get_iso8601_string(self.auth.token_expiration),
+            'token_expiration': format_event_time(self.auth.token_expiration),
         }
 
     def is_authorization_expired(self):
@@ -327,9 +327,9 @@ class Client(object):
         results = self.request_handler.get(endpoint='events', params={
             'tzid': tzid,
             'calendar_ids[]': calendar_ids,
-            'from': get_iso8601_string(from_date),
-            'to': get_iso8601_string(to_date),
-            'last_modified': get_iso8601_string(last_modified),
+            'from': format_event_time(from_date),
+            'to': format_event_time(to_date),
+            'last_modified': format_event_time(last_modified),
             'only_managed': only_managed,
             'include_managed': include_managed,
             'include_deleted': include_deleted,
@@ -364,8 +364,8 @@ class Client(object):
         results = self.request_handler.get(endpoint='free_busy', params={
             'tzid': tzid,
             'calendar_ids[]': calendar_ids,
-            'from': get_iso8601_string(from_date),
-            'to': get_iso8601_string(to_date),
+            'from': format_event_time(from_date),
+            'to': format_event_time(to_date),
             'include_managed': include_managed,
             'localized_times': localized_times,
         }).json()
@@ -417,7 +417,7 @@ class Client(object):
         return {
             'access_token': self.auth.access_token,
             'refresh_token': self.auth.refresh_token,
-            'token_expiration': get_iso8601_string(self.auth.token_expiration),
+            'token_expiration': format_event_time(self.auth.token_expiration),
         }
 
     def revoke_authorization(self):
@@ -442,8 +442,8 @@ class Client(object):
         :param string calendar_id: ID of calendar to insert/update event into.
         :param dict event: Dictionary of event data to send to cronofy.
         """
-        event['start'] = get_iso8601_string(event['start'])
-        event['end'] = get_iso8601_string(event['end'])
+        event['start'] = format_event_time(event['start'])
+        event['end'] = format_event_time(event['end'])
         self.request_handler.post(
             endpoint='calendars/%s/events' % calendar_id, data=event)
 
@@ -566,7 +566,7 @@ class Client(object):
         for params in periods:
             for tp in ['start', 'end']:
                 if params[tp]:
-                    params[tp] = get_iso8601_string(params[tp])
+                    params[tp] = format_event_time(params[tp])
 
     def map_availability_participants(self, participants):
         if type(participants) is dict:

@@ -4,7 +4,7 @@ class PyCronofyDateTimeError(Exception):
     def __init__(self, message, argument):
         """
         :param string message: Exception message.
-        :param object argument: Value passed into get_iso8601_string.
+        :param object argument: Value passed into format_event_time.
         """
         super(PyCronofyDateTimeError, self).__init__(message)
         self.argument = argument

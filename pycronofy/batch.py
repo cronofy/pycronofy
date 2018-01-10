@@ -1,4 +1,4 @@
-from pycronofy.datetime_utils import get_iso8601_string
+from pycronofy.datetime_utils import format_event_time
 
 
 class BatchBuilder(object):
@@ -8,8 +8,8 @@ class BatchBuilder(object):
     def upsert_event(self, calendar_id, event):
         data = event.copy()
 
-        event['start'] = get_iso8601_string(event['start'])
-        event['end'] = get_iso8601_string(event['end'])
+        event['start'] = format_event_time(event['start'])
+        event['end'] = format_event_time(event['end'])
 
         self.post("/v1/calendars/%s/events" % calendar_id, data)
         return self
