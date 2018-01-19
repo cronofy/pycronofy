@@ -1,4 +1,5 @@
 CURRENT_VERSION:=$(shell grep "^Version: " PKG-INFO | cut -d" " -f2)
+SETUP_VERSION:=$(shell grep "version='" setup.py | cut -d"'" -f2)
 
 all: test
 
@@ -13,6 +14,11 @@ test: clean install_dependencies
 	python -m flake8
 
 release: test
+ifeq ($(CURRENT_VERSION),$(SETUP_VERSION))
 	git tag $(CURRENT_VERSION)
 	git push --tags
 	python setup.py sdist upload --repository pypi
+else
+	@echo "PKG-INFO and setup.py disagree on Version"
+	@exit 1
+endif

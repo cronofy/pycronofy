@@ -2,7 +2,7 @@
 from distutils.core import setup
 setup(
     name='PyCronofy',
-    version='1.1.1',
+    version='1.1.2',
     description='Python library for Cronofy',
     author='VenueBook',
     author_email='dev@venuebook.com',
