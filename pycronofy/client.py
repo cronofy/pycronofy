@@ -252,6 +252,36 @@ class Client(object):
             'token_expiration': format_event_time(self.auth.token_expiration),
         }
 
+    def application_calendar(self, application_calendar_id):
+        """Creates and Retrieves authorization for an application calendar
+
+        :param string application_calendar_id: The Id for this application calendar
+        :return: Dictionary containing auth tokens, expiration info, and response status.
+        :rtype: ``dict``
+        """
+        response = self.request_handler.post(
+            url='%s/v1/application_calendar' % settings.API_BASE_URL,
+            data={
+                'client_id': self.auth.client_id,
+                'client_secret': self.auth.client_secret,
+                'application_calendar_id': application_calendar_id,
+            })
+        data = response.json()
+        token_expiration = (datetime.datetime.utcnow() +
+                            datetime.timedelta(seconds=data['expires_in']))
+        self.auth.update(
+            token_expiration=token_expiration,
+            access_token=data['access_token'],
+            refresh_token=data['refresh_token'],
+        )
+        return {
+            'access_token': self.auth.access_token,
+            'refresh_token': self.auth.refresh_token,
+            'token_expiration': format_event_time(self.auth.token_expiration),
+            'sub': data.get('sub'),
+            'application_calendar_id': data.get('application_calendar_id')
+        }
+
     def is_authorization_expired(self):
         """Checks if the authorization token (access_token) has expired.
 
