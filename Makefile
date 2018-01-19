@@ -1,3 +1,5 @@
+CURRENT_VERSION:=$(shell grep "^Version: " PKG-INFO | cut -d" " -f2)
+
 all: test
 
 clean:
@@ -11,4 +13,6 @@ test: clean install_dependencies
 	python -m flake8
 
 release: test
+	git tag $(CURRENT_VERSION)
+	git push --tags
 	python setup.py sdist upload --repository pypi
