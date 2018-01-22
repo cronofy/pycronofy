@@ -15,9 +15,9 @@ test: clean install_dependencies
 
 release: test
 ifeq ($(CURRENT_VERSION),$(SETUP_VERSION))
+	python setup.py sdist upload --repository pypi
 	git tag $(CURRENT_VERSION)
 	git push --tags
-	python setup.py sdist upload --repository pypi
 else
 	@echo "PKG-INFO and setup.py disagree on Version"
 	@exit 1
