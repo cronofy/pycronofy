@@ -28,5 +28,6 @@ setup(
     author='VenueBook',
     author_email='dev@venuebook.com',
     url='https://github.com/cronofy/pycronofy',
-    packages=['pycronofy']
+    packages=['pycronofy'],
+    install_requires=["future"]
 )
