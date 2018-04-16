@@ -82,7 +82,11 @@ cronofy.revoke_authorization()
 # Getting account info
 
 ```python
+# For account details
 cronofy.account()
+
+# For userinfo 
+cronofy.userinfo()
 ```
 
 # Listing profiles
@@ -95,7 +99,8 @@ for profile in cronofy.list_profiles():
 # Listing calendars
 
 ```python
-cronofy.list_calendars()
+for calendar in cronofy.list_calendars():
+    print(calendar)
 ```
 
 # Reading events
@@ -161,6 +166,8 @@ all_events = cronofy.read_events(calendar_ids=(YOUR_CAL_ID,),
 This method is essentially the same as reading events, but will only return free busy information.
 
 ```python
+from_date = (datetime.datetime.utcnow() - datetime.timedelta(days=2))
+to_date = datetime.datetime.utcnow()
 free_busy_blocks = cronofy.read_free_busy(calendar_ids=(YOUR_CAL_ID,),
     from_date=from_date,
     to_date=to_date
