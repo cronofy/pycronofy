@@ -1,4 +1,4 @@
-## pycronofy ##
+## pycronofy
 
 [![Build Status](https://travis-ci.org/cronofy/pycronofy.svg?branch=master)](https://travis-ci.org/cronofy/pycronofy)
 
@@ -8,12 +8,11 @@ Inspired by [Cronofy-Ruby](https://github.com/cronofy/cronofy-ruby)
 
 [Developer API](http://www.cronofy.com/developers/api)
 
-**Installation:**
+# Installation
 
 (unless performing a system wide install, it's recommended to install inside of a virtualenv)
 
 ```bash
-
 # Install via pip:
 pip install pycronofy
 
@@ -22,33 +21,24 @@ pip install -r requirements.txt # Install core & dependencies for tests
 python setup.py install
 ```
 
-**Usage:**
+---
+
+# Authorization
+
+OAuth tokens can be obtained for an application.
 
 ```python
-import datetime
-import uuid
 import pycronofy
 
-# Example timezone id
-timezone_id = 'US/Eastern'
-
-#######################
-# Authorization:
-#######################
-
-### With a personal access token
-cronofy = pycronofy.Client(access_token=YOUR_TOKEN) # Using a personal token for testing.
-
-### With OAuth
 # Initial authorization
 cronofy = pycronofy.Client(client_id=YOUR_CLIENT_ID, client_secret=YOUR_CLIENT_SECRET)
 
 url = cronofy.user_auth_link('http://yourwebsite.com')
 print('Go to this url in your browser, and paste the code below')
-print(url)
+
 code = input('Paste Code Here: ') # raw_input() for python 2.
 auth = cronofy.get_authorization_from_code(code)
-print(auth)
+
 # get_authorization_from_code updates the state of the cronofy client. It also returns
 # the authorization tokens (and expiration) in case you need to store them.
 # If that is the case, you will want to initiate the client as follows:
@@ -59,40 +49,67 @@ cronofy = pycronofy.Client(
     refresh_token=auth['refresh_token'],
     token_expiration=auth['token_expiration']
 )
+```
 
-# Check if authorization is expired:
+Or alternatively with a personal access token.
+
+```python
+cronofy = pycronofy.Client(access_token=YOUR_TOKEN) # Using a personal token for testing.
+```
+
+Expiry of tokens can be verified with the is_authorization_expired method.
+
+```python
 cronofy.is_authorization_expired()
+```
 
-# Refresh
-# Refresh requires the client id and client secret be set.
+## Refreshing tokens
+
+OAuth tokens can be refreshed using the refresh_authorization method.
+
+```python
 auth = cronofy.refresh_authorization()
-print(auth)
+```
 
-# Revoke
+## Revoking tokens
+
+Tokens can be revoked using the revoke_authorization method.
+
+```python
 cronofy.revoke_authorization()
+```
 
-#######################
 # Getting account info
-#######################
 
-print(cronofy.account())
+```python
+# For account details
+cronofy.account()
 
-#######################
-# Getting profiles
-#######################
+# For userinfo 
+cronofy.userinfo()
+```
 
+# Listing profiles
+
+```python
 for profile in cronofy.list_profiles():
     print(profile)
+```
 
-#######################
-# Getting calendars
-#######################
+# Listing calendars
 
-print(cronofy.list_calendars())
+```python
+for calendar in cronofy.list_calendars():
+    print(calendar)
+```
 
-#######################
-# Getting events
-#######################
+# Reading events
+
+```python
+import datetime
+
+# Example timezone id
+timezone_id = 'US/Eastern'
 
 # Dates/Datetimes must be in UTC
 # For from_date, to_date, start, end, you can pass in a datetime object
@@ -142,13 +159,15 @@ all_events = cronofy.read_events(calendar_ids=(YOUR_CAL_ID,),
     to_date=to_date,
     tzid=timezone_id
 ).all()
+```
 
-#######################
 # Free/Busy blocks
-#######################
 
-# Essentially the same as reading events.
+This method is essentially the same as reading events, but will only return free busy information.
 
+```python
+from_date = (datetime.datetime.utcnow() - datetime.timedelta(days=2))
+to_date = datetime.datetime.utcnow()
 free_busy_blocks = cronofy.read_free_busy(calendar_ids=(YOUR_CAL_ID,),
     from_date=from_date,
     to_date=to_date
@@ -156,17 +175,25 @@ free_busy_blocks = cronofy.read_free_busy(calendar_ids=(YOUR_CAL_ID,),
 
 for block in free_busy_blocks:
     print(block)
+```
 
-#######################
-# Creating a test event
-#######################
+# Creating events
 
-# Create a test event with local timezone.
-# (Note datetime objects or datetime strings must be UTC)
-# You need to supply a uuid, most likely from your system.
-test_event_id = 'example-%s' % uuid.uuid4(),
+Create a event with local timezone.
+(Note datetime objects or datetime strings must be UTC)
+You need to supply a unique event id which you can then use to retreive the event with.
+
+```python
+import datetime
+import uuid
+
+# Example timezone id
+timezone_id = 'US/Eastern'
+
+event_id = 'example-%s' % uuid.uuid4(),
+
 event = {
-    'event_id': test_event_id,
+    'event_id': event_id,
     'summary': 'Test Event', # The event title
     'description': 'Discuss proactive strategies for a reactive world.',
     'start': datetime.datetime.utcnow(),
@@ -176,42 +203,50 @@ event = {
         'description': 'My Desk!',
     },
 }
+
 cronofy.upsert_event(calendar_id=cal['calendar_id'], event=event)
+```
 
-#######################
 # Deletion
-#######################
 
+Events can be deleted in a number of ways
+
+```python
+# Delete using known event id
 cronofy.delete_event(calendar_id=cal['calendar_id'], event_id=test_event_id)
 
-# Deletes all managed events (events inserted via Cronofy) for all user calendars.
+# Delete all managed events (events inserted via Cronofy) for all user calendars.
 cronofy.delete_all_events()
 
 # Deletes all managed events for the specified user calendars.
 cronofy.delete_all_events(calendar_ids=(CAL_ID,))
+```
 
-#######################
 # Notification channels
-#######################
 
-# Note this will only work with Oauth, not with a personal access token.
+Notification channels are used to receive push notifications informating your application of changes to calendars or profiles. This method requires an application and OAuth tokens, and will not work with a personal access token.
 
+```python
 channel = cronofy.create_notification_channel('http://example.com',
     calendar_ids=(cal['calendar_id'],)
 )
-print(channel)
-print(cronofy.list_notification_channels())
+
+# list channels
+cronofy.list_notification_channels()
+
 cronofy.close_notification_channel(channel['channel_id'])
+```
 
-#######################
+---
+
 # Validation
-#######################
 
-# You can validate any pycronofy client call for:
-# Authentication, required arguments, datetime/date string format.
-# A PyCronofyValidationError will be thrown if there is an error.
-# Some examples:
+You can validate any pycronofy client call for:
+Authentication, required arguments, datetime/date string format.
+A PyCronofyValidationError will be thrown if there is an error.
+Some examples:
 
+```python
 try:
     cronofy.validate('create_notification_channel', 'http://example.com',
         calendar_ids=(cal['calendar_id'],)
@@ -220,14 +255,14 @@ except pycronofy.exceptions.PyCronofyValidationError as e:
     print(e.message)
     print(e.fields)
     print(e.method)
+```
 
-#######################
 # Debugging
-#######################
 
-# All requests will call response.raise_on_status if the response is not OK or ACCEPTED.
-# You can catch the exception and access
+All requests will call response.raise_on_status if the response is not OK or ACCEPTED.
+You can catch the exception and access the details.
 
+```python
 try:
     cronofy.upsert(event(calendar_id='ABC', event=malformed_event))
 except pycronofy.exceptions.PyCronofyRequestError as e:
@@ -253,19 +288,19 @@ def on_request(response, *args, **kwargs):
 pycronofy.set_request_hook(on_request)
 ```
 
-**Tests:**
+# Running the Unit Tests
 
-```
+```bash
 py.test pycronofy --cov=pycronofy
 ```
 
-**Dependencies:**
+# Dependencies
 
 Core library depends on ``requests``.
 
 Tests depend on ``pytest, pytest-cov, responses``.
 
-**Notes:**
+# Notes
 
 In the event of an insecure platform warning:
 
