@@ -476,6 +476,9 @@ def test_upsert_smart_invtes(client):
     recipient = {
         'email': "example@example.com"
     }
+    organizer = {
+        'name': "Smart invite application"
+    }
 
     def request_callback(request):
         payload = json.loads(request.body)
@@ -515,7 +518,7 @@ def test_upsert_smart_invtes(client):
         content_type='application/json',
     )
 
-    result = client.upsert_smart_invite(smart_invite_id, recipient, TEST_EVENT, callback_url=url)
+    result = client.upsert_smart_invite(smart_invite_id, recipient, TEST_EVENT, callback_url=url, organizer=organizer)
 
     assert result['attachments']['icalendar'] == "BEGIN:VCALENDAR\nVERSION:2.0..."
 
