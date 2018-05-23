@@ -152,7 +152,7 @@ class Client(object):
 
         return self.request_handler.post('permissions', data=body).json()['permissions_request']
 
-    def upsert_smart_invite(self, smart_invite_id, recipient, event, callback_url=None):
+    def upsert_smart_invite(self, smart_invite_id, recipient, event, callback_url=None, organizer=None):
         """ Creates or updates smart invite.
         :param string smart_invite_id - A String uniquely identifying the event for your
               application (note: this is NOT an ID generated
@@ -192,6 +192,8 @@ class Client(object):
              :transparency - The transparency state for the event (optional).
                              Accepted values are "transparent" and "opaque".
              :color        - The color of the event (optional).
+        :param dict organizer - A Dict containing the organzier of the invite
+             :name      - A String for the name of the organizer.
         """
         event['start'] = format_event_time(event['start'])
         event['end'] = format_event_time(event['end'])
@@ -204,6 +206,9 @@ class Client(object):
 
         if callback_url:
             body['callback_url'] = callback_url
+
+        if organizer:
+            body['organizer'] = organizer
 
         return self.request_handler.post('smart_invites', data=body, use_api_key=True).json()
 
