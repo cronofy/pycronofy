@@ -200,9 +200,12 @@ class Client(object):
 
         body = {
             'smart_invite_id': smart_invite_id,
-            'recipient': recipient,
             'event': event
         }
+        if type(recipient) == dict:
+            body['recipient'] = recipient
+        elif type(recipient) == list:
+            body['recipients'] = recipient
 
         if callback_url:
             body['callback_url'] = callback_url
