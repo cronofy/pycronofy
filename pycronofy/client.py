@@ -407,11 +407,13 @@ class Client(object):
 
         return Pages(self.request_handler, results, 'free_busy', automatic_pagination)
 
-    def availability(self, participants=(), required_duration=(), available_periods=()):
+    def availability(self, participants=(), required_duration=(), available_periods=(), start_interval=None, buffer=()):
         """ Performs an availability query.
         :param list participants: An Array of participant groups or a dict for a single participant group.
         :param dict or int required_duration - An Integer representing the minimum number of minutes of availability required.
         :param list available_periods - An Array of available time periods dicts, each must specify a start and end Time.
+        :param dict or int start_interval - An Interger representing the start interval minutes for the event.
+        :param dict buffer - An Dict representing the buffer to apply to the request.
 
         :rtype: ``list``
         """
@@ -420,6 +422,10 @@ class Client(object):
             participants)
         options['required_duration'] = self.map_availability_required_duration(
             required_duration)
+        options['buffer'] = self.map_availability_buffer(buffer)
+
+        if start_interval:
+            options['start_interval'] = self.map_availability_required_duration(start_interval)
 
         self.translate_available_periods(available_periods)
         options['available_periods'] = available_periods
@@ -438,6 +444,8 @@ class Client(object):
                                      last for
                 :event - A dict describing the event
                 :available_periods - A dict stating the available periods for the step
+                :start_interval - An Interger representing the start interval minutes for the event.
+                :buffer - An Dict representing the buffer to apply to the request.
         :param list available_periods - An Array of available time periods dicts, each must specify a start and end Time.
 
         :rtype: ``list``
@@ -537,6 +545,8 @@ class Client(object):
             :required_duration - A dict stating the length of time the event will
                                  last for
             :available_periods - A dict stating the available periods for the event
+            :start_interval    - A Integer representing the start_interval of the event
+            :buffer            - A dict representing the buffer for the event
         :param dict oauth:   - A dict describing the OAuth flow required:
             :scope             - A String representing the scopes to ask for
                                  within the OAuth flow
@@ -559,6 +569,8 @@ class Client(object):
             options = {}
             options['participants'] = self.map_availability_participants(availability.get('participants', None))
             options['required_duration'] = self.map_availability_required_duration(availability.get('required_duration', None))
+            options['start_interval'] = self.map_availability_required_duration(availability.get('start_interval', None))
+            options['buffer'] = self.map_availability_buffer(availability.get('buffer', None))
 
             self.translate_available_periods(availability['available_periods'])
             options['available_periods'] = availability['available_periods']
@@ -680,10 +692,38 @@ class Client(object):
         else:
             return sequence
 
+    def map_availability_buffer(self, buffer):
+        result = {}
+
+        if type(buffer) is not dict:
+            return result
+
+        if 'before' in buffer:
+            result['before'] = self.map_buffer_details(buffer['before'])
+
+        if 'after' in buffer:
+            result['after'] = self.map_buffer_details(buffer['after'])
+
+        return result
+
+    def map_buffer_details(self, buffer):
+        if type(buffer) is not dict:
+            return self.map_availability_required_duration(buffer)
+
+        result = {}
+        if 'minimum' in buffer:
+            result['minimum'] = self.map_availability_required_duration(buffer['minimum'])
+
+        if 'maximum' in buffer:
+            result['maximum'] = self.map_availability_required_duration(buffer['maximum'])
+
+        return result
+
     def map_sequence_item(self, sequence_item):
         sequence_item['participants'] = self.map_availability_participants(sequence_item.get('participants', None))
         sequence_item['required_duration'] = self.map_availability_required_duration(sequence_item.get('required_duration', None))
-        sequence_item['start_inverval'] = self.map_availability_required_duration(sequence_item.get('start_inverval', None))
+        sequence_item['start_interval'] = self.map_availability_required_duration(sequence_item.get('start_interval', None))
+        sequence_item['buffer'] = self.map_availability_buffer(sequence_item.get('buffer', None))
 
         if sequence_item.get('available_periods', None):
             self.translate_available_periods(sequence_item['available_periods'])

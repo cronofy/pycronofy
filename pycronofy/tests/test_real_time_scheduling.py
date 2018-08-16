@@ -38,6 +38,9 @@ def test_real_time_scheduling(client):
 
         availability = payload['availability']
         assert availability['required_duration'] == {'minutes': 30}
+        assert availability['start_interval'] == {'minutes': 30}
+        assert availability['buffer']['before'] == {'minutes': 30}
+        assert availability['buffer']['after'] == {'minutes': 45}
         assert availability['available_periods'] == [
             {'start': '2017-01-03T09:00:00Z', 'end': '2017-01-03T18:00:00Z'},
             {'start': '2017-01-04T09:00:00Z', 'end': '2017-01-04T18:00:00Z'}
@@ -79,7 +82,12 @@ def test_real_time_scheduling(client):
     availability = {
         'participants': example_participants,
         'available_periods': periods,
-        'required_duration': 30
+        'required_duration': 30,
+        'start_interval': 30,
+        'buffer': {
+            'before': 30,
+            'after': 45,
+        },
     }
 
     oauth = {

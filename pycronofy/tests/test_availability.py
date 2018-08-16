@@ -123,6 +123,9 @@ def test_availablity_with_simple_values(client):
     def request_callback(request):
         payload = json.loads(request.body)
         assert payload['required_duration'] == {'minutes': 30}
+        assert payload['start_interval'] == {'minutes': 30}
+        assert payload['buffer']['before'] == {'minutes': 30}
+        assert payload['buffer']['after'] == {'minutes': 45}
         assert payload['available_periods'] == [
             {'start': '2017-01-03T09:00:00Z', 'end': '2017-01-03T18:00:00Z'},
             {'start': '2017-01-04T09:00:00Z', 'end': '2017-01-04T18:00:00Z'}
@@ -157,7 +160,12 @@ def test_availablity_with_simple_values(client):
         ],
     })
 
-    result = client.availability(required_duration=30, available_periods=periods, participants=example_participants)
+    example_buffer = {
+        'before': 30,
+        'after': 45
+    }
+
+    result = client.availability(required_duration=30, available_periods=periods, participants=example_participants, start_interval=30, buffer=example_buffer)
     assert len(result) == 1
 
 
@@ -176,6 +184,8 @@ def test_availablity_with_fully_specified_options(client):
         ]
 
         assert payload['required_duration'] == {'minutes': 30}
+        assert payload['buffer']['before']['minimum'] == {'minutes': 30}
+        assert payload['buffer']['after']['minimum'] == {'minutes': 45}
         assert payload['available_periods'] == expected_periods
         assert payload['participants'] == [
             {
@@ -207,7 +217,16 @@ def test_availablity_with_fully_specified_options(client):
         'required': 'all'
     })
 
-    result = client.availability(required_duration={'minutes': 30}, available_periods=periods, participants=example_participants)
+    example_buffer = {
+        'before': {
+            'minimum': 30
+        },
+        'after': {
+            'minimum': 45
+        }
+    }
+
+    result = client.availability(required_duration={'minutes': 30}, available_periods=periods, participants=example_participants, buffer=example_buffer)
     assert(len(result)) == 1
 
 
@@ -238,6 +257,11 @@ def test_sequenced_availablity_with_simple_values(client):
         assert first_sequence['sequence_id'] == "1234"
         assert first_sequence['ordinal'] == 1
         assert first_sequence['required_duration'] == {'minutes': 30}
+        assert first_sequence['start_interval'] == {'minutes': 60}
+        assert first_sequence['buffer']['before']['minimum'] == {'minutes': 30}
+        assert first_sequence['buffer']['before']['maximum'] == {'minutes': 45}
+        assert first_sequence['buffer']['after']['minimum'] == {'minutes': 45}
+        assert first_sequence['buffer']['after']['maximum'] == {'minutes': 60}
 
         second_sequence = payload['sequence'][1]
         assert second_sequence['sequence_id'] == "4567"
@@ -263,12 +287,25 @@ def test_sequenced_availablity_with_simple_values(client):
         ],
     })
 
+    example_buffer = {
+        'before': {
+            'minimum': 30,
+            'maximum': 45
+        },
+        'after': {
+            'minimum': 45,
+            'maximum': 60
+        }
+    }
+
     sequence = [
         {
             'sequence_id': "1234",
             'ordinal': 1,
             'participants': example_participants,
             'required_duration': 30,
+            'start_interval': 60,
+            'buffer': example_buffer,
         },
         {
             'sequence_id': "4567",

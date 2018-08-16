@@ -47,6 +47,11 @@ def test_real_time_sequencing(client):
         assert sequence['sequence_id'] == "1234"
         assert sequence['ordinal'] == 1
         assert sequence['required_duration'] == {'minutes': 30}
+        assert sequence['start_interval'] == {'minutes': 30}
+        assert sequence['buffer']['before']['minimum'] == {'minutes': 30}
+        assert sequence['buffer']['before']['maximum'] == {'minutes': 45}
+        assert sequence['buffer']['after']['minimum'] == {'minutes': 45}
+        assert sequence['buffer']['after']['maximum'] == {'minutes': 60}
         assert sequence['participants'] == [
             {
                 'required': 'all',
@@ -92,6 +97,17 @@ def test_real_time_sequencing(client):
             'ordinal': 1,
             'participants': example_participants,
             'required_duration': 30,
+            'start_interval': 30,
+            'buffer': {
+                'before': {
+                    'minimum': 30,
+                    'maximum': 45,
+                },
+                'after': {
+                    'minimum': 45,
+                    'maximum': 60,
+                },
+            },
             'event': TEST_EVENT,
         },
         {
