@@ -710,7 +710,8 @@ class Client(object):
         if type(buffer) is not dict:
             return self.map_availability_required_duration(buffer)
 
-        result = {}
+        result = self.map_availability_required_duration(buffer)
+
         if 'minimum' in buffer:
             result['minimum'] = self.map_availability_required_duration(buffer['minimum'])
 

@@ -26,19 +26,6 @@ TEST_UPSERT_EVENT_ARGS = {
     'content_type': 'application/json'
 }
 
-TEST_AVAILABLITY_RESPONSE = {
-    "available_periods": [
-        {
-            "start": "2017-01-03T09:00:00Z",
-            "end": "2017-01-03T11:00:00Z",
-            "participants": [
-                {"sub": "acc_567236000909002"},
-                {"sub": "acc_678347111010113"}
-            ]
-        }
-    ]
-}
-
 
 @pytest.fixture(scope="module")
 def client():

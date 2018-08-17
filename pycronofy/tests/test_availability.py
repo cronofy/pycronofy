@@ -162,7 +162,7 @@ def test_availablity_with_simple_values(client):
 
     example_buffer = {
         'before': 30,
-        'after': 45
+        'after': {'minutes': 45}
     }
 
     result = client.availability(required_duration=30, available_periods=periods, participants=example_participants, start_interval=30, buffer=example_buffer)
@@ -219,7 +219,7 @@ def test_availablity_with_fully_specified_options(client):
 
     example_buffer = {
         'before': {
-            'minimum': 30
+            'minimum': {'minutes': 30}
         },
         'after': {
             'minimum': 45
