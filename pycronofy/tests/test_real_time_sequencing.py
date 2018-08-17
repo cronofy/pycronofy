@@ -17,7 +17,7 @@ TEST_EVENT = {
     },
 }
 
-REAL_TIME_SCHEDULING_RESPONSE = {'url': 'http://www.example.com'}
+REAL_TIME_SEQUENCING_RESPONSE = {'url': 'http://www.example.com'}
 
 
 @pytest.fixture(scope="module")
@@ -27,7 +27,7 @@ def client():
 
 
 @responses.activate
-def test_real_time_scheduling(client):
+def test_real_time_sequencing(client):
     """Test Client.availability().
 
     :param Client client: Client instance with test data.
@@ -37,15 +37,22 @@ def test_real_time_scheduling(client):
         payload = json.loads(request.body)
 
         availability = payload['availability']
-        assert availability['required_duration'] == {'minutes': 30}
-        assert availability['start_interval'] == {'minutes': 30}
-        assert availability['buffer']['before'] == {'minutes': 30}
-        assert availability['buffer']['after'] == {'minutes': 45}
         assert availability['available_periods'] == [
             {'start': '2017-01-03T09:00:00Z', 'end': '2017-01-03T18:00:00Z'},
             {'start': '2017-01-04T09:00:00Z', 'end': '2017-01-04T18:00:00Z'}
         ]
-        assert availability['participants'] == [
+
+        sequence = availability['sequence'][0]
+
+        assert sequence['sequence_id'] == "1234"
+        assert sequence['ordinal'] == 1
+        assert sequence['required_duration'] == {'minutes': 30}
+        assert sequence['start_interval'] == {'minutes': 30}
+        assert sequence['buffer']['before']['minimum'] == {'minutes': 30}
+        assert sequence['buffer']['before']['maximum'] == {'minutes': 45}
+        assert sequence['buffer']['after']['minimum'] == {'minutes': 45}
+        assert sequence['buffer']['after']['maximum'] == {'minutes': 60}
+        assert sequence['participants'] == [
             {
                 'required': 'all',
                 'members': [
@@ -54,16 +61,21 @@ def test_real_time_scheduling(client):
                 ]
             }
         ]
+        assert sequence['event'] == TEST_EVENT
+
+        second_sequence = availability['sequence'][1]
+        assert second_sequence['sequence_id'] == "4567"
+        assert second_sequence['ordinal'] == 2
 
         assert payload['event'] == TEST_EVENT
         assert payload['oauth'] == oauth
         assert request.headers['Authorization'] == "Bearer %s" % client.auth.client_secret
 
-        return (200, {}, json.dumps(REAL_TIME_SCHEDULING_RESPONSE))
+        return (200, {}, json.dumps(REAL_TIME_SEQUENCING_RESPONSE))
 
     responses.add_callback(
         responses.POST,
-        url='%s/%s/real_time_scheduling' % (settings.API_BASE_URL, settings.API_VERSION),
+        url='%s/%s/real_time_sequencing' % (settings.API_BASE_URL, settings.API_VERSION),
         callback=request_callback,
         content_type='application/json',
     )
@@ -79,15 +91,37 @@ def test_real_time_scheduling(client):
         ],
     })
 
-    availability = {
-        'participants': example_participants,
-        'available_periods': periods,
-        'required_duration': 30,
-        'start_interval': 30,
-        'buffer': {
-            'before': 30,
-            'after': 45,
+    sequence = [
+        {
+            'sequence_id': "1234",
+            'ordinal': 1,
+            'participants': example_participants,
+            'required_duration': 30,
+            'start_interval': 30,
+            'buffer': {
+                'before': {
+                    'minimum': 30,
+                    'maximum': 45,
+                },
+                'after': {
+                    'minimum': 45,
+                    'maximum': 60,
+                },
+            },
+            'event': TEST_EVENT,
         },
+        {
+            'sequence_id': "4567",
+            'ordinal': 2,
+            'participants': example_participants,
+            'required_duration': 30,
+            'event': TEST_EVENT,
+        }
+    ]
+
+    availability = {
+        'sequence': sequence,
+        'available_periods': periods,
     }
 
     oauth = {
@@ -96,5 +130,5 @@ def test_real_time_scheduling(client):
         'state': 'bar'
     }
 
-    result = client.real_time_scheduling(availability, oauth, TEST_EVENT)
-    assert result == REAL_TIME_SCHEDULING_RESPONSE
+    result = client.real_time_sequencing(availability, oauth, TEST_EVENT)
+    assert result == REAL_TIME_SEQUENCING_RESPONSE

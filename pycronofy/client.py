@@ -410,11 +410,13 @@ class Client(object):
 
         return Pages(self.request_handler, results, 'free_busy', automatic_pagination)
 
-    def availability(self, participants=(), required_duration=(), available_periods=()):
+    def availability(self, participants=(), required_duration=(), available_periods=(), start_interval=None, buffer=()):
         """ Performs an availability query.
         :param list participants: An Array of participant groups or a dict for a single participant group.
         :param dict or int required_duration - An Integer representing the minimum number of minutes of availability required.
         :param list available_periods - An Array of available time periods dicts, each must specify a start and end Time.
+        :param dict or int start_interval - An Interger representing the start interval minutes for the event.
+        :param dict buffer - An Dict representing the buffer to apply to the request.
 
         :rtype: ``list``
         """
@@ -423,11 +425,41 @@ class Client(object):
             participants)
         options['required_duration'] = self.map_availability_required_duration(
             required_duration)
+        options['buffer'] = self.map_availability_buffer(buffer)
+
+        if start_interval:
+            options['start_interval'] = self.map_availability_required_duration(start_interval)
 
         self.translate_available_periods(available_periods)
         options['available_periods'] = available_periods
 
         return self.request_handler.post(endpoint='availability', data=options).json()['available_periods']
+
+    def sequenced_availability(self, sequence=(), available_periods=()):
+        """ Performs an availability query.
+        :param list sequence: An Array of dics representing sequences to find availability for
+                       each sequence can contain.
+                :sequence_id - A string identifying this step in the sequence.
+                :ordinal - An Integer defining the order of this step in the sequence.
+                :participants      - A dict stating who is required for the availability
+                                 call
+                :required_duration - A dict stating the length of time the event will
+                                     last for
+                :event - A dict describing the event
+                :available_periods - A dict stating the available periods for the step
+                :start_interval - An Interger representing the start interval minutes for the event.
+                :buffer - An Dict representing the buffer to apply to the request.
+        :param list available_periods - An Array of available time periods dicts, each must specify a start and end Time.
+
+        :rtype: ``list``
+        """
+        options = {}
+        options['sequence'] = self.map_availability_sequence(sequence)
+
+        self.translate_available_periods(available_periods)
+        options['available_periods'] = available_periods
+
+        return self.request_handler.post(endpoint='sequenced_availability', data=options).json()['sequences']
 
     def refresh_authorization(self):
         """Refreshes the authorization tokens.
@@ -516,6 +548,8 @@ class Client(object):
             :required_duration - A dict stating the length of time the event will
                                  last for
             :available_periods - A dict stating the available periods for the event
+            :start_interval    - A Integer representing the start_interval of the event
+            :buffer            - A dict representing the buffer for the event
         :param dict oauth:   - A dict describing the OAuth flow required:
             :scope             - A String representing the scopes to ask for
                                  within the OAuth flow
@@ -538,12 +572,61 @@ class Client(object):
             options = {}
             options['participants'] = self.map_availability_participants(availability.get('participants', None))
             options['required_duration'] = self.map_availability_required_duration(availability.get('required_duration', None))
+            options['start_interval'] = self.map_availability_required_duration(availability.get('start_interval', None))
+            options['buffer'] = self.map_availability_buffer(availability.get('buffer', None))
 
             self.translate_available_periods(availability['available_periods'])
             options['available_periods'] = availability['available_periods']
             args['availability'] = options
 
         return self.request_handler.post(endpoint='real_time_scheduling', data=args, use_api_key=True).json()
+
+    def real_time_sequencing(self, availability, oauth, event, target_calendars=()):
+        """Generates an real time sequencing link to start the OAuth process with
+        an event to be automatically upserted
+
+        :param dict availability:  - A dict describing the availability details for the event:
+
+            :sequence: An Array of dics representing sequences to find availability for
+                       each sequence can contain.
+                :sequence_id - A string identifying this step in the sequence.
+                :ordinal - An Integer defining the order of this step in the sequence.
+                :participants      - A dict stating who is required for the availability
+                                 call
+                :required_duration - A dict stating the length of time the event will
+                                     last for
+                :event - A dict describing the event
+                :available_periods - A dict stating the available periods for the step
+            :available_periods - A dict stating the available periods for the sequence
+        :param dict oauth:   - A dict describing the OAuth flow required:
+            :scope             - A String representing the scopes to ask for
+                                 within the OAuth flow
+            :redirect_uri      - A String containing a url to redirect the
+                                 user to after completing the OAuth flow.
+            :scope             - A String representing additional state to
+                                 be passed within the OAuth flow.
+        :param dict event:     - A dict describing the event
+        :param list target_calendars: - An list of dics stating into which calendars
+                                        to insert the created event
+        See http://www.cronofy.com/developers/api#upsert-event for reference.
+        """
+        args = {
+            'oauth': oauth,
+            'event': event,
+            'target_calendars': target_calendars
+        }
+
+        if availability:
+            options = {}
+            options['sequence'] = self.map_availability_sequence(availability.get('sequence', None))
+
+            if availability.get('available_periods', None):
+                self.translate_available_periods(availability['available_periods'])
+                options['available_periods'] = availability['available_periods']
+
+        args['availability'] = options
+
+        return self.request_handler.post(endpoint='real_time_sequencing', data=args, use_api_key=True).json()
 
     def user_auth_link(self, redirect_uri, scope='', state='', avoid_linking=False):
         """Generates a URL to send the user for OAuth 2.0
@@ -605,6 +688,51 @@ class Client(object):
             for tp in ['start', 'end']:
                 if params[tp]:
                     params[tp] = format_event_time(params[tp])
+
+    def map_availability_sequence(self, sequence):
+        if isinstance(sequence, collections.Iterable):
+            return list(map(lambda item: self.map_sequence_item(item), sequence))
+        else:
+            return sequence
+
+    def map_availability_buffer(self, buffer):
+        result = {}
+
+        if type(buffer) is not dict:
+            return result
+
+        if 'before' in buffer:
+            result['before'] = self.map_buffer_details(buffer['before'])
+
+        if 'after' in buffer:
+            result['after'] = self.map_buffer_details(buffer['after'])
+
+        return result
+
+    def map_buffer_details(self, buffer):
+        if type(buffer) is not dict:
+            return self.map_availability_required_duration(buffer)
+
+        result = self.map_availability_required_duration(buffer)
+
+        if 'minimum' in buffer:
+            result['minimum'] = self.map_availability_required_duration(buffer['minimum'])
+
+        if 'maximum' in buffer:
+            result['maximum'] = self.map_availability_required_duration(buffer['maximum'])
+
+        return result
+
+    def map_sequence_item(self, sequence_item):
+        sequence_item['participants'] = self.map_availability_participants(sequence_item.get('participants', None))
+        sequence_item['required_duration'] = self.map_availability_required_duration(sequence_item.get('required_duration', None))
+        sequence_item['start_interval'] = self.map_availability_required_duration(sequence_item.get('start_interval', None))
+        sequence_item['buffer'] = self.map_availability_buffer(sequence_item.get('buffer', None))
+
+        if sequence_item.get('available_periods', None):
+            self.translate_available_periods(sequence_item['available_periods'])
+
+        return sequence_item
 
     def map_availability_participants(self, participants):
         if type(participants) is dict:
