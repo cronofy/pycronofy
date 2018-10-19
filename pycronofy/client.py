@@ -238,7 +238,8 @@ class Client(object):
         :rtype: ``dict``
         """
         response = self.request_handler.post(
-            url='%s/oauth/token' % settings.API_BASE_URL,
+            endpoint='oauth/token',
+            omit_api_version=True,
             data={
                 'grant_type': 'authorization_code',
                 'client_id': self.auth.client_id,
@@ -268,7 +269,7 @@ class Client(object):
         :rtype: ``dict``
         """
         response = self.request_handler.post(
-            url='%s/v1/application_calendar' % settings.API_BASE_URL,
+            endpoint='application_calendar',
             data={
                 'client_id': self.auth.client_id,
                 'client_secret': self.auth.client_secret,
@@ -468,7 +469,8 @@ class Client(object):
         :rtype: ``dict``
         """
         response = self.request_handler.post(
-            url='%s/oauth/token' % settings.API_BASE_URL,
+            endpoint='oauth/token',
+            omit_api_version=True,
             data={
                 'grant_type': 'refresh_token',
                 'client_id': self.auth.client_id,
@@ -493,7 +495,8 @@ class Client(object):
     def revoke_authorization(self):
         """Revokes Oauth authorization."""
         self.request_handler.post(
-            url='%s/oauth/token/revoke' % settings.API_BASE_URL,
+            endpoint='oauth/token/revoke',
+            omit_api_version=True,
             data={
                 'client_id': self.auth.client_id,
                 'client_secret': self.auth.client_secret,
