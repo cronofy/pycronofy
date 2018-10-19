@@ -41,7 +41,7 @@ class RequestHandler(object):
         """
         return self._request('delete', endpoint, url, params=params, data=data)
 
-    def post(self, endpoint='', url='', data=None, use_api_key=False):
+    def post(self, endpoint='', url='', data=None, use_api_key=False, omit_api_version=False):
         """Perform a post to an API endpoint.
 
         :param string endpoint: Target endpoint. (Optional).
@@ -50,9 +50,9 @@ class RequestHandler(object):
         :return: Response.
         :rtype: ``Response``
         """
-        return self._request('post', endpoint, url, data=data, use_api_key=use_api_key)
+        return self._request('post', endpoint, url, data=data, use_api_key=use_api_key, omit_api_version=omit_api_version)
 
-    def _request(self, request_method, endpoint='', url='', data=None, params=None, use_api_key=False):
+    def _request(self, request_method, endpoint='', url='', data=None, params=None, use_api_key=False, omit_api_version=False):
         """Perform a http request via the specified method to an API endpoint.
 
         :param string request_method: Request method.
@@ -67,6 +67,8 @@ class RequestHandler(object):
             data = {}
         if not params:
             params = {}
+        if endpoint and omit_api_version and not url:
+            url = '%s/%s' % (self.base_url, endpoint)
         if endpoint and not url:
             url = '%s/%s/%s' % (self.base_url, settings.API_VERSION, endpoint)
 
