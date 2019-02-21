@@ -39,7 +39,7 @@ class Client(object):
                          refresh_token, token_expiration)
         self.request_handler = RequestHandler(self.auth, data_center)
 
-        if data_center is None or data_center is 'us':
+        if data_center is None or data_center == 'us':
             self.app_base_url = settings.APP_BASE_URL
         else:
             self.app_base_url = settings.APP_REGION_FORMAT % data_center
@@ -248,8 +248,7 @@ class Client(object):
                 'redirect_uri': redirect_uri if redirect_uri else self.auth.redirect_uri,
             })
         data = response.json()
-        token_expiration = (datetime.datetime.utcnow() +
-                            datetime.timedelta(seconds=data['expires_in']))
+        token_expiration = (datetime.datetime.utcnow() + datetime.timedelta(seconds=data['expires_in']))
         self.auth.update(
             token_expiration=token_expiration,
             access_token=data['access_token'],
@@ -276,8 +275,7 @@ class Client(object):
                 'application_calendar_id': application_calendar_id,
             })
         data = response.json()
-        token_expiration = (datetime.datetime.utcnow() +
-                            datetime.timedelta(seconds=data['expires_in']))
+        token_expiration = (datetime.datetime.utcnow() + datetime.timedelta(seconds=data['expires_in']))
         self.auth.update(
             token_expiration=token_expiration,
             access_token=data['access_token'],
@@ -479,8 +477,7 @@ class Client(object):
             }
         )
         data = response.json()
-        token_expiration = (datetime.datetime.utcnow() +
-                            datetime.timedelta(seconds=data['expires_in']))
+        token_expiration = (datetime.datetime.utcnow() + datetime.timedelta(seconds=data['expires_in']))
         self.auth.update(
             token_expiration=token_expiration,
             access_token=data['access_token'],

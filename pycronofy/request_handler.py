@@ -13,7 +13,7 @@ class RequestHandler(object):
         """
         self.auth = auth
         self.user_agent = '%s %s' % (pycronofy.__name__, pycronofy.__version__)
-        if data_center is None or data_center is 'us':
+        if data_center is None or data_center == 'us':
             self.base_url = settings.API_BASE_URL
         else:
             self.base_url = settings.API_REGION_FORMAT % data_center
@@ -90,8 +90,7 @@ class RequestHandler(object):
             json=data,
             params=params
         )
-        if ((response.status_code != 200) and
-                (response.status_code != 202)):
+        if ((response.status_code != 200) and (response.status_code != 202)):
             try:
                 response.raise_for_status()
             except requests.exceptions.HTTPError as e:

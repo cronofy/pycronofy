@@ -5,10 +5,10 @@ from pycronofy.exceptions import PyCronofyValidationError
 
 # Matches ISO_8601 Cronofy accepts. Must be UTC if datetime.
 ISO_8601_FORMATS = (
-    '(^\d\d\d\d\-\d\d-\d\d$)',
-    '(^\d\d\d\d\-\d\d-\d\dT\d\d\:\d\d\:\d\dZ$)',
-    '(^\d\d\d\d\-\d\d-\d\dT\d\d\:\d\d\:\d\dUTC)',
-    '(^\d\d\d\d\-\d\d-\d\dT\d\d\:\d\d\:\d\d\+00:00$)',
+    r'(^\d\d\d\d\-\d\d-\d\d$)',
+    r'(^\d\d\d\d\-\d\d-\d\dT\d\d\:\d\d\:\d\dZ$)',
+    r'(^\d\d\d\d\-\d\d-\d\dT\d\d\:\d\d\:\d\dUTC)',
+    r'(^\d\d\d\d\-\d\d-\d\dT\d\d\:\d\d\:\d\d\+00:00$)',
 )
 ISO_8601_REGEX = re.compile('|'.join(ISO_8601_FORMATS))
 
