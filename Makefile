@@ -18,6 +18,8 @@ version:
 
 release: test
 ifeq ($(CURRENT_VERSION),$(INIT_VERSION))
+	# Check pypi configured
+	test -f ~/.pypirc
 	python setup.py sdist upload --repository pypi
 	git tag $(CURRENT_VERSION)
 	git push --tags
