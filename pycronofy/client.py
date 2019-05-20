@@ -18,7 +18,7 @@ with hooks():
 
 class Client(object):
     """Client for cronofy web service.
-    Performs authentication, and wraps API: https://www.cronofy.com/developers/api/
+    Performs authentication, and wraps API: https://docs.cronofy.com/developers/api/authorization/
     """
 
     def __init__(self, client_id=None, client_secret=None, access_token=None, refresh_token=None, token_expiration=None, data_center=None):
