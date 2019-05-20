@@ -409,13 +409,14 @@ class Client(object):
 
         return Pages(self.request_handler, results, 'free_busy', automatic_pagination)
 
-    def availability(self, participants=(), required_duration=(), available_periods=(), start_interval=None, buffer=()):
+    def availability(self, participants=(), required_duration=(), available_periods=(), start_interval=None, buffer=(), response_format=None):
         """ Performs an availability query.
         :param list participants: An Array of participant groups or a dict for a single participant group.
         :param dict or int required_duration - An Integer representing the minimum number of minutes of availability required.
         :param list available_periods - An Array of available time periods dicts, each must specify a start and end Time.
         :param dict or int start_interval - An Interger representing the start interval minutes for the event.
         :param dict buffer - An Dict representing the buffer to apply to the request.
+        :param string response_format - periods, slots or overlapping_slots (Optional, default periods)
 
         :rtype: ``list``
         """
@@ -429,10 +430,17 @@ class Client(object):
         if start_interval:
             options['start_interval'] = self.map_availability_required_duration(start_interval)
 
+        response_element = 'available_periods'
+
+        if response_format:
+            options['response_format'] = response_format
+            if response_format in ['slots', 'overlapping_slots']:
+                response_element = 'available_slots'
+
         self.translate_available_periods(available_periods)
         options['available_periods'] = available_periods
 
-        return self.request_handler.post(endpoint='availability', data=options).json()['available_periods']
+        return self.request_handler.post(endpoint='availability', data=options).json()[response_element]
 
     def sequenced_availability(self, sequence=(), available_periods=()):
         """ Performs an availability query.

@@ -18,6 +18,26 @@ TEST_AVAILABLITY_RESPONSE = {
     ]
 }
 
+TEST_AVAILABLITY_RESPONSE_SLOTS = {
+    "available_slots": [
+        {
+            "start": "2017-01-03T09:00:00Z",
+            "end": "2017-01-03T10:00:00Z",
+            "participants": [
+                {"sub": "acc_567236000909002"},
+                {"sub": "acc_678347111010113"}
+            ]
+        },
+        {
+            "start": "2017-01-03T10:00:00Z",
+            "end": "2017-01-03T11:00:00Z",
+            "participants": [
+                {"sub": "acc_678347111010113"}
+            ]
+        }
+    ]
+}
+
 TEST_SEQUENCED_AVAILABLITY_RESPONSE = {
     "sequences": [
         {
@@ -167,6 +187,64 @@ def test_availablity_with_simple_values(client):
 
     result = client.availability(required_duration=30, available_periods=periods, participants=example_participants, start_interval=30, buffer=example_buffer)
     assert len(result) == 1
+
+@responses.activate
+def test_availablity_with_simple_values_slots_response(client):
+    """Test Client.availability().
+
+    :param Client client: Client instance with test data.
+    """
+
+    def request_callback(request):
+        payload = json.loads(request.body)
+        assert payload['required_duration'] == {'minutes': 30}
+        assert payload['start_interval'] == {'minutes': 30}
+        assert payload['buffer']['before'] == {'minutes': 30}
+        assert payload['buffer']['after'] == {'minutes': 45}
+        assert payload['available_periods'] == [
+            {'start': '2017-01-03T09:00:00Z', 'end': '2017-01-03T18:00:00Z'},
+            {'start': '2017-01-04T09:00:00Z', 'end': '2017-01-04T18:00:00Z'}
+        ]
+        assert payload['participants'] == [
+            {
+                'required': 'all',
+                'members': [
+                    {'sub': 'acc_567236000909002'},
+                    {'sub': 'acc_678347111010113'}
+                ]
+            }
+        ]
+        assert payload['response_format'] == 'slots'
+
+        return (200, {}, json.dumps(TEST_AVAILABLITY_RESPONSE_SLOTS))
+
+    responses.add_callback(
+        responses.POST,
+        url='%s/%s/availability' % (settings.API_BASE_URL, settings.API_VERSION),
+        callback=request_callback,
+        content_type='application/json',
+    )
+
+    periods = (
+        {'start': "2017-01-03T09:00:00Z", 'end': "2017-01-03T18:00:00Z"},
+        {'start': "2017-01-04T09:00:00Z", 'end': "2017-01-04T18:00:00Z"}
+    )
+    example_participants = ({
+        'members': [
+            "acc_567236000909002",
+            "acc_678347111010113",
+        ],
+    })
+
+    example_buffer = {
+        'before': 30,
+        'after': {'minutes': 45}
+    }
+
+    example_response_format = 'slots'
+
+    result = client.availability(required_duration=30, available_periods=periods, participants=example_participants, start_interval=30, buffer=example_buffer, response_format=example_response_format)
+    assert len(result) == 2
 
 
 @responses.activate
