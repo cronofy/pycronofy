@@ -570,7 +570,7 @@ class Client(object):
                                         to insert the created event
         :param dict :minimum_notice - A dict describing the minimum notice for a booking (Optional)
 
-        See http://www.cronofy.com/developers/api#upsert-event for reference.
+        See https://docs.cronofy.com/developers/api/scheduling/real-time-scheduling/ for reference.
         """
         args = {
             'oauth': oauth,
@@ -593,7 +593,7 @@ class Client(object):
 
         return self.request_handler.post(endpoint='real_time_scheduling', data=args, use_api_key=True).json()
 
-    def real_time_sequencing(self, availability, oauth, event, target_calendars=()):
+    def real_time_sequencing(self, availability, oauth, event, target_calendars=(), minimum_notice=None):
         """Generates an real time sequencing link to start the OAuth process with
         an event to be automatically upserted
 
@@ -620,7 +620,9 @@ class Client(object):
         :param dict event:     - A dict describing the event
         :param list target_calendars: - An list of dics stating into which calendars
                                         to insert the created event
-        See http://www.cronofy.com/developers/api#upsert-event for reference.
+        :param dict :minimum_notice - A dict describing the minimum notice for a booking (Optional)
+
+        See https://docs.cronofy.com/developers/api-alpha/sequenced-scheduling/real-time-sequencing/ for reference.
         """
         args = {
             'oauth': oauth,
@@ -637,6 +639,9 @@ class Client(object):
                 options['available_periods'] = availability['available_periods']
 
         args['availability'] = options
+
+        if minimum_notice:
+            args['minimum_notice'] = self.map_availability_duration(minimum_notice)
 
         return self.request_handler.post(endpoint='real_time_sequencing', data=args, use_api_key=True).json()
 
