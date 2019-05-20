@@ -432,13 +432,13 @@ class Client(object):
 
         response_element = 'available_periods'
 
+        self.translate_available_periods(available_periods)
+        options['available_periods'] = available_periods
+
         if response_format:
             options['response_format'] = response_format
             if response_format in ['slots', 'overlapping_slots']:
                 response_element = 'available_slots'
-
-        self.translate_available_periods(available_periods)
-        options['available_periods'] = available_periods
 
         return self.request_handler.post(endpoint='availability', data=options).json()[response_element]
 

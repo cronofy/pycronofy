@@ -18,6 +18,7 @@ TEST_AVAILABLITY_RESPONSE = {
     ]
 }
 
+
 TEST_AVAILABLITY_RESPONSE_SLOTS = {
     "available_slots": [
         {
@@ -37,6 +38,7 @@ TEST_AVAILABLITY_RESPONSE_SLOTS = {
         }
     ]
 }
+
 
 TEST_SEQUENCED_AVAILABLITY_RESPONSE = {
     "sequences": [
@@ -187,6 +189,7 @@ def test_availablity_with_simple_values(client):
 
     result = client.availability(required_duration=30, available_periods=periods, participants=example_participants, start_interval=30, buffer=example_buffer)
     assert len(result) == 1
+
 
 @responses.activate
 def test_availablity_with_simple_values_slots_response(client):
