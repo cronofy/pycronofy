@@ -18,7 +18,7 @@ with hooks():
 
 class Client(object):
     """Client for cronofy web service.
-    Performs authentication, and wraps API: https://www.cronofy.com/developers/api/
+    Performs authentication, and wraps API: https://docs.cronofy.com/developers/api/authorization/
     """
 
     def __init__(self, client_id=None, client_secret=None, access_token=None, refresh_token=None, token_expiration=None, data_center=None):
@@ -409,30 +409,38 @@ class Client(object):
 
         return Pages(self.request_handler, results, 'free_busy', automatic_pagination)
 
-    def availability(self, participants=(), required_duration=(), available_periods=(), start_interval=None, buffer=()):
+    def availability(self, participants=(), required_duration=(), available_periods=(), start_interval=None, buffer=(), response_format=None):
         """ Performs an availability query.
         :param list participants: An Array of participant groups or a dict for a single participant group.
         :param dict or int required_duration - An Integer representing the minimum number of minutes of availability required.
         :param list available_periods - An Array of available time periods dicts, each must specify a start and end Time.
         :param dict or int start_interval - An Interger representing the start interval minutes for the event.
         :param dict buffer - An Dict representing the buffer to apply to the request.
+        :param string response_format - periods, slots or overlapping_slots (Optional, default periods)
 
         :rtype: ``list``
         """
         options = {}
         options['participants'] = self.map_availability_participants(
             participants)
-        options['required_duration'] = self.map_availability_required_duration(
+        options['required_duration'] = self.map_availability_duration(
             required_duration)
         options['buffer'] = self.map_availability_buffer(buffer)
 
         if start_interval:
-            options['start_interval'] = self.map_availability_required_duration(start_interval)
+            options['start_interval'] = self.map_availability_duration(start_interval)
+
+        response_element = 'available_periods'
 
         self.translate_available_periods(available_periods)
         options['available_periods'] = available_periods
 
-        return self.request_handler.post(endpoint='availability', data=options).json()['available_periods']
+        if response_format:
+            options['response_format'] = response_format
+            if response_format in ['slots', 'overlapping_slots']:
+                response_element = 'available_slots'
+
+        return self.request_handler.post(endpoint='availability', data=options).json()[response_element]
 
     def sequenced_availability(self, sequence=(), available_periods=()):
         """ Performs an availability query.
@@ -538,7 +546,7 @@ class Client(object):
             endpoint="service_account_authorizations", data=params)
         None
 
-    def real_time_scheduling(self, availability, oauth, event, target_calendars=()):
+    def real_time_scheduling(self, availability, oauth, event, target_calendars=(), minimum_notice=None):
         """Generates an real time scheduling link to start the OAuth process with
         an event to be automatically upserted
 
@@ -560,7 +568,9 @@ class Client(object):
         :param dict event:     - A dict describing the event
         :param list target_calendars: - An list of dics stating into which calendars
                                         to insert the created event
-        See http://www.cronofy.com/developers/api#upsert-event for reference.
+        :param dict :minimum_notice - A dict describing the minimum notice for a booking (Optional)
+
+        See https://docs.cronofy.com/developers/api/scheduling/real-time-scheduling/ for reference.
         """
         args = {
             'oauth': oauth,
@@ -571,17 +581,19 @@ class Client(object):
         if availability:
             options = {}
             options['participants'] = self.map_availability_participants(availability.get('participants', None))
-            options['required_duration'] = self.map_availability_required_duration(availability.get('required_duration', None))
-            options['start_interval'] = self.map_availability_required_duration(availability.get('start_interval', None))
+            options['required_duration'] = self.map_availability_duration(availability.get('required_duration', None))
+            options['start_interval'] = self.map_availability_duration(availability.get('start_interval', None))
             options['buffer'] = self.map_availability_buffer(availability.get('buffer', None))
-
             self.translate_available_periods(availability['available_periods'])
             options['available_periods'] = availability['available_periods']
             args['availability'] = options
 
+        if minimum_notice:
+            args['minimum_notice'] = self.map_availability_duration(minimum_notice)
+
         return self.request_handler.post(endpoint='real_time_scheduling', data=args, use_api_key=True).json()
 
-    def real_time_sequencing(self, availability, oauth, event, target_calendars=()):
+    def real_time_sequencing(self, availability, oauth, event, target_calendars=(), minimum_notice=None):
         """Generates an real time sequencing link to start the OAuth process with
         an event to be automatically upserted
 
@@ -608,7 +620,9 @@ class Client(object):
         :param dict event:     - A dict describing the event
         :param list target_calendars: - An list of dics stating into which calendars
                                         to insert the created event
-        See http://www.cronofy.com/developers/api#upsert-event for reference.
+        :param dict :minimum_notice - A dict describing the minimum notice for a booking (Optional)
+
+        See https://docs.cronofy.com/developers/api-alpha/sequenced-scheduling/real-time-sequencing/ for reference.
         """
         args = {
             'oauth': oauth,
@@ -625,6 +639,9 @@ class Client(object):
                 options['available_periods'] = availability['available_periods']
 
         args['availability'] = options
+
+        if minimum_notice:
+            args['minimum_notice'] = self.map_availability_duration(minimum_notice)
 
         return self.request_handler.post(endpoint='real_time_sequencing', data=args, use_api_key=True).json()
 
@@ -711,22 +728,22 @@ class Client(object):
 
     def map_buffer_details(self, buffer):
         if type(buffer) is not dict:
-            return self.map_availability_required_duration(buffer)
+            return self.map_availability_duration(buffer)
 
-        result = self.map_availability_required_duration(buffer)
+        result = self.map_availability_duration(buffer)
 
         if 'minimum' in buffer:
-            result['minimum'] = self.map_availability_required_duration(buffer['minimum'])
+            result['minimum'] = self.map_availability_duration(buffer['minimum'])
 
         if 'maximum' in buffer:
-            result['maximum'] = self.map_availability_required_duration(buffer['maximum'])
+            result['maximum'] = self.map_availability_duration(buffer['maximum'])
 
         return result
 
     def map_sequence_item(self, sequence_item):
         sequence_item['participants'] = self.map_availability_participants(sequence_item.get('participants', None))
-        sequence_item['required_duration'] = self.map_availability_required_duration(sequence_item.get('required_duration', None))
-        sequence_item['start_interval'] = self.map_availability_required_duration(sequence_item.get('start_interval', None))
+        sequence_item['required_duration'] = self.map_availability_duration(sequence_item.get('required_duration', None))
+        sequence_item['start_interval'] = self.map_availability_duration(sequence_item.get('start_interval', None))
         sequence_item['buffer'] = self.map_availability_buffer(sequence_item.get('buffer', None))
 
         if sequence_item.get('available_periods', None):
@@ -768,7 +785,7 @@ class Client(object):
 
         return member
 
-    def map_availability_required_duration(self, required_duration):
+    def map_availability_duration(self, required_duration):
         if type(required_duration) is int:
             return {'minutes': required_duration}
         else:
