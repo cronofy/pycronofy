@@ -10,7 +10,7 @@ clean:
 
 .PHONY: init
 init:
-	pip install --requirement requirements.txt --quiet
+	pip install --requirement requirements.txt
 
 .PHONY: version
 version:
