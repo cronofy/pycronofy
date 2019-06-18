@@ -256,6 +256,24 @@ def test_revoke(client):
 
 
 @responses.activate
+def test_revoke_profile(client):
+    """Test Client.revoke_profile().
+
+    :param Client client: Client instance with test data.
+    """
+    profile_id = "profile_123"
+
+    responses.add(
+        responses.POST,
+        url='%s/%s/profiles/%s/revoke' % (settings.API_BASE_URL, settings.API_VERSION, profile_id),
+        content_type='application/json',
+        status=202
+    )
+    result = client.revoke_profile(profile_id)
+    assert result is None
+
+
+@responses.activate
 def test_upsert_event(client):
     """Test Client.upsert_event().
 
