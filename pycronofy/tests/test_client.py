@@ -166,6 +166,20 @@ def test_create_notification_channel(client):
     channel = client.create_notification_channel('http://example.com', calendar_ids=('1',))
     assert channel['channel_id'] == 'chn_123example'
 
+@responses.activate
+def test_create_notification_channel_only_managed(client):
+    """Test Client.create_notification_channel().
+
+    :param Client client: Client instance with test data.
+    """
+    responses.add(responses.POST,
+                  url='%s/%s/channels' % (settings.API_BASE_URL, settings.API_VERSION),
+                  body='{"channel": {"channel_id": "chn_123example", "callback_url": "http://example.com", "filters": {"calendar_ids": ["1"], "only_managed": true}}}',
+                  status=200,
+                  content_type='application/json',
+                  )
+    channel = client.create_notification_channel('http://example.com', calendar_ids=('1',), only_managed=True)
+    assert channel['filters']['only_managed']
 
 @responses.activate
 def test_elevated_permissions(client):
