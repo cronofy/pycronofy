@@ -23,7 +23,7 @@ METHOD_RULES = {
         'required': ('channel_id',),
     },
     'create_notification_channel': {
-        'args': ('callback_url', 'calendar_ids'),
+        'args': ('callback_url', 'calendar_ids', 'only_managed'),
         'auth': ('access_token',),
         'required': ('callback_url',),
     },

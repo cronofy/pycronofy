@@ -83,18 +83,25 @@ class Client(object):
 
         self.request_handler.post('calendars/%s/events/%s/participation_status' % (calendar_id, event_uid), data=data)
 
-    def create_notification_channel(self, callback_url, calendar_ids=()):
+    def create_notification_channel(self, callback_url, calendar_ids=(), only_managed=False):
         """Create a new channel for receiving push notifications.
 
         :param string callback_url: The url that will receive push notifications.
         Must not be longer than 128 characters and should be HTTPS.
         :param tuple calendar_ids: List of calendar ids to create notification channels for. (Optional. Default empty tuple)
+        :param boolean only_managed: whether the notification channel should display only chronofy managed events
+        (Optional. Default false)
         :return: Channel id and channel callback
         :rtype: ``dict``
         """
         data = {'callback_url': callback_url}
+        filters = {}
         if calendar_ids:
-            data['filters'] = {'calendar_ids': calendar_ids}
+            filters['calendar_ids'] = calendar_ids
+        if only_managed:
+            filters['only_managed'] = only_managed
+        if filters != {}:
+            data['filters'] = filters
 
         return self.request_handler.post('channels', data=data).json()['channel']
 
