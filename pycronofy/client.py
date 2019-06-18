@@ -514,6 +514,16 @@ class Client(object):
             refresh_token=None,
         )
 
+    def revoke_profile(self, profile_id):
+        """Revokes access to a specific profile.
+
+        :param string profile_id: The ID of the profile to revoke access to.
+        :return: None
+
+        See https://docs.cronofy.com/developers/api/authorization/revoke-profile/ for reference
+        """
+        self.request_handler.post(endpoint='profiles/%s/revoke' % profile_id)
+
     def upsert_event(self, calendar_id, event):
         """Inserts or updates an event for the specified calendar.
 

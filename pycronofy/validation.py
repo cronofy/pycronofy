@@ -72,6 +72,11 @@ METHOD_RULES = {
         'args': (),
         'auth': ('client_id', 'client_secret', 'access_token'),
     },
+    'revoke_profile': {
+        'args': ('profile_id',),
+        'auth': ('access_token',),
+        'required': ('profile_id',),
+    },
     'upsert_event': {
         'args': ('calendar_id', 'event'),
         'auth': ('access_token',),
