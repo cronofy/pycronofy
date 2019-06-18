@@ -18,7 +18,7 @@ class Auth(object):
         self.client_secret = client_secret
         self.access_token = access_token
         self.refresh_token = refresh_token
-        self.token_expiration = None
+        self.token_expiration = token_expiration
         self.redirect_uri = ''
 
     def get_authorization(self):
