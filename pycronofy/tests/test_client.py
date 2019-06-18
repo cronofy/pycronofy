@@ -166,6 +166,7 @@ def test_create_notification_channel(client):
     channel = client.create_notification_channel('http://example.com', calendar_ids=('1',))
     assert channel['channel_id'] == 'chn_123example'
 
+
 @responses.activate
 def test_create_notification_channel_only_managed(client):
     """Test Client.create_notification_channel().
@@ -180,6 +181,7 @@ def test_create_notification_channel_only_managed(client):
                   )
     channel = client.create_notification_channel('http://example.com', calendar_ids=('1',), only_managed=True)
     assert channel['filters']['only_managed']
+
 
 @responses.activate
 def test_elevated_permissions(client):
