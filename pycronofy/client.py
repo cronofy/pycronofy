@@ -89,7 +89,7 @@ class Client(object):
         :param string callback_url: The url that will receive push notifications.
         Must not be longer than 128 characters and should be HTTPS.
         :param tuple calendar_ids: List of calendar ids to create notification channels for. (Optional. Default empty tuple)
-        :param boolean only_managed: whether the notification channel should display only chronofy managed events
+        :param boolean only_managed: whether the notification channel should display only Cronofy managed events
         (Optional. Default false)
         :return: Channel id and channel callback
         :rtype: ``dict``
