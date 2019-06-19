@@ -1,5 +1,7 @@
 import datetime
 import collections
+
+import pytz
 from future.standard_library import hooks
 
 from pycronofy import settings
@@ -32,7 +34,7 @@ class Client(object):
         :param string client_secret: OAuth Client Secret. (Optional, default None)
         :param string access_token: Access Token for User's Account. (Optional, default None)
         :param string refresh_token: Existing Refresh Token for User's Account. (Optional, default None)
-        :param string token_expiration: Datetime token expires. (Optional, default None)
+        :param datetime.datetime token_expiration: Datetime token expires. (Optional, default None)
         :param string data_center: The name of the data_center to use. (Optional, default None)
         """
         self.auth = Auth(client_id, client_secret, access_token,
@@ -255,7 +257,7 @@ class Client(object):
                 'redirect_uri': redirect_uri if redirect_uri else self.auth.redirect_uri,
             })
         data = response.json()
-        token_expiration = (datetime.datetime.utcnow() + datetime.timedelta(seconds=data['expires_in']))
+        token_expiration = (datetime.datetime.now(tz=pytz.utc) + datetime.timedelta(seconds=data['expires_in']))
         self.auth.update(
             token_expiration=token_expiration,
             access_token=data['access_token'],
@@ -282,7 +284,7 @@ class Client(object):
                 'application_calendar_id': application_calendar_id,
             })
         data = response.json()
-        token_expiration = (datetime.datetime.utcnow() + datetime.timedelta(seconds=data['expires_in']))
+        token_expiration = (datetime.datetime.now(tz=pytz.utc) + datetime.timedelta(seconds=data['expires_in']))
         self.auth.update(
             token_expiration=token_expiration,
             access_token=data['access_token'],
@@ -304,7 +306,7 @@ class Client(object):
         """
         if not self.auth.token_expiration:
             return True
-        return (datetime.datetime.utcnow() > self.auth.token_expiration)
+        return datetime.datetime.now(tz=pytz.utc) > self.auth.token_expiration
 
     def list_calendars(self):
         """Return a list of calendars available for the active account.
@@ -492,7 +494,7 @@ class Client(object):
             }
         )
         data = response.json()
-        token_expiration = (datetime.datetime.utcnow() + datetime.timedelta(seconds=data['expires_in']))
+        token_expiration = (datetime.datetime.now(tz=pytz.utc) + datetime.timedelta(seconds=data['expires_in']))
         self.auth.update(
             token_expiration=token_expiration,
             access_token=data['access_token'],

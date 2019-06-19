@@ -11,7 +11,7 @@ class Auth(object):
         :param string client_secret: OAuth Client Secret. (Optional, default None)
         :param string access_token: Access Token for User's Account. (Optional, default None)
         :param string refresh_token: Existing Refresh Token for User's Account. (Optional, default None)
-        :param string token_expiration: Datetime token expires. (Optional, default None)
+        :param datetime.datetime token_expiration: Datetime token expires. (Optional, default None)
         :param bool settings.DEBUG: Instantiate in debug mode. (Optional, default False).
         """
         self.client_id = client_id
