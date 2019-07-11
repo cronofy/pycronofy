@@ -277,7 +277,7 @@ class Client(object):
         :rtype: ``dict``
         """
         response = self.request_handler.post(
-            endpoint='application_calendar',
+            endpoint='application_calendars',
             data={
                 'client_id': self.auth.client_id,
                 'client_secret': self.auth.client_secret,

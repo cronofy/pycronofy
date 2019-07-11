@@ -32,7 +32,7 @@ def test_application_calendar(client):
 
     responses.add_callback(
         responses.POST,
-        url='%s/v1/application_calendar' % (settings.API_BASE_URL),
+        url='%s/v1/application_calendars' % (settings.API_BASE_URL),
         callback=request_callback,
         content_type='application/json',
     )
