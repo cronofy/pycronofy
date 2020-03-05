@@ -827,15 +827,9 @@ class Client(object):
                     raise e
                 # ignore the error if told to, and just give back the calendar
                 calendar_list = self.list_calendars()
-                calendar_found = False
                 calendar_data = None
                 for calendar_item in calendar_list:
                     if calendar_item['profile_id'] == profile_id:
                         if calendar_item['calendar_name'] == calendar_name:
-                            calendar_found = True
                             calendar_data = calendar_item.copy()
                 return calendar_data
-
-
-        
-
