@@ -9,7 +9,7 @@ from pycronofy.auth import Auth
 from pycronofy.batch import BatchEntry
 from pycronofy.batch import BatchResponse
 from pycronofy.datetime_utils import format_event_time
-from pycronofy.exceptions import PyCronofyPartialSuccessError
+from pycronofy.exceptions import PyCronofyPartialSuccessError, PyCronofyRequestError
 from pycronofy.pagination import Pages
 from pycronofy.request_handler import RequestHandler
 from pycronofy.validation import validate
@@ -811,3 +811,31 @@ class Client(object):
             return {'minutes': required_duration}
         else:
             return required_duration
+
+    def create_calendar(self, profile_id, calendar_name, error_on_duplicate=True):
+        try:
+            results = self.request_handler.post(endpoint='calendars', data={
+                'profile_id': profile_id,
+                'name': calendar_name,
+            }).json()
+            return results
+        except PyCronofyRequestError as e:
+            # check for duplicate calendar errors (some providers do not allow them)
+            if e.response.json()['errors']['name'][0]['key'] == 'errors.duplicate_calendar_name':
+                if error_on_duplicate:
+                    # throw the error by default
+                    raise e
+                # ignore the error if told to, and just give back the calendar
+                calendar_list = self.list_calendars()
+                calendar_found = False
+                calendar_data = None
+                for calendar_item in calendar_list:
+                    if calendar_item['profile_id'] == profile_id:
+                        if calendar_item['calendar_name'] == calendar_name:
+                            calendar_found = True
+                            calendar_data = calendar_item.copy()
+                return calendar_data
+
+
+        
+

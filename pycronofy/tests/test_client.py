@@ -27,6 +27,10 @@ TEST_UPSERT_EVENT_ARGS = {
     'content_type': 'application/json'
 }
 
+TEST_CALENDAR_NAME = 'test-calendar'
+
+TEST_PROFILE_ID = 'test-profile-id'
+
 
 @pytest.fixture(scope="module")
 def client():
@@ -151,6 +155,48 @@ def test_userinfo(client):
     assert userinfo['sub'] == 'acc_5700a00eb0ccd07000000000'
     assert userinfo['cronofy.type'] == 'userinfo'
 
+
+@responses.activate
+def test_create_calendar_with_duplicate_no_issues(client):
+    responses.add(responses.POST,
+                  url='%s/%s/calendars' % (settings.API_BASE_URL, settings.API_VERSION),
+                  body="""{"calendar": {"provider_name": "test_provider",
+                      "profile_id": "%s",
+                      "profile_name": "my-test-profile-name",
+                      "calendar_id": "test-calendar-id",
+                      "calendar_name": "%s",
+                      "calendar_readonly": false,
+                      "calendar_deleted": false,
+                      "calendar_primary": false,
+                      "permission_level": "unrestricted"}}""" % (TEST_PROFILE_ID, TEST_CALENDAR_NAME),
+                  status=200,
+                  content_type='application/json',
+    )
+    calendar_data = client.create_calendar(profile_id=TEST_PROFILE_ID, calendar_name=TEST_CALENDAR_NAME, error_on_duplicate=False)
+    assert calendar_data['calendar']['profile_id'] == TEST_PROFILE_ID
+    assert calendar_data['calendar']['calendar_name'] == TEST_CALENDAR_NAME
+
+
+
+@responses.activate
+def test_create_calendar(client):
+    responses.add(responses.POST,
+                  url='%s/%s/calendars' % (settings.API_BASE_URL, settings.API_VERSION),
+                  body="""{"calendar": {"provider_name": "test_provider",
+                      "profile_id": "%s",
+                      "profile_name": "my-test-profile-name",
+                      "calendar_id": "test-calendar-id",
+                      "calendar_name": "%s",
+                      "calendar_readonly": false,
+                      "calendar_deleted": false,
+                      "calendar_primary": false,
+                      "permission_level": "unrestricted"}}""" % (TEST_PROFILE_ID, TEST_CALENDAR_NAME),
+                  status=200,
+                  content_type='application/json',
+    )
+    calendar_data = client.create_calendar(profile_id=TEST_PROFILE_ID, calendar_name=TEST_CALENDAR_NAME)
+    assert calendar_data['calendar']['profile_id'] == TEST_PROFILE_ID
+    assert calendar_data['calendar']['calendar_name'] == TEST_CALENDAR_NAME
 
 @responses.activate
 def test_create_notification_channel(client):
