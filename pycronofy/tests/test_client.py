@@ -254,7 +254,6 @@ def test_create_calendar(client):
     assert calendar_data['calendar']['calendar_name'] == TEST_CALENDAR_NAME
 
 
-
 @responses.activate
 def test_create_notification_channel(client):
     """Test Client.create_notification_channel().
