@@ -5,7 +5,9 @@ import pytz
 import responses
 from pycronofy import Client
 from pycronofy import settings
+from pycronofy.exceptions import PyCronofyRequestError
 from pycronofy.tests import common_data
+
 
 TEST_EVENT = {
     'event_id': 'test-1',
@@ -30,6 +32,27 @@ TEST_UPSERT_EVENT_ARGS = {
 TEST_CALENDAR_NAME = 'test-calendar'
 
 TEST_PROFILE_ID = 'test-profile-id'
+
+TEST_CALENDAR_LIST = [
+    {'provider_name': 'live_connect',
+     'profile_id': TEST_PROFILE_ID,
+     'profile_name': 'testing@live.com',
+     'calendar_id': 'testing_cal',
+     'calendar_name': TEST_CALENDAR_NAME,
+     'calendar_readonly': True,
+     'calendar_deleted': True,
+     'calendar_primary': False,
+     'permission_level': 'unrestricted'},
+    {'provider_name': 'google',
+     'profile_id': 'test_profile_google',
+     'profile_name': 'test-google@gmail.com',
+     'calendar_id': 'cal_test_google',
+     'calendar_name': TEST_CALENDAR_NAME,
+     'calendar_readonly': False,
+     'calendar_deleted': False,
+     'calendar_primary': False,
+     'permission_level': 'unrestricted'}
+]
 
 
 @pytest.fixture(scope="module")
@@ -157,31 +180,60 @@ def test_userinfo(client):
 
 
 @responses.activate
-def test_create_calendar_with_duplicate_no_issues(client):
+def test_create_calendar_with_duplicates_errors(client):
+    """Test Client.create_calendar
+        - when there is a duplicate calendar error and we want to get the exception,
+        ie: the default
+
+    :param Client client: Client instance with test data.
+    """
+    duplicate_error_json = '{"errors": {"name": [{"key": "errors.duplicate_calendar_name", "description": "A calendar with this name already exists and the provider does not allow duplicates"}]}}'
     responses.add(
         responses.POST,
         url='%s/%s/calendars' % (settings.API_BASE_URL, settings.API_VERSION),
-        body="""
-        {"calendar": {"provider_name": "test_provider",
-        "profile_id": "%s",
-        "profile_name": "my-test-profile-name",
-        "calendar_id": "test-calendar-id",
-        "calendar_name": "%s",
-        "calendar_readonly": false,
-        "calendar_deleted": false,
-        "calendar_primary": false,
-        "permission_level": "unrestricted"
-        }}""" % (TEST_PROFILE_ID, TEST_CALENDAR_NAME),
+        body=duplicate_error_json,
+        status=422,
+        content_type='application/json; charset utf-8',
+    )
+    with pytest.raises(PyCronofyRequestError) as exc_info:
+        client.create_calendar(calendar_name=TEST_CALENDAR_NAME, profile_id=TEST_PROFILE_ID)
+        assert exc_info.response.json() == duplicate_error_json
+
+
+@responses.activate
+def test_create_calendar_with_duplicate_no_issues(client):
+    """Test Client.create_calendar
+        - when there is a duplicate calendar error and we dont mind, just use the old one
+
+    :param Client client: Client instance with test data.
+    """
+    duplicate_error_json = '{"errors": {"name": [{"key": "errors.duplicate_calendar_name", "description": "A calendar with this name already exists and the provider does not allow duplicates"}]}}'
+    responses.add(
+        responses.POST,
+        url='%s/%s/calendars' % (settings.API_BASE_URL, settings.API_VERSION),
+        body=duplicate_error_json,
+        status=422,
+        content_type='application/json; charset utf-8',
+    )
+    responses.add(
+        responses.GET,
+        body=json.dumps(dict(calendars=TEST_CALENDAR_LIST)),
+        url='%s/%s/calendars' % (settings.API_BASE_URL, settings.API_VERSION),
         status=200,
-        content_type='application/json',
+        content_type='application/json; charset utf-8'
     )
     calendar_data = client.create_calendar(profile_id=TEST_PROFILE_ID, calendar_name=TEST_CALENDAR_NAME, error_on_duplicate=False)
-    assert calendar_data['calendar']['profile_id'] == TEST_PROFILE_ID
-    assert calendar_data['calendar']['calendar_name'] == TEST_CALENDAR_NAME
+    assert calendar_data
+    assert calendar_data['profile_id'] == TEST_PROFILE_ID
+    assert calendar_data['calendar_name'] == TEST_CALENDAR_NAME
 
 
 @responses.activate
 def test_create_calendar(client):
+    """Test Client.create_calendar
+
+    :param Client client: Client instance with test data.
+    """
     responses.add(
         responses.POST,
         url='%s/%s/calendars' % (settings.API_BASE_URL, settings.API_VERSION),
@@ -200,6 +252,7 @@ def test_create_calendar(client):
     calendar_data = client.create_calendar(profile_id=TEST_PROFILE_ID, calendar_name=TEST_CALENDAR_NAME)
     assert calendar_data['calendar']['profile_id'] == TEST_PROFILE_ID
     assert calendar_data['calendar']['calendar_name'] == TEST_CALENDAR_NAME
+
 
 
 @responses.activate
