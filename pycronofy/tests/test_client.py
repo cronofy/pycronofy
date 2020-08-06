@@ -599,6 +599,7 @@ def test_get_smart_invite(client):
 
     assert result['attachments']['icalendar'] == "BEGIN:VCALENDAR\nVERSION:2.0..."
 
+
 @responses.activate
 def test_cancel_smart_invite(client):
     smart_invite_id = "qTtZdczOccgaPncGJaCiLg"
@@ -648,6 +649,7 @@ def test_cancel_smart_invite(client):
     result = client.cancel_smart_invite(smart_invite_id, recipient)
 
     assert result['attachments']['icalendar'] == "BEGIN:VCALENDAR\nVERSION:2.0..."
+
 
 @responses.activate
 def test_cancel_smart_invite_with_multiple_recipients(client):
