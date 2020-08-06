@@ -238,6 +238,28 @@ class Client(object):
 
         return self.request_handler.get('smart_invites', params=params, use_api_key=True).json()
 
+    def cancel_smart_invite(self, smart_invite_id, recipient):
+        """Cancel a smart invite.
+
+        :param string smart_invite_id - A String uniquely identifying the event for your
+              application (note: this is NOT an ID generated
+              by Cronofy).
+        :param dict recipient - A Dict containing the intended recipient of the invite
+             :email      - A String for the email address you are
+                           going to send the Smart Invite to.
+        """
+        body = {
+            'smart_invite_id': smart_invite_id,
+            'method': 'cancel'
+        }
+
+        if type(recipient) == dict:
+            body['recipient'] = recipient
+        elif type(recipient) == list:
+            body['recipients'] = recipient
+
+        return self.request_handler.post('smart_invites', data=body, use_api_key=True).json()
+
     def get_authorization_from_code(self, code, redirect_uri=''):
         """Updates the authorization tokens from the user provided code.
 
