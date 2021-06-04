@@ -855,3 +855,34 @@ class Client(object):
                         if calendar_item['calendar_name'] == calendar_name:
                             calendar_data = calendar_item.copy()
                 return calendar_data
+
+    def upsert_availability_rule(self, availability_rule):
+        """Inserts or updates an Availability Rule for the active account.
+
+        :param dict availability_rule: Dictionary representing the Availability Rule.
+        """
+        return self.request_handler.post(
+            endpoint='availability_rules', data=availability_rule).json()['availability_rule']
+
+    def list_availability_rules(self):
+        """Return a list of Availability Rules saved against the active account.
+
+        :return: List of Availability Rules (dictionaries).
+        :rtype: ``list``
+        """
+        return self.request_handler.get(endpoint='availability_rules').json()['availability_rules']
+
+    def get_availability_rule(self, availability_rule_id):
+        """Retrieve a single Availability Rule saved against the active account.
+
+        :return: The Availability Rule (dictionary).
+        :rtype: ``dict``
+        """
+        return self.request_handler.get(endpoint='availability_rules/%s' % availability_rule_id).json()['availability_rule']
+
+    def delete_availability_rule(self, availability_rule_id):
+        """Delete an event from the specified calendar.
+
+        :param string availability_rule_id: ID of the Availability Rule to delete.
+        """
+        self.request_handler.delete(endpoint='availability_rules/%s' % availability_rule_id)
