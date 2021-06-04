@@ -17,7 +17,12 @@ TEST_EVENT = {
     },
 }
 
-REAL_TIME_SCHEDULING_RESPONSE = {'url': 'http://www.example.com'}
+REAL_TIME_SCHEDULING_RESPONSE = {
+    'real_time_scheduling': {
+        'real_time_scheduling_id': "sch_4353945880944395",
+        'url': 'https://app.cronofy.com/rts/example'
+    }
+}
 
 
 @pytest.fixture(scope="module")
