@@ -772,14 +772,193 @@ def test_list_resources(client):
 
     :param Client client: Client instance with test data.
     """
-    responses.add(responses.GET,
-                  '%s/v1/resources' % settings.API_BASE_URL,
-                  body='{"resources":[{"email":"board-room-london@example.com","name":"Board room (London)"},{"email":"3dprinter@example.com","name":"3D Printer"},{"email":"vr-headset@example.com","name":"Oculus Rift"}]}',
-                  status=200,
-                  content_type='application/json'
-                  )
+    responses.add(
+        responses.GET,
+        '%s/v1/resources' % settings.API_BASE_URL,
+        body='{"resources":[{"email":"board-room-london@example.com","name":"Board room (London)"},{"email":"3dprinter@example.com","name":"3D Printer"},{"email":"vr-headset@example.com","name":"Oculus Rift"}]}',
+        status=200,
+        content_type='application/json'
+    )
     response = client.resources()
 
     assert len(response) == 3
     assert response[0]['email'] == "board-room-london@example.com"
     assert response[0]['name'] == "Board room (London)"
+
+
+@responses.activate
+def test_upsert_availability_rule(client):
+    """Test Client.upsert_availability_rule().
+
+    :param Client client: Client instance with test data.
+    """
+
+    def request_callback(request):
+        payload = json.loads(request.body)
+        assert payload == test_availability_rule
+
+        return (200, {}, json.dumps(test_response))
+
+    test_availability_rule = {
+        'availability_rule_id': 'rule-1',
+        'tzid': 'America/Chicago',
+        'calendar_ids': [
+            'cal_n23kjnwrw2_jsdfjksn234'
+        ],
+        'weekly_periods': [
+            {
+                'day': 'monday',
+                'start_time': '09:30',
+                'end_time': '12:30'
+            },
+            {
+                'day': 'monday',
+                'start_time': '14:00',
+                'end_time': '17:00'
+            },
+            {
+                'day': 'wednesday',
+                'start_time': '09:30',
+                'end_time': '12:30'
+            }
+        ]
+    }
+
+    test_response = {
+        'availability_rule': test_availability_rule
+    }
+
+    responses.add_callback(
+        responses.POST,
+        '%s/%s/availability_rules' % (settings.API_BASE_URL, settings.API_VERSION),
+        callback=request_callback,
+        content_type='application/json',
+    )
+
+    result = client.upsert_availability_rule(test_availability_rule)
+    assert result == test_availability_rule
+
+
+@responses.activate
+def test_list_availability_rules(client):
+    """Test Client.list_availability_rules().
+
+    :param Client client: Client instance with test data.
+    """
+
+    test_availability_rules = [
+        {
+            'availability_rule_id': 'rule-1',
+            'tzid': 'America/Chicago',
+            'calendar_ids': [
+                'cal_n23kjnwrw2_jsdfjksn234'
+            ],
+            'weekly_periods': [
+                {
+                    'day': 'monday',
+                    'start_time': '09:30',
+                    'end_time': '12:30'
+                }
+            ]
+        },
+        {
+            'availability_rule_id': 'rule-2',
+            'tzid': 'America/Chicago',
+            'calendar_ids': [
+                'cal_n23kjnwrw2_jsdfjksn234'
+            ],
+            'weekly_periods': [
+                {
+                    'day': 'tuesday',
+                    'start_time': '13:30',
+                    'end_time': '17:30'
+                }
+            ]
+        }
+    ]
+
+    test_response = {
+        'availability_rules': test_availability_rules
+    }
+
+    responses.add(
+        responses.GET,
+        '%s/%s/availability_rules' % (settings.API_BASE_URL, settings.API_VERSION),
+        body=json.dumps(test_response),
+        status=200,
+        content_type='application/json'
+    )
+
+    result = client.list_availability_rules()
+
+    assert result == test_availability_rules
+
+
+@responses.activate
+def test_get_availability_rule(client):
+    """Test Client.get_availability_rule().
+
+    :param Client client: Client instance with test data.
+    """
+    availability_rule_id = 'rule-1'
+
+    test_availability_rule = {
+        'availability_rule_id': availability_rule_id,
+        'tzid': 'America/Chicago',
+        'calendar_ids': [
+            'cal_n23kjnwrw2_jsdfjksn234'
+        ],
+        'weekly_periods': [
+            {
+                'day': 'monday',
+                'start_time': '09:30',
+                'end_time': '12:30'
+            },
+            {
+                'day': 'monday',
+                'start_time': '14:00',
+                'end_time': '17:00'
+            },
+            {
+                'day': 'wednesday',
+                'start_time': '09:30',
+                'end_time': '12:30'
+            }
+        ]
+    }
+
+    test_response = {
+        'availability_rule': test_availability_rule
+    }
+
+    responses.add(
+        responses.GET,
+        '%s/%s/availability_rules/%s' % (settings.API_BASE_URL, settings.API_VERSION, availability_rule_id),
+        body=json.dumps(test_response),
+        status=200,
+        content_type='application/json'
+    )
+
+    result = client.get_availability_rule(availability_rule_id)
+    assert result == test_availability_rule
+
+
+@responses.activate
+def test_delete_availability_rule(client):
+    """Test Client.delete_availability_rule().
+
+    :param Client client: Client instance with test data.
+    """
+    availability_rule_id = "test-1"
+
+    def request_callback(request):
+        return (202, {}, None)
+
+    responses.add_callback(
+        responses.DELETE,
+        url='%s/%s/availability_rules/%s' % (settings.API_BASE_URL, settings.API_VERSION, availability_rule_id),
+        callback=request_callback,
+        content_type='application/json',
+    )
+    result = client.delete_availability_rule(availability_rule_id)
+    assert result is None
