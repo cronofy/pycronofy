@@ -587,7 +587,7 @@ class Client(object):
             endpoint="service_account_authorizations", data=params)
         None
 
-    def real_time_scheduling(self, availability, oauth, event, target_calendars=(), minimum_notice=None):
+    def real_time_scheduling(self, availability, oauth, event, target_calendars=(), minimum_notice=None, callback_url=None, redirect_urls=None):
         """Generates an real time scheduling link to start the OAuth process with
         an event to be automatically upserted
 
@@ -610,6 +610,11 @@ class Client(object):
         :param list target_calendars: - An list of dics stating into which calendars
                                         to insert the created event
         :param dict :minimum_notice - A dict describing the minimum notice for a booking (Optional)
+        :param string :callback_url - A String representing the URL Cronofy will notify
+                                      once a slot has been selected.
+        :param dict redirect_urls: - A dict containing redirect URLs for the end-user's journey
+            :completed_url         - A String representing the URL the end-user
+                                     will be redirected to after choosing a slot
 
         See https://docs.cronofy.com/developers/api/scheduling/real-time-scheduling/ for reference.
         """
@@ -631,6 +636,12 @@ class Client(object):
 
         if minimum_notice:
             args['minimum_notice'] = self.map_availability_duration(minimum_notice)
+
+        if callback_url:
+            args['callback_url'] = callback_url
+
+        if redirect_urls:
+            args['redirect_urls'] = redirect_urls
 
         return self.request_handler.post(endpoint='real_time_scheduling', data=args, use_api_key=True).json()
 
