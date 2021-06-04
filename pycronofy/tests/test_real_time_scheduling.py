@@ -17,7 +17,12 @@ TEST_EVENT = {
     },
 }
 
-REAL_TIME_SCHEDULING_RESPONSE = {'url': 'http://www.example.com'}
+REAL_TIME_SCHEDULING_RESPONSE = {
+    'real_time_scheduling': {
+        'real_time_scheduling_id': "sch_4353945880944395",
+        'url': 'https://app.cronofy.com/rts/example'
+    }
+}
 
 
 @pytest.fixture(scope="module")
@@ -58,6 +63,9 @@ def test_real_time_scheduling(client):
         assert payload['event'] == TEST_EVENT
         assert payload['oauth'] == oauth
         assert payload['minimum_notice'] == {'hours': 4}
+
+        assert payload['callback_url'] == 'http://www.example.com/callback'
+        assert payload['redirect_urls']['completed_url'] == 'http://www.example.com/completed'
 
         assert request.headers['Authorization'] == "Bearer %s" % client.auth.client_secret
 
@@ -102,5 +110,11 @@ def test_real_time_scheduling(client):
         'hours': 4
     }
 
-    result = client.real_time_scheduling(availability, oauth, TEST_EVENT, [], minimum_notice)
+    callback_url = 'http://www.example.com/callback'
+
+    redirect_urls = {
+        'completed_url': 'http://www.example.com/completed'
+    }
+
+    result = client.real_time_scheduling(availability, oauth, TEST_EVENT, [], minimum_notice, callback_url=callback_url, redirect_urls=redirect_urls)
     assert result == REAL_TIME_SCHEDULING_RESPONSE
