@@ -645,6 +645,32 @@ class Client(object):
 
         return self.request_handler.post(endpoint='real_time_scheduling', data=args, use_api_key=True).json()
 
+    def get_real_time_scheduling_status(self, token=None, real_time_scheduling_id=None):
+        if real_time_scheduling_id:
+            return self.request_handler.get(
+                endpoint='real_time_scheduling/%s' % real_time_scheduling_id,
+                use_api_key=True
+            ).json()
+        elif token:
+            return self.request_handler.get(
+                endpoint='real_time_scheduling',
+                params={
+                    'token': token
+                },
+                use_api_key=True
+            ).json()
+        else:
+            return None  # raise error?
+
+    def disable_real_time_scheduling_link(self, real_time_scheduling_id, display_message):
+        return self.request_handler.post(
+            endpoint='real_time_scheduling/%s/disable' % real_time_scheduling_id,
+            data={
+                'display_message': display_message
+            },
+            use_api_key=True
+        ).json()
+
     def real_time_sequencing(self, availability, oauth, event, target_calendars=(), minimum_notice=None):
         """Generates an real time sequencing link to start the OAuth process with
         an event to be automatically upserted
