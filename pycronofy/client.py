@@ -9,7 +9,7 @@ from pycronofy.auth import Auth
 from pycronofy.batch import BatchEntry
 from pycronofy.batch import BatchResponse
 from pycronofy.datetime_utils import format_event_time
-from pycronofy.exceptions import PyCronofyPartialSuccessError, PyCronofyRequestError
+from pycronofy.exceptions import PyCronofyPartialSuccessError, PyCronofyRequestError, PyCronofyValidationError
 from pycronofy.pagination import Pages
 from pycronofy.request_handler import RequestHandler
 from pycronofy.validation import validate
@@ -646,7 +646,9 @@ class Client(object):
         return self.request_handler.post(endpoint='real_time_scheduling', data=args, use_api_key=True).json()
 
     def get_real_time_scheduling_status(self, token=None, real_time_scheduling_id=None):
-        if real_time_scheduling_id:
+        if real_time_scheduling_id and token:
+            raise PyCronofyValidationError('Must pass one of token or real_time_scheduling_id.', 'get_real_time_scheduling_status')
+        elif real_time_scheduling_id:
             return self.request_handler.get(
                 endpoint='real_time_scheduling/%s' % real_time_scheduling_id,
                 use_api_key=True
@@ -660,7 +662,7 @@ class Client(object):
                 use_api_key=True
             ).json()
         else:
-            return None  # raise error?
+            raise PyCronofyValidationError('Must pass either token or real_time_scheduling_id.', 'get_real_time_scheduling_status')
 
     def disable_real_time_scheduling_link(self, real_time_scheduling_id, display_message):
         return self.request_handler.post(
