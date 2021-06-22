@@ -118,3 +118,61 @@ def test_real_time_scheduling(client):
 
     result = client.real_time_scheduling(availability, oauth, TEST_EVENT, [], minimum_notice, callback_url=callback_url, redirect_urls=redirect_urls)
     assert result == REAL_TIME_SCHEDULING_RESPONSE
+
+
+@responses.activate
+def test_get_real_time_scheduling_status_by_token(client):
+
+    def request_callback(request):
+        assert request.headers['Authorization'] == "Bearer %s" % client.auth.client_secret
+        return (200, {}, json.dumps(REAL_TIME_SCHEDULING_RESPONSE))
+
+    responses.add_callback(
+        responses.GET,
+        url='%s/%s/real_time_scheduling?token=example' % (settings.API_BASE_URL, settings.API_VERSION),
+        callback=request_callback,
+        content_type='application/json',
+        match_querystring=True,
+    )
+
+    result = client.get_real_time_scheduling_status(token='example')
+    assert result == REAL_TIME_SCHEDULING_RESPONSE
+
+
+@responses.activate
+def test_get_real_time_scheduling_status_by_id(client):
+
+    def request_callback(request):
+        assert request.headers['Authorization'] == "Bearer %s" % client.auth.client_secret
+        return (200, {}, json.dumps(REAL_TIME_SCHEDULING_RESPONSE))
+
+    responses.add_callback(
+        responses.GET,
+        url='%s/%s/real_time_scheduling/sch_4353945880944395' % (settings.API_BASE_URL, settings.API_VERSION),
+        callback=request_callback,
+        content_type='application/json',
+    )
+
+    result = client.get_real_time_scheduling_status(real_time_scheduling_id='sch_4353945880944395')
+    assert result == REAL_TIME_SCHEDULING_RESPONSE
+
+
+@responses.activate
+def test_disable_real_time_scheduling_link(client):
+    def request_callback(request):
+        payload = json.loads(request.body)
+
+        assert request.headers['Authorization'] == "Bearer %s" % client.auth.client_secret
+        assert payload['display_message'] == 'test message'
+
+        return (200, {}, json.dumps(REAL_TIME_SCHEDULING_RESPONSE))
+
+    responses.add_callback(
+        responses.POST,
+        url='%s/%s/real_time_scheduling/%s/disable' % (settings.API_BASE_URL, settings.API_VERSION, 'sch_4353945880944395'),
+        callback=request_callback,
+        content_type='application/json',
+    )
+
+    result = client.disable_real_time_scheduling_link('sch_4353945880944395', 'test message')
+    assert result == REAL_TIME_SCHEDULING_RESPONSE

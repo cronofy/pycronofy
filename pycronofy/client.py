@@ -9,7 +9,7 @@ from pycronofy.auth import Auth
 from pycronofy.batch import BatchEntry
 from pycronofy.batch import BatchResponse
 from pycronofy.datetime_utils import format_event_time
-from pycronofy.exceptions import PyCronofyPartialSuccessError, PyCronofyRequestError
+from pycronofy.exceptions import PyCronofyPartialSuccessError, PyCronofyRequestError, PyCronofyValidationError
 from pycronofy.pagination import Pages
 from pycronofy.request_handler import RequestHandler
 from pycronofy.validation import validate
@@ -644,6 +644,48 @@ class Client(object):
             args['redirect_urls'] = redirect_urls
 
         return self.request_handler.post(endpoint='real_time_scheduling', data=args, use_api_key=True).json()
+
+    def get_real_time_scheduling_status(self, token=None, real_time_scheduling_id=None):
+        """ Gets the status of a Real-Time Scheduling link by either ID or its URL token.
+
+        :param string token: the link's token from its URL
+        :param string real_time_scheduling_id: the ID of the link
+        :return: Dictionary containing the current status of the Real-Time Scheduling link
+        :rtype: ``dict``
+        """
+        if real_time_scheduling_id and token:
+            raise PyCronofyValidationError('Must pass one of token or real_time_scheduling_id.', 'get_real_time_scheduling_status')
+        elif real_time_scheduling_id:
+            return self.request_handler.get(
+                endpoint='real_time_scheduling/%s' % real_time_scheduling_id,
+                use_api_key=True
+            ).json()
+        elif token:
+            return self.request_handler.get(
+                endpoint='real_time_scheduling',
+                params={
+                    'token': token
+                },
+                use_api_key=True
+            ).json()
+        else:
+            raise PyCronofyValidationError('Must pass either token or real_time_scheduling_id.', 'get_real_time_scheduling_status')
+
+    def disable_real_time_scheduling_link(self, real_time_scheduling_id, display_message):
+        """ Disables a Real-Time Scheduling link, with a display message for visitors to the URL
+
+        :param string real_time_scheduling_id: the ID of the link
+        :param string display_message: a message to show visitors to the disabled link (<500 characters)
+        :return: Dictionary containing the current status of the Real-Time Scheduling link
+        :rtype: ``dict``
+        """
+        return self.request_handler.post(
+            endpoint='real_time_scheduling/%s/disable' % real_time_scheduling_id,
+            data={
+                'display_message': display_message
+            },
+            use_api_key=True
+        ).json()
 
     def real_time_sequencing(self, availability, oauth, event, target_calendars=(), minimum_notice=None):
         """Generates an real time sequencing link to start the OAuth process with
