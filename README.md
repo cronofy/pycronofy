@@ -47,7 +47,8 @@ cronofy = pycronofy.Client(
     client_secret=YOUR_CLIENT_SECRET,
     access_token=auth['access_token'],
     refresh_token=auth['refresh_token'],
-    token_expiration=auth['token_expiration']
+    token_expiration=auth['token_expiration'],
+    data_center=ANY_OF_THE_FOLLOWING 'us','au', 'ca', 'de', 'sg', 'uk'
 )
 ```
 
@@ -61,6 +62,19 @@ Expiry of tokens can be verified with the is_authorization_expired method.
 
 ```python
 cronofy.is_authorization_expired()
+```
+
+Data centers(us, au, ca, de, sg, uk) can also be specified:
+
+```python
+cronofy = pycronofy.Client(
+    client_id=YOUR_CLIENT_ID,
+    client_secret=YOUR_CLIENT_SECRET,
+    access_token=auth['access_token'],
+    refresh_token=auth['refresh_token'],
+    token_expiration=auth['token_expiration'],
+    data_center='us'
+)
 ```
 
 ## Refreshing tokens
