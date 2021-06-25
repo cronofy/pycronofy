@@ -1,0 +1,8 @@
+requests
+pytz
+future
+
+pytest
+pytest-cov
+responses
+flake8

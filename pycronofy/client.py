@@ -1,6 +1,10 @@
 import datetime
 import collections
 
+import hashlib
+import base64
+import hmac
+
 import pytz
 from future.standard_library import hooks
 
@@ -939,3 +943,24 @@ class Client(object):
         :param string availability_rule_id: ID of the Availability Rule to delete.
         """
         self.request_handler.delete(endpoint='availability_rules/%s' % availability_rule_id)
+
+    def hmac_valid(self, hmac_string, body):
+        """Verifies a HMAC from a push notification using the client secret.
+
+        :hmac_string: A String containing comma-separated values describing HMACs of the notification taken from the
+                        Cronofy-HMAC-SHA256 header.
+        :body: A String of the body of the notification.
+        :return: TRUE if one of the HMAC provided matches the one calculated using the client secret, otherwise FALSE.
+        """
+        if hmac_string is None or not hmac_string:
+            return False
+
+        # In order to support oython 2.7 we generate the hmac and calculate the digest in two steps using `new` and `digest`
+        generated = hmac.new(self.auth.client_secret.encode(), body.encode(), hashlib.sha256)
+        digest = generated.digest()
+        calculated = base64.b64encode(digest).strip()
+
+        hmac_list = hmac_string.split(',')
+
+        # compare_digest used to reduce vulnerability to timing attacks
+        return any(hmac.compare_digest(value.encode(), calculated) for value in hmac_list)

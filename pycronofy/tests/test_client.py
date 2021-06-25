@@ -962,3 +962,17 @@ def test_delete_availability_rule(client):
     )
     result = client.delete_availability_rule(availability_rule_id)
     assert result is None
+
+
+@responses.activate
+def test_hmac_valid(client):
+    """Test Client.hmac_valid.
+
+    :param Client client: Client instance with test data.
+    """
+    assert client.hmac_valid('38ArsN7+J/O8joGsgirVEdV16a/+eb+5QgHGIiuv4hk=', '{\"example\":\"well-known\"}') is True
+    assert client.hmac_valid('wrong-hmac', '{\"example\":\"well-known\"}') is False
+    assert client.hmac_valid('wrong-hmac,38ArsN7+J/O8joGsgirVEdV16a/+eb+5QgHGIiuv4hk=,wrong-hmac-again', '{\"example\":\"well-known\"}') is True
+    assert client.hmac_valid('wrong-hmac,wrong-hmac-again', '{\"example\":\"well-known\"}') is False
+    assert client.hmac_valid(None, '{\"example\":\"well-known\"}') is False
+    assert client.hmac_valid('', '{\"example\":\"well-known\"}') is False
