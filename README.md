@@ -63,6 +63,19 @@ Expiry of tokens can be verified with the is_authorization_expired method.
 cronofy.is_authorization_expired()
 ```
 
+Data center can also be specified using the SDK ID from the docs: https://docs.cronofy.com/developers/data-centers/
+
+```python
+cronofy = pycronofy.Client(
+    client_id=YOUR_CLIENT_ID,
+    client_secret=YOUR_CLIENT_SECRET,
+    access_token=auth['access_token'],
+    refresh_token=auth['refresh_token'],
+    token_expiration=auth['token_expiration'],
+    data_center='us'
+)
+```
+
 ## Refreshing tokens
 
 OAuth tokens can be refreshed using the refresh_authorization method.
