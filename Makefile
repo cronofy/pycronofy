@@ -8,6 +8,11 @@ all: test
 clean:
 	rm -rf build
 
+.PHONY: init_ci
+init_ci:
+	python -m pip install --upgrade pip
+	pip install --requirement requirements-ci.txt
+
 .PHONY: init
 init:
 	pip install --requirement requirements.txt
@@ -25,12 +30,15 @@ else
 	@exit 1
 endif
 
+.PHONY: test_ci
+test_ci: clean init_ci pytest checkversion
+
 .PHONY: test
 test: clean init pytest checkversion
 
 .PHONY: pytest
 pytest:
-	py.test pycronofy --cov=pycronofy -vv -s
+	python -m pytest pycronofy --cov=pycronofy -vv -s
 	python -m flake8
 
 .PHONY: release
