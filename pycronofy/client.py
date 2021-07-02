@@ -955,7 +955,7 @@ class Client(object):
         if hmac_string is None or not hmac_string:
             return False
 
-        # In order to support oython 2.7 we generate the hmac and calculate the digest in two steps using `new` and `digest`
+        # In order to support Python 2.7 we generate the hmac and calculate the digest in two steps using `new` and `digest`
         generated = hmac.new(self.auth.client_secret.encode(), body.encode(), hashlib.sha256)
         digest = generated.digest()
         calculated = base64.b64encode(digest).strip()
