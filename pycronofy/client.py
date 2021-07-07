@@ -969,7 +969,7 @@ class Client(object):
         """Get an auth link to redirect the user to so they can authorize with a conferencing provider
 
         :param string redirect_uri: URL to redirect the user to after auth.
-        :param provider_name: One of 'ms_teams', 'go_to', 'zoom'
+        :param string provider_name: Restrict possible conferencing providers. Must be one of 'ms_teams', 'go_to', 'zoom'.
         """
         data = {"redirect_uri": redirect_uri}
         if provider_name:
