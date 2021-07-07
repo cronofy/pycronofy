@@ -964,3 +964,15 @@ class Client(object):
 
         # compare_digest used to reduce vulnerability to timing attacks
         return any(hmac.compare_digest(value.encode(), calculated) for value in hmac_list)
+
+    def conferencing_services_auth_link(self, redirect_uri, provider_name=None):
+        """Get an auth link to redirect the user to so they can authorize with a conferencing provider
+
+        :param string redirect_uri: URL to redirect the user to after auth.
+        :param provider_name: One of 'ms_teams', 'go_to', 'zoom'
+        """
+        data = {"redirect_uri": redirect_uri}
+        if provider_name:
+            data["provider_name"] = provider_name
+        response = self.request_handler.post(endpoint="conferencing_service_authorizations", data=data)
+        return response.json()["authorization_request"]["url"]
