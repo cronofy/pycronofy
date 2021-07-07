@@ -98,7 +98,7 @@ cronofy.revoke_authorization()
 # For account details
 cronofy.account()
 
-# For userinfo 
+# For userinfo
 cronofy.userinfo()
 ```
 
@@ -320,3 +320,12 @@ In the event of an insecure platform warning:
 * Install python >= 2.7.9
 * pip install requests\[security\] (you may need to install additional library packages)
 * Call ``requests.packages.urllib3.disable_warnings()`` in your code to suppress the warnings.
+
+## A feature I want is not in the SDK, how do I get it?
+
+We add features to this SDK as they are requested, to focus on developing the Cronofy API.
+
+If you're comfortable contributing support for an endpoint or attribute, then we love to receive pull requests!
+Please create a PR mentioning the feature/API endpoint you’ve added and we’ll review it as soon as we can.
+
+If you would like to request a feature is added by our team then please let us know by getting in touch via [support@cronofy.com](mailto:support@cronofy.com).
