@@ -966,6 +966,16 @@ class Client(object):
         return any(hmac.compare_digest(value.encode(), calculated) for value in hmac_list)
 
     def get_ui_element_token(self, permissions, subs, origin, version="1"):
+        """Get a UI element token for rendering UI elements
+
+        :param permissions: List of strings containing the permissions required.
+            See documentation for info: https://docs.cronofy.com/developers/ui-elements/authentication/#param-permissions
+        :param subs: List of strings containing the subs of the users to include in the
+            element token request
+        :param origin: String containing the HTTP origin that the element token will be
+            used to render elements on
+        :param version: Version of the element token to request
+        """
         return self.request_handler.post(
             endpoint="element_tokens",
             data={
