@@ -964,3 +964,14 @@ class Client(object):
 
         # compare_digest used to reduce vulnerability to timing attacks
         return any(hmac.compare_digest(value.encode(), calculated) for value in hmac_list)
+
+    def get_ui_element_token(self, permissions, subs, origin, version="1"):
+        return self.request_handler.post(
+            endpoint="element_tokens",
+            data={
+                "permissions": permissions,
+                "subs": subs,
+                "origin": origin,
+                "version": version
+            }
+        ).json()["token"]
