@@ -8,6 +8,7 @@ from pycronofy import settings
 from pycronofy.exceptions import PyCronofyRequestError
 from pycronofy.tests import common_data
 
+
 TEST_EVENT = {
     'event_id': 'test-1',
     'summary': 'Test Event',
