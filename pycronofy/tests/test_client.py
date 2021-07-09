@@ -7,7 +7,7 @@ from pycronofy import Client
 from pycronofy import settings
 from pycronofy.exceptions import PyCronofyRequestError
 from pycronofy.tests import common_data
-
+from pycronofy.tests.common_data import AUTH_ARGS
 
 TEST_EVENT = {
     'event_id': 'test-1',
@@ -983,6 +983,7 @@ def test_get_ui_element_token(client):
     permissions = ["agenda"]
     origin = "http://localhost"
     subs = ["acc_5700a00eb0ccd07000000000"]
+    expires_in = 64800
 
     token = "ELEMENT_TOKEN"
 
@@ -994,11 +995,13 @@ def test_get_ui_element_token(client):
         assert payload["subs"] == subs
         assert payload["version"] == "1"  # as per default
 
+        assert request.headers["Authorization"] == "Bearer %s" % AUTH_ARGS["client_secret"]
+
         response_data = {
             "subs": subs,
             "permissions": permissions,
             "token": token,
-            "expires_in": 64800
+            "expires_in": expires_in
         }
 
         return (200, {}, json.dumps(response_data))
@@ -1016,4 +1019,7 @@ def test_get_ui_element_token(client):
         origin=origin
     )
 
-    assert response == token
+    assert response["token"] == token
+    assert response["expires_in"] == expires_in
+    assert response["subs"] == subs
+    assert response["permissions"] == permissions
