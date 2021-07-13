@@ -976,3 +976,50 @@ def test_hmac_valid(client):
     assert client.hmac_valid('wrong-hmac,wrong-hmac-again', '{\"example\":\"well-known\"}') is False
     assert client.hmac_valid(None, '{\"example\":\"well-known\"}') is False
     assert client.hmac_valid('', '{\"example\":\"well-known\"}') is False
+
+
+@responses.activate
+def test_get_ui_element_token(client):
+    permissions = ["agenda"]
+    origin = "http://localhost"
+    subs = ["acc_5700a00eb0ccd07000000000"]
+    expires_in = 64800
+
+    token = "ELEMENT_TOKEN"
+
+    def request_callback(request):
+        payload = json.loads(request.body)
+
+        assert payload["permissions"] == permissions
+        assert payload["origin"] == origin
+        assert payload["subs"] == subs
+        assert payload["version"] == "1"  # as per default
+
+        assert request.headers["Authorization"] == "Bearer %s" % common_data.AUTH_ARGS["client_secret"]
+
+        response_data = {
+            "subs": subs,
+            "permissions": permissions,
+            "token": token,
+            "expires_in": expires_in
+        }
+
+        return (200, {}, json.dumps(response_data))
+
+    responses.add_callback(
+        responses.POST,
+        url="%s/%s/element_tokens" % (settings.API_BASE_URL, settings.API_VERSION),
+        callback=request_callback,
+        content_type="application/json"
+    )
+
+    response = client.get_ui_element_token(
+        permissions=permissions,
+        subs=subs,
+        origin=origin
+    )
+
+    assert response["token"] == token
+    assert response["expires_in"] == expires_in
+    assert response["subs"] == subs
+    assert response["permissions"] == permissions
