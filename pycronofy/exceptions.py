@@ -1,4 +1,9 @@
-class PyCronofyDateTimeError(Exception):
+class PyCronofyException(Exception):
+    """Base Exception for PyCronofy exceptions."""
+    pass
+
+
+class PyCronofyDateTimeError(PyCronofyException):
     """Exception class for datetime_utils improper argument."""
 
     def __init__(self, message, argument):
@@ -11,7 +16,7 @@ class PyCronofyDateTimeError(Exception):
         self.message = message
 
 
-class PyCronofyRequestError(Exception):
+class PyCronofyRequestError(PyCronofyException):
     """Wraps requests.exceptions.HTTPError for convenience and give a little more info in the message."""
 
     def __init__(self, request, response):
@@ -42,7 +47,7 @@ class PyCronofyRequestError(Exception):
         self.response = response
 
 
-class PyCronofyValidationError(Exception):
+class PyCronofyValidationError(PyCronofyException):
     """Exception class for validation errors with client.Client methods."""
 
     def __init__(self, message, method, fields=None, values=None):
@@ -59,7 +64,7 @@ class PyCronofyValidationError(Exception):
         self.values = values
 
 
-class PyCronofyPartialSuccessError(Exception):
+class PyCronofyPartialSuccessError(PyCronofyException):
     def __init__(self, message, batch_response):
         super(PyCronofyPartialSuccessError, self).__init__(message)
         self.message = message
