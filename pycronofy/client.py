@@ -786,7 +786,8 @@ class Client(object):
     def batch(self, builder):
         requests = builder.build()
 
-        responses = self.request_handler.post(endpoint="batch", data=requests).json().get('batch', [])
+        data = {"batch": requests}
+        responses = self.request_handler.post(endpoint="batch", data=data).json().get('batch', [])
 
         entries = list()
         for (request, response) in zip(requests, responses):
