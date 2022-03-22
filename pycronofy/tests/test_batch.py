@@ -1,4 +1,7 @@
+import datetime
+
 import pytest
+import pytz
 import responses
 import json
 from pycronofy import Client
@@ -124,3 +127,59 @@ def test_batch_with_errors(client):
         client.batch(builder)
     except PyCronofyPartialSuccessError as e:
         assert e.message == 'Batch contains 1 errors'
+
+
+@responses.activate
+def test_batch_upsert_with_datetimes(client):
+    """Ensure the batch builder properly stringifies datetimes for upserts"""
+    builder = BatchBuilder()
+
+    calendar_id = "cal_123"
+    event = {
+        'event_id': 'test-1',
+        'summary': 'Test Event',
+        'description': 'Talk about how awesome dogs are.',
+        'start': datetime.datetime(2022, 3, 22, 17, tzinfo=pytz.utc),
+        'end': datetime.datetime(2022, 3, 22, 18, tzinfo=pytz.utc),
+        'tzid': 'Etc/UTC',
+        'location': {
+            'description': 'Location!',
+        },
+    }
+
+    stringified_event = event.copy()
+    stringified_event['start'] = '2022-03-22T17:00:00Z'
+    stringified_event['end'] = '2022-03-22T18:00:00Z'
+
+    builder.upsert_event(calendar_id, event)
+
+    def request_callback(request):
+        payload = json.loads(request.body)
+
+        assert len(payload) == 1
+
+        upsert = payload[0]
+
+        assert upsert['method'] == 'POST'
+        assert upsert['relative_url'] == '/v1/calendars/%s/events' % calendar_id
+
+        assert upsert['data'] == stringified_event
+
+        response = {
+            "batch": [
+                {"status": 202},
+            ]
+        }
+
+        return (207, {}, json.dumps(response))
+
+    responses.add_callback(
+        responses.POST,
+        url='%s/%s/batch' % (settings.API_BASE_URL, settings.API_VERSION),
+        callback=request_callback,
+        content_type='application/json',
+    )
+
+    result = client.batch(builder)
+    assert len(result.entries) == 1
+    assert result.entries[0].response == {'status': 202}

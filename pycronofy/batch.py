@@ -8,8 +8,8 @@ class BatchBuilder(object):
     def upsert_event(self, calendar_id, event):
         data = event.copy()
 
-        event['start'] = format_event_time(event['start'])
-        event['end'] = format_event_time(event['end'])
+        data['start'] = format_event_time(event['start'])
+        data['end'] = format_event_time(event['end'])
 
         self.post("/v1/calendars/%s/events" % calendar_id, data)
         return self
