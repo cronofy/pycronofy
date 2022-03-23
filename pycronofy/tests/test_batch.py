@@ -1,14 +1,15 @@
 import datetime
+import json
 
 import pytest
 import pytz
 import responses
-import json
+
 from pycronofy import Client
 from pycronofy import settings
-from pycronofy.tests import common_data
 from pycronofy.batch import BatchBuilder
 from pycronofy.exceptions import PyCronofyPartialSuccessError
+from pycronofy.tests import common_data
 
 
 @pytest.fixture(scope="module")
@@ -41,7 +42,7 @@ def test_batch(client):
     builder.upsert_event(calendar_id, event)
 
     def request_callback(request):
-        payload = json.loads(request.body)
+        payload = json.loads(request.body)["batch"]
 
         assert len(payload) == 3
 
@@ -154,7 +155,7 @@ def test_batch_upsert_with_datetimes(client):
     builder.upsert_event(calendar_id, event)
 
     def request_callback(request):
-        payload = json.loads(request.body)
+        payload = json.loads(request.body)["batch"]
 
         assert len(payload) == 1
 
