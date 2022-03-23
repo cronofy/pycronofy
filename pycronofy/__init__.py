@@ -1,6 +1,6 @@
 from pycronofy.client import Client  # noqa: F401
 from pycronofy import settings
-__version__ = '1.9.4'
+__version__ = '1.9.5'
 __name__ = 'PyCronofy'
 
 """
