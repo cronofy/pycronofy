@@ -70,7 +70,7 @@ METHOD_RULES = {
     },
     'revoke_authorization': {
         'args': (),
-        'auth': ('client_id', 'client_secret', 'access_token'),
+        'auth': ('client_id', 'client_secret', 'refresh_token'),
     },
     'revoke_profile': {
         'args': ('profile_id',),
