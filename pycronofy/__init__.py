@@ -1,10 +1,10 @@
 from pycronofy.client import Client  # noqa: F401
 from pycronofy import settings
-__version__ = '1.9.5'
+__version__ = '1.9.6'
 __name__ = 'PyCronofy'
 
 """
-Python library wrapping Cronofy:
+SDK for Cronofy - the Scheduling Platform for Business
 
 More info available at:
 
