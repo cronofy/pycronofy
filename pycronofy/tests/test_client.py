@@ -601,7 +601,7 @@ def test_get_smart_invite(client):
     result = client.get_smart_invite(smart_invite_id, recipient)
 
     assert result['attachments']['icalendar'] == "BEGIN:VCALENDAR\nVERSION:2.0..."
-    
+
     result = client.get_smart_invite(smart_invite_id)
 
     assert result['attachments']['icalendar'] == "BEGIN:VCALENDAR\nVERSION:2.0..."
