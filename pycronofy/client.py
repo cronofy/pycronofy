@@ -207,6 +207,7 @@ class Client(object):
              :color        - The color of the event (optional).
         :param dict organizer - A Dict containing the organzier of the invite
              :name      - A String for the name of the organizer.
+             :email     - A String for the email address of the organizer.
         """
         event['start'] = format_event_time(event['start'])
         event['end'] = format_event_time(event['end'])
