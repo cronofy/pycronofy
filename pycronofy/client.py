@@ -1,5 +1,5 @@
 import datetime
-import collections
+import collections.abc
 
 import hashlib
 import base64
@@ -808,7 +808,7 @@ class Client(object):
                     params[tp] = format_event_time(params[tp])
 
     def map_availability_sequence(self, sequence):
-        if isinstance(sequence, collections.Iterable):
+        if isinstance(sequence, collections.abc.Iterable):
             return list(map(lambda item: self.map_sequence_item(item), sequence))
         else:
             return sequence
@@ -856,7 +856,7 @@ class Client(object):
         if type(participants) is dict:
             # Allow one group to be specified without being nested
             return [self.map_availability_participants_group(participants)]
-        elif isinstance(participants, collections.Iterable):
+        elif isinstance(participants, collections.abc.Iterable):
             return list(map(lambda group: self.map_availability_participants_group(group), participants))
         else:
             return participants
@@ -870,7 +870,7 @@ class Client(object):
                 participants['required'] = 'all'
 
             return participants
-        elif isinstance(participants, collections.Iterable):
+        elif isinstance(participants, collections.abc.Iterable):
             return list(map(lambda group: self.map_availability_participants(group), participants))
         else:
             participants
