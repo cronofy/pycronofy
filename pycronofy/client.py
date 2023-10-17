@@ -6,7 +6,6 @@ import base64
 import hmac
 
 import pytz
-from future.standard_library import hooks
 
 from pycronofy import settings
 from pycronofy.auth import Auth
@@ -18,8 +17,7 @@ from pycronofy.pagination import Pages
 from pycronofy.request_handler import RequestHandler
 from pycronofy.validation import validate
 
-with hooks():
-    from urllib.parse import urlencode
+from urllib.parse import urlencode
 
 
 class Client(object):

@@ -32,6 +32,5 @@ setup(
     install_requires=[
         "requests>=2.20.0",
         "pytz>=2013.7",
-        "future",
     ],
 )
