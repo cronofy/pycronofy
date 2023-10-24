@@ -10,6 +10,8 @@ Inspired by [Cronofy-Ruby](https://github.com/cronofy/cronofy-ruby)
 
 # Installation
 
+**NOTE:** Support for Python v2.7 was dropped as of pycronofy v2.0.0
+
 (unless performing a system wide install, it's recommended to install inside of a virtualenv)
 
 ```bash

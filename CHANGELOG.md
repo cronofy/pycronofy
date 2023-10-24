@@ -1,3 +1,6 @@
+## [2.0.0]
+* Add support for Python v3.12+ and drop support for Python v2.7 [#89]
+
 ## [1.9.6]
 * Update library description
 
