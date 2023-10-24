@@ -308,7 +308,7 @@ def test_availablity_with_fully_specified_options(client):
     }
 
     result = client.availability(required_duration={'minutes': 30}, available_periods=periods, participants=example_participants, buffer=example_buffer)
-    assert(len(result)) == 1
+    assert len(result) == 1
 
 
 @responses.activate

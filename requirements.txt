@@ -1,8 +1,7 @@
 requests>=2.21.0
 pytz>=2018.9
-future
 
-pytest==6.2.4
-pytest-cov==2.12.1
-responses==0.5.0
+pytest>=6.2.4
+pytest-cov>=2.12.1
+responses>=0.5.0
 flake8

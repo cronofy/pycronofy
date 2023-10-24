@@ -1,6 +1,5 @@
 requests>=2.21.0
 pytz>=2018.9
-future
 
 pytest
 pytest-cov
