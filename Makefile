@@ -15,6 +15,7 @@ init_ci:
 
 .PHONY: init
 init:
+	python -m pip install --upgrade pip build
 	pip install --requirement requirements.txt
 
 .PHONY: version
@@ -45,7 +46,9 @@ pytest:
 release: test
 	# Check pypi configured
 	test -f ~/.pypirc
-	python setup.py sdist upload --repository pypi
+	pythom -m build
+	twine upload -r testpypi dist/*
+	# twine upload -r pypi dist/*
 	git tag $(CURRENT_VERSION)
 	git push --tags
 	git push
