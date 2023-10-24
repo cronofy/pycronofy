@@ -1,5 +1,6 @@
 ## [2.0.0]
-* Add support for Python v3.12+ and drop support for Python v2.7 [#89]
+* Support for Python 2.X removed [#89]
+* Support for Python 3.12 added [#89]
 
 ## [1.9.6]
 * Update library description
