@@ -46,7 +46,7 @@ pytest:
 release: test
 	# Check pypi configured
 	test -f ~/.pypirc
-	pythom -m build
+	python -m build
 	twine upload -r testpypi dist/*
 	# twine upload -r pypi dist/*
 	git tag $(CURRENT_VERSION)
