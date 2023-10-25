@@ -6,7 +6,7 @@ all: test
 
 .PHONY: clean
 clean:
-	rm -rf build
+	rm -rf dist
 
 .PHONY: init_ci
 init_ci:
@@ -50,8 +50,7 @@ pytest:
 release: test
 	# Check pypi configured
 	test -f ~/.pypirc
-	twine upload -r testpypi dist/*
-	# twine upload -r pypi dist/*
+	twine upload -r pypi dist/*
 	git tag $(CURRENT_VERSION)
 	git push --tags
 	git push
