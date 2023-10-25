@@ -26,7 +26,7 @@ classifiers = [
 "API Docs" = "https://docs.cronofy.com/developers/"
 
 [tool.setuptools.dynamic]
-version = {attr = "package.__version__"}
+version = {attr = "pycronofy.__version__"}
 
 [build-system]
 requires = ["setuptools"]
