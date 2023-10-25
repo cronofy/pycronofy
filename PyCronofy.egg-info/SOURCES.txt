@@ -21,7 +21,6 @@ pycronofy/pagination.py
 pycronofy/request_handler.py
 pycronofy/settings.py
 pycronofy/validation.py
-pycronofy/tests/__init__.py
 pycronofy/tests/common_data.py
 pycronofy/tests/test_application_calendar.py
 pycronofy/tests/test_auth.py
