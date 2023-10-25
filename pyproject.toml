@@ -1,6 +1,6 @@
 [project]
 name = "PyCronofy"
-version = "2.0.0"
+dynamic = ["version"]
 requires-python = ">=3.7"
 dependencies = [
     "requests>=2.20.0",
@@ -11,6 +11,9 @@ authors = [
     {name = "VenueBook", email = "dev@venuebook.com"},
     {name = "Cronofy", email = "support@cronofy.com"},
 ]
+
+[tool.setuptools.dynamic]
+version = {attr = "package.__version__"}
 
 [build-system]
 requires = ["setuptools"]

@@ -1,9 +1,7 @@
 from pycronofy.client import Client  # noqa: F401
 from pycronofy import settings
-import importlib
-
+__version__ = '2.0.0'
 __name__ = 'PyCronofy'
-__version__ = importlib.metadata.version(__package__ or __name__)
 
 """
 SDK for Cronofy - the Scheduling Platform for Business

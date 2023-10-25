@@ -1,6 +1,5 @@
 CURRENT_VERSION:=$(shell grep "^Version: " PKG-INFO | cut -d" " -f2)
-INIT_VERSION:=$(shell grep "version" ./pyproject.toml | cut -d"=" -f2 | tr -d '"[:blank:]' )
-
+INIT_VERSION:=$(shell grep "__version__" pycronofy/__init__.py | cut -d"'" -f2)
 
 .PHONY: all
 all: test
