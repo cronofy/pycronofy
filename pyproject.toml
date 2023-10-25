@@ -11,6 +11,19 @@ authors = [
     {name = "VenueBook", email = "dev@venuebook.com"},
     {name = "Cronofy", email = "support@cronofy.com"},
 ]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/cronofy/pycronofy"
+"API Docs" = "https://docs.cronofy.com/developers/"
 
 [tool.setuptools.dynamic]
 version = {attr = "package.__version__"}
