@@ -1,0 +1,33 @@
+[project]
+name = "PyCronofy"
+dynamic = ["version"]
+requires-python = ">=3.7"
+dependencies = [
+    "requests>=2.20.0",
+    "pytz>=2013.7",
+]
+description = 'Python library for Cronofy'
+authors = [
+    {name = "VenueBook", email = "dev@venuebook.com"},
+    {name = "Cronofy", email = "support@cronofy.com"},
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/cronofy/pycronofy"
+"API Docs" = "https://docs.cronofy.com/developers/"
+
+[tool.setuptools.dynamic]
+version = {attr = "pycronofy.__version__"}
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"

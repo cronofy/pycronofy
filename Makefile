@@ -6,15 +6,16 @@ all: test
 
 .PHONY: clean
 clean:
-	rm -rf build
+	rm -rf dist
 
 .PHONY: init_ci
 init_ci:
-	python -m pip install --upgrade pip
+	python -m pip install --upgrade pip build
 	pip install --requirement requirements-ci.txt
 
 .PHONY: init
 init:
+	python -m pip install --upgrade pip build
 	pip install --requirement requirements.txt
 
 .PHONY: version
@@ -31,10 +32,14 @@ else
 endif
 
 .PHONY: test_ci
-test_ci: clean init_ci pytest checkversion
+test_ci: clean init_ci build pytest checkversion
 
 .PHONY: test
-test: clean init pytest checkversion
+test: clean init build pytest checkversion
+
+.PHONY: build
+build:
+	python -m build
 
 .PHONY: pytest
 pytest:
@@ -45,7 +50,7 @@ pytest:
 release: test
 	# Check pypi configured
 	test -f ~/.pypirc
-	python setup.py sdist upload --repository pypi
+	twine upload -r pypi dist/*
 	git tag $(CURRENT_VERSION)
 	git push --tags
 	git push
