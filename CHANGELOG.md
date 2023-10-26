@@ -1,6 +1,7 @@
-## [2.0.0]
+## [2.0.0.rc1]
 * Support for Python 2.X removed [#89]
 * Support for Python 3.12 added [#89]
+* Build pipeline upgrade
 
 ## [1.9.6]
 * Update library description
@@ -15,7 +16,7 @@
 ## [1.9.3]
 * Add support for Element Token generation [#70]
 
-[2.0.0]: https://github.com/cronofy/pycronofy/releases/tag/2.0.0
+[2.0.0.rc1]: https://github.com/cronofy/pycronofy/releases/tag/2.0.0.rc1
 [1.9.6]: https://github.com/cronofy/pycronofy/releases/tag/1.9.6
 [1.9.5]: https://github.com/cronofy/pycronofy/releases/tag/1.9.5
 [1.9.4]: https://github.com/cronofy/pycronofy/releases/tag/1.9.4
