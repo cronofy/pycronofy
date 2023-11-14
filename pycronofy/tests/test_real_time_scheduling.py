@@ -121,6 +121,101 @@ def test_real_time_scheduling(client):
 
 
 @responses.activate
+def test_real_time_scheduling_when_callback_url_is_dictionary(client):
+    """Test Client.availability().
+
+    :param Client client: Client instance with test data.
+    """
+
+    def request_callback(request):
+        payload = json.loads(request.body)
+
+        availability = payload['availability']
+        assert availability['required_duration'] == {'minutes': 30}
+        assert availability['start_interval'] == {'minutes': 30}
+        assert availability['buffer']['before'] == {'minutes': 30}
+        assert availability['buffer']['after'] == {'minutes': 45}
+        assert availability['available_periods'] == [
+            {'start': '2017-01-03T09:00:00Z', 'end': '2017-01-03T18:00:00Z'},
+            {'start': '2017-01-04T09:00:00Z', 'end': '2017-01-04T18:00:00Z'}
+        ]
+        assert availability['participants'] == [
+            {
+                'required': 'all',
+                'members': [
+                    {'sub': 'acc_567236000909002'},
+                    {'sub': 'acc_678347111010113'}
+                ]
+            }
+        ]
+
+        assert payload['event'] == TEST_EVENT
+        assert payload['oauth'] == oauth
+        assert payload['minimum_notice'] == {'hours': 4}
+
+        assert payload['callback_url']['completed_url'] == 'http://www.example.com/callback'
+        assert payload['callback_url']['completed_url'] == 'http://www.example.com/callback'
+
+        assert payload['redirect_urls']['completed_url'] == 'http://www.example.com/completed'
+
+        assert request.headers['Authorization'] == "Bearer %s" % client.auth.client_secret
+
+        return (200, {}, json.dumps(REAL_TIME_SCHEDULING_RESPONSE))
+
+    responses.add_callback(
+        responses.POST,
+        url='%s/%s/real_time_scheduling' % (settings.API_BASE_URL, settings.API_VERSION),
+        callback=request_callback,
+        content_type='application/json',
+    )
+
+    periods = (
+        {'start': "2017-01-03T09:00:00Z", 'end': "2017-01-03T18:00:00Z"},
+        {'start': "2017-01-04T09:00:00Z", 'end': "2017-01-04T18:00:00Z"}
+    )
+    example_participants = ({
+        'members': [
+            "acc_567236000909002",
+            "acc_678347111010113",
+        ],
+    })
+
+    availability = {
+        'participants': example_participants,
+        'available_periods': periods,
+        'required_duration': 30,
+        'start_interval': 30,
+        'buffer': {
+            'before': 30,
+            'after': 45,
+        },
+    }
+
+    oauth = {
+        'scope': 'foo',
+        'redirect_uri': 'http://www.example.com',
+        'state': 'bar'
+    }
+
+    minimum_notice = {
+        'hours': 4
+    }
+
+    callback_url = {
+        'completed_url': 'http://www.example.com/callback',
+        'no_times_suitable_url': 'http://www.example.com/callback'
+    }
+
+    redirect_urls = {
+        'completed_url': 'http://www.example.com/completed'
+    }
+
+    result = client.real_time_scheduling(availability, oauth, TEST_EVENT, [], minimum_notice, callback_url=callback_url, redirect_urls=redirect_urls)
+    assert result == REAL_TIME_SCHEDULING_RESPONSE
+
+
+
+@responses.activate
 def test_get_real_time_scheduling_status_by_token(client):
 
     def request_callback(request):
