@@ -612,8 +612,13 @@ class Client(object):
         :param list target_calendars: - An list of dics stating into which calendars
                                         to insert the created event
         :param dict :minimum_notice - A dict describing the minimum notice for a booking (Optional)
-        :param string :callback_url - A String representing the URL Cronofy will notify
+        (DEPRECATED) :param string :callback_url - A String representing the URL Cronofy will notify
                                       once a slot has been selected.
+        :param dict callback_url: - A dict containing redirect URLs for the end-user's journey
+            :completed_url         - A String representing the URL the end-user
+                                     will be redirected to after choosing a slot
+            :no_times_suitable_url - A String representing the URL the end-user
+                                     will be redirected if there is no available slots
         :param dict redirect_urls: - A dict containing redirect URLs for the end-user's journey
             :completed_url         - A String representing the URL the end-user
                                      will be redirected to after choosing a slot

@@ -214,7 +214,6 @@ def test_real_time_scheduling_when_callback_url_is_dictionary(client):
     assert result == REAL_TIME_SCHEDULING_RESPONSE
 
 
-
 @responses.activate
 def test_get_real_time_scheduling_status_by_token(client):
 
