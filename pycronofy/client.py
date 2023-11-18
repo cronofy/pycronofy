@@ -493,7 +493,7 @@ class Client(object):
 
         :rtype: ``list``
         """
-        options = {}
+        options = dict()
         options['sequence'] = self.map_availability_sequence(sequence)
 
         self.translate_available_periods(available_periods)
@@ -568,26 +568,33 @@ class Client(object):
         self.request_handler.post(
             endpoint='calendars/%s/events' % calendar_id, data=event)
 
-    def authorize_with_service_account(self, email, scope, callback_url, state=None):
+    def authorize_with_service_account(self, email=None, scope=None, callback_url=None, service_account_authorizations=None, state=None):
         """ Attempts to authorize the email with impersonation from a service account
 
         :param string email: the email address to impersonate
         :param string callback_url: URL to callback with the OAuth code.
         :param string scope: The scope of the privileges you want the eventual access_token to grant.
+        :param string, optional state: A value that will be returned to you unaltered along with the authorization request decision.
+        :param list, optional service_account_authorizations: Allows a batch of 1 to 50 access requests to be submitted at the same time.
         :return: nothing
         """
-        params = {
-            'email': email,
-            'scope': scope,
-            'callback_url': callback_url
-        }
 
-        if state is not None:
-            params['state'] = state
+        if service_account_authorizations is not None:
+            params = {
+                "service_account_authorizations": service_account_authorizations
+            }
+        else:
+            params = {
+                'email': email,
+                'scope': scope,
+                'callback_url': callback_url
+            }
+
+            if state is not None:
+                params['state'] = state
 
         self.request_handler.post(
             endpoint="service_account_authorizations", data=params)
-        None
 
     def real_time_scheduling(self, availability, oauth, event, target_calendars=(), minimum_notice=None, callback_url=None, redirect_urls=None):
         """Generates an real time scheduling link to start the OAuth process with
@@ -611,7 +618,7 @@ class Client(object):
         :param dict event:     - A dict describing the event
         :param list target_calendars: - An list of dics stating into which calendars
                                         to insert the created event
-        :param dict :minimum_notice - A dict describing the minimum notice for a booking (Optional)
+        :param dict, optional minimum_notice: - A dict describing the minimum notice for a booking (Optional)
         (DEPRECATED) :param string :callback_url - A String representing the URL Cronofy will notify
                                       once a slot has been selected.
         :param dict callback_url: - A dict containing redirect URLs for the end-user's journey
@@ -732,7 +739,7 @@ class Client(object):
         }
 
         if availability:
-            options = {}
+            options = dict()
             options['sequence'] = self.map_availability_sequence(availability.get('sequence', None))
 
             if availability.get('available_periods', None):

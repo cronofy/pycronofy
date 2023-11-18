@@ -28,6 +28,11 @@ classifiers = [
 [tool.setuptools.dynamic]
 version = {attr = "pycronofy.__version__"}
 
+[tool.pytest.ini_options]
+pythonpath = [
+  "."
+]
+
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
