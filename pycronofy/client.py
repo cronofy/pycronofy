@@ -493,7 +493,7 @@ class Client(object):
 
         :rtype: ``list``
         """
-        options = dict()
+        options = {}
         options['sequence'] = self.map_availability_sequence(sequence)
 
         self.translate_available_periods(available_periods)
@@ -751,7 +751,7 @@ class Client(object):
         }
 
         if availability:
-            options = dict()
+            options = {}
             options['sequence'] = self.map_availability_sequence(availability.get('sequence', None))
 
             if availability.get('available_periods', None):
