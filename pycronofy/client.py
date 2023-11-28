@@ -572,8 +572,9 @@ class Client(object):
         """ Attempts to authorize the email with impersonation from a service account
 
         :param string email: the email address to impersonate
-        :param string callback_url: URL to callback with the OAuth code.
         :param string scope: The scope of the privileges you want the eventual access_token to grant.
+        :param string callback_url: URL to callback with the OAuth code.
+        :param string, optional state: A value that will be returned to you unaltered along with the authorization request decision.
         :return: nothing
         """
         params = {
@@ -589,15 +590,19 @@ class Client(object):
             endpoint="service_account_authorizations", data=params)
         None
 
-    def authorize_batch_with_service_account(self, service_account_authorizations):
+    def authorize_batch_with_service_account(self, service_account_authorizations, state=None):
         """ Attempts to authorize a batch of emails with impersonation from a service account
 
         :param string authorizations: A batch of 1 to 50 access requests.
+        :param string, optional state: A value that will be returned to you unaltered along with the authorization request decision.
         :return: nothing
         """
         params = {
             "service_account_authorizations": service_account_authorizations
         }
+
+        if state is not None:
+            params['state'] = state
 
         self.request_handler.post(
             endpoint="service_account_authorizations", data=params)
