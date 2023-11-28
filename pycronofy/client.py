@@ -493,7 +493,7 @@ class Client(object):
 
         :rtype: ``list``
         """
-        options = {}
+        options = dict()
         options['sequence'] = self.map_availability_sequence(sequence)
 
         self.translate_available_periods(available_periods)
@@ -584,6 +584,20 @@ class Client(object):
 
         if state is not None:
             params['state'] = state
+
+        self.request_handler.post(
+            endpoint="service_account_authorizations", data=params)
+        None
+
+    def authorize_batch_with_service_account(self, service_account_authorizations):
+        """ Attempts to authorize a batch of emails with impersonation from a service account
+
+        :param string authorizations: A batch of 1 to 50 access requests.
+        :return: nothing
+        """
+        params = {
+            "service_account_authorizations": service_account_authorizations
+        }
 
         self.request_handler.post(
             endpoint="service_account_authorizations", data=params)
@@ -721,7 +735,7 @@ class Client(object):
         :param dict event:     - A dict describing the event
         :param list target_calendars: - An list of dics stating into which calendars
                                         to insert the created event
-        :param dict :minimum_notice - A dict describing the minimum notice for a booking (Optional)
+        :param dict, optional :minimum_notice - A dict describing the minimum notice for a booking (Optional)
 
         See https://docs.cronofy.com/developers/api-alpha/sequenced-scheduling/real-time-sequencing/ for reference.
         """
@@ -732,7 +746,7 @@ class Client(object):
         }
 
         if availability:
-            options = {}
+            options = dict()
             options['sequence'] = self.map_availability_sequence(availability.get('sequence', None))
 
             if availability.get('available_periods', None):
