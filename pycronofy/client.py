@@ -590,7 +590,7 @@ class Client(object):
             endpoint="service_account_authorizations", data=params)
         None
 
-    def authorize_batch_with_service_account(self, service_account_authorizations, state=None):
+    def authorize_multiple_accounts_via_service_account(self, service_account_authorizations, state=None):
         """ Attempts to authorize a batch of emails with impersonation from a service account
 
         :param string authorizations: A batch of 1 to 50 access requests.

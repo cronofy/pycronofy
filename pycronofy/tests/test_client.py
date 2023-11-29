@@ -3,7 +3,9 @@ import json
 import pytest
 import pytz
 import responses
+
 from functools import partial
+
 from pycronofy import Client
 from pycronofy import settings
 from pycronofy.exceptions import PyCronofyRequestError
@@ -773,8 +775,8 @@ def test_authorize_with_service_account(client):
 
 
 @responses.activate
-def test_authorize_batch_with_service_account(client):
-    """Test authorize_batch_with_service_account with correct data
+def test_authorize_multiple_accounts_via_service_account(client):
+    """Test authorize_multiple_accounts_via_service_account with correct data
     :param Client client: Client instance with test data.
     """
 
@@ -827,7 +829,7 @@ def test_authorize_batch_with_service_account(client):
             content_type='application/json',
         )
 
-    client.authorize_batch_with_service_account(
+    client.authorize_multiple_accounts_via_service_account(
         service_account_authorizations=payloads
     )
 
