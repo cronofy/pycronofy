@@ -3,6 +3,9 @@ import json
 import pytest
 import pytz
 import responses
+
+from functools import partial
+
 from pycronofy import Client
 from pycronofy import settings
 from pycronofy.exceptions import PyCronofyRequestError
@@ -763,7 +766,72 @@ def test_authorize_with_service_account(client):
         callback=request_callback,
         content_type='application/json',
     )
-    client.authorize_with_service_account("example@example.com", "felines", "http://www.example.com/callback", state="state example")
+    client.authorize_with_service_account(
+        "example@example.com",
+        "felines",
+        "http://www.example.com/callback",
+        state="state example"
+    )
+
+
+@responses.activate
+def test_authorize_multiple_accounts_via_service_account(client):
+    """Test authorize_multiple_accounts_via_service_account with correct data
+    :param Client client: Client instance with test data.
+    """
+
+    def request_callback(request, email, scope, state, callback_url):
+        request_body = json.loads(request.body)
+
+        assert request_body['service_account_authorizations'] != []
+
+        service_account_authorizations = request_body['service_account_authorizations']
+        for payload in service_account_authorizations:
+            assert payload['email'] == email
+            assert payload['scope'] == scope
+            assert payload['state'] == state
+            assert payload['callback_url'] == callback_url
+
+            return (202, {}, None)
+
+    payloads = [
+        {
+            'email': 'example+1@example.com',
+            'scope': 'felines',
+            'state': 'state example',
+            'callback_url': 'http://www.example.com/callback'
+        },
+        {
+            'email': 'example+2@example.com',
+            'scope': 'felines',
+            'state': 'state example',
+            'callback_url': 'http://www.example.com/callback'
+        },
+        {
+            'email': 'example+3@example.com',
+            'scope': 'felines',
+            'state': 'state example',
+            'callback_url': 'http://www.example.com/callback'
+        }
+    ]
+
+    for data in payloads:
+        responses.add_callback(
+            responses.POST,
+            '%s/v1/service_account_authorizations' % settings.API_BASE_URL,
+            callback=partial(
+                request_callback,
+                email=data['email'],
+                scope=data['scope'],
+                callback_url=data['callback_url'],
+                state=data['state']
+            ),
+            content_type='application/json',
+        )
+
+    client.authorize_multiple_accounts_via_service_account(
+        service_account_authorizations=payloads
+    )
 
 
 @responses.activate
