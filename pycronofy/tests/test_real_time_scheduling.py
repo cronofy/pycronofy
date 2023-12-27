@@ -121,7 +121,7 @@ def test_real_time_scheduling(client):
 
 
 @responses.activate
-def test_real_time_scheduling_when_callback_url_is_dictionary(client):
+def test_real_time_scheduling_when_callback_urls_is_dictionary(client):
     """Test Client.availability().
 
     :param Client client: Client instance with test data.
@@ -153,8 +153,9 @@ def test_real_time_scheduling_when_callback_url_is_dictionary(client):
         assert payload['oauth'] == oauth
         assert payload['minimum_notice'] == {'hours': 4}
 
-        assert payload['callback_url']['completed_url'] == 'http://www.example.com/callback'
-        assert payload['callback_url']['completed_url'] == 'http://www.example.com/callback'
+        assert payload['callback_urls']['completed_url'] == 'http://www.example.com/completed_callback'
+        assert payload['callback_urls']['no_times_suitable_url'] == 'http://www.example.com/no_times_suitable_url_callback'
+        assert payload['callback_urls']['no_times_displayed_url'] == 'http://www.example.com/no_times_displayed_url_callback'
 
         assert payload['redirect_urls']['completed_url'] == 'http://www.example.com/completed'
 
@@ -201,16 +202,17 @@ def test_real_time_scheduling_when_callback_url_is_dictionary(client):
         'hours': 4
     }
 
-    callback_url = {
-        'completed_url': 'http://www.example.com/callback',
-        'no_times_suitable_url': 'http://www.example.com/callback'
+    callback_urls = {
+        'completed_url': 'http://www.example.com/completed_callback',
+        'no_times_suitable_url': 'http://www.example.com/no_times_suitable_url_callback',
+        'no_times_displayed_url': 'http://www.example.com/no_times_displayed_url_callback'
     }
 
     redirect_urls = {
         'completed_url': 'http://www.example.com/completed'
     }
 
-    result = client.real_time_scheduling(availability, oauth, TEST_EVENT, [], minimum_notice, callback_url=callback_url, redirect_urls=redirect_urls)
+    result = client.real_time_scheduling(availability, oauth, TEST_EVENT, [], minimum_notice, callback_urls=callback_urls, redirect_urls=redirect_urls)
     assert result == REAL_TIME_SCHEDULING_RESPONSE
 
 

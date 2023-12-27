@@ -608,7 +608,7 @@ class Client(object):
             endpoint="service_account_authorizations", data=params)
         None
 
-    def real_time_scheduling(self, availability, oauth, event, target_calendars=(), minimum_notice=None, callback_url=None, redirect_urls=None):
+    def real_time_scheduling(self, availability, oauth, event, target_calendars=(), minimum_notice=None, callback_url=None, callback_urls=None, redirect_urls=None):
         """Generates an real time scheduling link to start the OAuth process with
         an event to be automatically upserted
 
@@ -633,11 +633,13 @@ class Client(object):
         :param dict :minimum_notice - A dict describing the minimum notice for a booking (Optional)
         (DEPRECATED) :param string :callback_url - A String representing the URL Cronofy will notify
                                       once a slot has been selected.
-        :param dict callback_url: - A dict containing redirect URLs for the end-user's journey
-            :completed_url         - A String representing the URL the end-user
-                                     will be redirected to after choosing a slot
-            :no_times_suitable_url - A String representing the URL the end-user
-                                     will be redirected if there is no available slots
+        :param dict callback_urls: - A dict containing the callback URLs Cronofy will notify for each event
+            :completed_url         - A String representing the URL to call when a slot
+                                     has been chosen and the full event details are known
+            :no_times_suitable_url - A String representing the URL to call when the user
+                                     indicates that none of the available times are suitable for them
+            :no_times_displayed_url - A String representing the URL to call when the user
+                                     was shown a page with no available times
         :param dict redirect_urls: - A dict containing redirect URLs for the end-user's journey
             :completed_url         - A String representing the URL the end-user
                                      will be redirected to after choosing a slot
@@ -665,6 +667,9 @@ class Client(object):
 
         if callback_url:
             args['callback_url'] = callback_url
+
+        if callback_urls:
+            args['callback_urls'] = callback_urls
 
         if redirect_urls:
             args['redirect_urls'] = redirect_urls
