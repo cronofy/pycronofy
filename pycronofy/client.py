@@ -654,7 +654,7 @@ class Client(object):
                                      will be redirected to after choosing a slot
         :param string event_creation: - A string to determine behaviour of event creation.
                                         The value of 'single' will create the resulting event in a single
-                                        calendar. 'default' if omitted, creates an event in each calendar
+                                        calendar. 'default' or omitted, creates an event in each calendar
                                         listed in target_calendars. See docs for more details. (Optional)
 
         See https://docs.cronofy.com/developers/api/scheduling/real-time-scheduling/ for reference.
