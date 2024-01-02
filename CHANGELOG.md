@@ -1,8 +1,8 @@
-# [2.0.3]
+## [2.0.3]
 * Support for event_creation param for Real Time Scheduling [#102]
 * Bug fix to accept callback_urls param for Real Time Scheduling [#101]
 
-# [2.0.2]
+## [2.0.2]
 * Added method to bulk authorize accounts via a service account authentication [#99]
 
 ## [2.0.1]
