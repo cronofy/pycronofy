@@ -1,4 +1,8 @@
-## [2.0.2]
+# [2.0.3]
+* Support for event_creation param for Real Time Scheduling [#102]
+* Bug fix to accept callback_urls param for Real Time Scheduling [#101]
+
+# [2.0.2]
 * Added method to bulk authorize accounts via a service account authentication [#99]
 
 ## [2.0.1]
@@ -22,6 +26,7 @@
 ## [1.9.3]
 * Add support for Element Token generation [#70]
 
+[2.0.3]: https://github.com/cronofy/pycronofy/releases/tag/2.0.3
 [2.0.2]: https://github.com/cronofy/pycronofy/releases/tag/2.0.2
 [2.0.1]: https://github.com/cronofy/pycronofy/releases/tag/2.0.1
 [2.0.0]: https://github.com/cronofy/pycronofy/releases/tag/2.0.0.rc1
@@ -30,6 +35,8 @@
 [1.9.4]: https://github.com/cronofy/pycronofy/releases/tag/1.9.4
 [1.9.3]: https://github.com/cronofy/pycronofy/releases/tag/1.9.3
 
+[#102]: https://github.com/cronofy/pycronofy/pull/102
+[#101]: https://github.com/cronofy/pycronofy/pull/101
 [#99]: https://github.com/cronofy/pycronofy/pull/99
 [#95]: https://github.com/cronofy/pycronofy/pull/95
 [#89]: https://github.com/cronofy/pycronofy/pull/89
