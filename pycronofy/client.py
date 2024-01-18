@@ -442,7 +442,16 @@ class Client(object):
 
         return Pages(self.request_handler, results, 'free_busy', automatic_pagination)
 
-    def availability(self, participants=(), required_duration=(), available_periods=(), start_interval=None, buffer=(), response_format=None):
+    def availability(
+        self,
+        participants=(),
+        required_duration=(),
+        available_periods=None,
+        start_interval=None,
+        buffer=(),
+        response_format=None,
+        query_slots=None
+    ):
         """ Performs an availability query.
         :param list participants: An Array of participant groups or a dict for a single participant group.
         :param dict or int required_duration - An Integer representing the minimum number of minutes of availability required.
@@ -450,6 +459,7 @@ class Client(object):
         :param dict or int start_interval - An Interger representing the start interval minutes for the event.
         :param dict buffer - An Dict representing the buffer to apply to the request.
         :param string response_format - periods, slots or overlapping_slots (Optional, default periods)
+        :param list query_slots - An Array of query slots, each much specify a start Time.
 
         :rtype: ``list``
         """
@@ -465,8 +475,13 @@ class Client(object):
 
         response_element = 'available_periods'
 
-        self.translate_available_periods(available_periods)
-        options['available_periods'] = available_periods
+        if available_periods:
+            self.translate_available_periods(available_periods)
+            options['available_periods'] = available_periods
+
+        if query_slots:
+            self.translate_query_slots(query_slots)
+            options['query_slots'] = query_slots
 
         if response_format:
             options['response_format'] = response_format
@@ -849,6 +864,11 @@ class Client(object):
             for tp in ['start', 'end']:
                 if params[tp]:
                     params[tp] = format_event_time(params[tp])
+
+    def translate_query_slots(self, query_slots):
+        for params in query_slots:
+            if params['start']:
+                params['start'] = format_event_time(params['start'])
 
     def map_availability_sequence(self, sequence):
         if isinstance(sequence, collections.abc.Iterable):
