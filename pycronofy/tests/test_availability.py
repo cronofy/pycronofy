@@ -277,6 +277,8 @@ def test_availablity_with_fully_specified_options(client):
                 ]
             }
         ]
+        assert payload['max_results'] == 42
+
         return (200, {}, json.dumps(TEST_AVAILABLITY_RESPONSE))
 
     responses.add_callback(
@@ -307,7 +309,13 @@ def test_availablity_with_fully_specified_options(client):
         }
     }
 
-    result = client.availability(required_duration={'minutes': 30}, available_periods=periods, participants=example_participants, buffer=example_buffer)
+    result = client.availability(
+        required_duration={'minutes': 30},
+        available_periods=periods,
+        participants=example_participants,
+        buffer=example_buffer,
+        max_results=42
+    )
     assert len(result) == 1
 
 
