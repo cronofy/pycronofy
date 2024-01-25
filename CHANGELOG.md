@@ -1,3 +1,6 @@
+## [2.0.5]
+* Added support for the `max_results` parameter to the `availability` query API [#105]
+
 ## [2.0.4]
 * Added support for the `query_slots` parameter to the `availability` query API [#104]
 
@@ -29,6 +32,7 @@
 ## [1.9.3]
 * Add support for Element Token generation [#70]
 
+[2.0.5]: https://github.com/cronofy/pycronofy/releases/tag/2.0.5
 [2.0.4]: https://github.com/cronofy/pycronofy/releases/tag/2.0.4
 [2.0.3]: https://github.com/cronofy/pycronofy/releases/tag/2.0.3
 [2.0.2]: https://github.com/cronofy/pycronofy/releases/tag/2.0.2
@@ -39,6 +43,7 @@
 [1.9.4]: https://github.com/cronofy/pycronofy/releases/tag/1.9.4
 [1.9.3]: https://github.com/cronofy/pycronofy/releases/tag/1.9.3
 
+[#105]: https://github.com/cronofy/pycronofy/pull/105
 [#104]: https://github.com/cronofy/pycronofy/pull/104
 [#102]: https://github.com/cronofy/pycronofy/pull/102
 [#101]: https://github.com/cronofy/pycronofy/pull/101
