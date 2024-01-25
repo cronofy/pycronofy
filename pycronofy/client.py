@@ -450,16 +450,18 @@ class Client(object):
         start_interval=None,
         buffer=(),
         response_format=None,
-        query_slots=None
+        query_slots=None,
+        max_results=None
     ):
         """ Performs an availability query.
         :param list participants: An Array of participant groups or a dict for a single participant group.
         :param dict or int required_duration - An Integer representing the minimum number of minutes of availability required.
         :param list available_periods - An Array of available time periods dicts, each must specify a start and end Time.
-        :param dict or int start_interval - An Interger representing the start interval minutes for the event.
+        :param dict or int start_interval - An Integer representing the start interval minutes for the event.
         :param dict buffer - An Dict representing the buffer to apply to the request.
         :param string response_format - periods, slots or overlapping_slots (Optional, default periods)
         :param list query_slots - An Array of query slots, each much specify a start Time.
+        :param int max_results - An Integer describing the maximum number of available periods or slots to return from the query.
 
         :rtype: ``list``
         """
@@ -487,6 +489,9 @@ class Client(object):
             options['response_format'] = response_format
             if response_format in ['slots', 'overlapping_slots']:
                 response_element = 'available_slots'
+
+        if max_results:
+            options['max_results'] = max_results
 
         return self.request_handler.post(endpoint='availability', data=options).json()[response_element]
 
