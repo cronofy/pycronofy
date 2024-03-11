@@ -656,7 +656,7 @@ class Client(object):
                                  user to after completing the OAuth flow.
             :scope             - A String representing additional state to
                                  be passed within the OAuth flow.
-            :max_results       - An Integer describing the maximum number of slots to calculate from the query.
+            :max_results       - An Integer describing the maximum number of slots to calculate from the query (Optional)
         :param dict event:     - A dict describing the event
         :param list target_calendars: - An list of dics stating into which calendars
                                         to insert the created event
