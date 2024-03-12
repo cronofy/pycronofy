@@ -649,6 +649,8 @@ class Client(object):
             :available_periods - A dict stating the available periods for the event
             :start_interval    - A Integer representing the start_interval of the event
             :buffer            - A dict representing the buffer for the event
+            :max_results       - An Integer describing the maximum number of slots to calculate from the query (Optional)
+            :response_format   - A String controlling the generation of available slots (Optional)
         :param dict oauth:   - A dict describing the OAuth flow required:
             :scope             - A String representing the scopes to ask for
                                  within the OAuth flow
@@ -656,9 +658,8 @@ class Client(object):
                                  user to after completing the OAuth flow.
             :scope             - A String representing additional state to
                                  be passed within the OAuth flow.
-            :max_results       - An Integer describing the maximum number of slots to calculate from the query (Optional)
         :param dict event:     - A dict describing the event
-        :param list target_calendars: - An list of dics stating into which calendars
+        :param list target_calendars: - A list of dictionaries stating into which calendars
                                         to insert the created event
         :param dict :minimum_notice - A dict describing the minimum notice for a booking (Optional)
         (DEPRECATED) :param string :callback_url - A String representing the URL Cronofy will notify
@@ -696,6 +697,8 @@ class Client(object):
             options['available_periods'] = availability['available_periods']
             if availability.get('max_results'):
                 options['max_results'] = availability['max_results']
+            if availability.get('response_format'):
+                options['response_format'] = availability['response_format']
 
             args['availability'] = options
 
