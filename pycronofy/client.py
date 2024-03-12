@@ -656,6 +656,7 @@ class Client(object):
                                  user to after completing the OAuth flow.
             :scope             - A String representing additional state to
                                  be passed within the OAuth flow.
+            :max_results       - An Integer describing the maximum number of slots to calculate from the query (Optional)
         :param dict event:     - A dict describing the event
         :param list target_calendars: - An list of dics stating into which calendars
                                         to insert the created event
@@ -693,6 +694,9 @@ class Client(object):
             options['buffer'] = self.map_availability_buffer(availability.get('buffer', None))
             self.translate_available_periods(availability['available_periods'])
             options['available_periods'] = availability['available_periods']
+            if availability.get('max_results'):
+                options['max_results'] = availability['max_results']
+
             args['availability'] = options
 
         if minimum_notice:
