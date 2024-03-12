@@ -1,3 +1,6 @@
+## [2.0.7]
+* Added support for the `response_format` parameter to the `real_time_scheduling` query API [#108]
+
 ## [2.0.6]
 * Added support for the `max_results` parameter to the `real_time_scheduling` query API [#107]
 
@@ -35,6 +38,7 @@
 ## [1.9.3]
 * Add support for Element Token generation [#70]
 
+[2.0.6]: https://github.com/cronofy/pycronofy/releases/tag/2.0.7
 [2.0.6]: https://github.com/cronofy/pycronofy/releases/tag/2.0.6
 [2.0.5]: https://github.com/cronofy/pycronofy/releases/tag/2.0.5
 [2.0.4]: https://github.com/cronofy/pycronofy/releases/tag/2.0.4
@@ -47,6 +51,7 @@
 [1.9.4]: https://github.com/cronofy/pycronofy/releases/tag/1.9.4
 [1.9.3]: https://github.com/cronofy/pycronofy/releases/tag/1.9.3
 
+[#108]: https://github.com/cronofy/pycronofy/pull/108
 [#107]: https://github.com/cronofy/pycronofy/pull/107
 [#105]: https://github.com/cronofy/pycronofy/pull/105
 [#104]: https://github.com/cronofy/pycronofy/pull/104
