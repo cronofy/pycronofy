@@ -72,7 +72,7 @@ class Client(object):
 
         :param string channel_id: The id of the notification channel.
         """
-        self.request_handler.delete(endpoint='channels/%s' % channel_id)
+        return self.request_handler.delete(endpoint='channels/%s' % channel_id)
 
     def change_participation_status(self, calendar_id, event_uid, status):
         """Changes the participation status for a calendar event
@@ -85,7 +85,7 @@ class Client(object):
         """
         data = {'status': status}
 
-        self.request_handler.post('calendars/%s/events/%s/participation_status' % (calendar_id, event_uid), data=data)
+        return self.request_handler.post('calendars/%s/events/%s/participation_status' % (calendar_id, event_uid), data=data)
 
     def create_notification_channel(self, callback_url, calendar_ids=(), only_managed=False):
         """Create a new channel for receiving push notifications.
@@ -118,7 +118,7 @@ class Client(object):
         if calendar_ids:
             params = {'calendar_ids[]': calendar_ids}
 
-        self.request_handler.delete(endpoint='events', params=params)
+        return self.request_handler.delete(endpoint='events', params=params)
 
     def delete_event(self, calendar_id, event_id):
         """Delete an event from the specified calendar.
@@ -126,7 +126,7 @@ class Client(object):
         :param string calendar_id: ID of calendar to delete from.
         :param string event_id: ID of event to delete.
         """
-        self.request_handler.delete(endpoint='calendars/%s/events' % calendar_id, data={'event_id': event_id})
+        return self.request_handler.delete(endpoint='calendars/%s/events' % calendar_id, data={'event_id': event_id})
 
     def delete_external_event(self, calendar_id, event_uid):
         """Delete an external event from the specified calendar.
@@ -134,7 +134,7 @@ class Client(object):
         :param string calendar_id: ID of calendar to delete from.
         :param string event_uid: ID of event to delete.
         """
-        self.request_handler.delete(endpoint='calendars/%s/events' % calendar_id, data={'event_uid': event_uid})
+        return self.request_handler.delete(endpoint='calendars/%s/events' % calendar_id, data={'event_uid': event_uid})
 
     def elevated_permissions(self, permissions, redirect_uri=None):
         """Requests elevated permissions for a set of calendars.
@@ -585,7 +585,7 @@ class Client(object):
         """
         event['start'] = format_event_time(event['start'])
         event['end'] = format_event_time(event['end'])
-        self.request_handler.post(
+        return self.request_handler.post(
             endpoint='calendars/%s/events' % calendar_id, data=event)
 
     def authorize_with_service_account(self, email, scope, callback_url, state=None):
