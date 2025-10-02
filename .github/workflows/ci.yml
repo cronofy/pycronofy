@@ -3,13 +3,31 @@ name: python CI
 on: [push]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build-legacy:
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         python-version:
           - "3.7"
           - "3.8"
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          cache: 'pip'
+          python-version: ${{ matrix.python-version }}
+
+      - name: test application
+        run: make test_ci
+
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
           - "3.9"
           - "3.10"
           - "3.11"
