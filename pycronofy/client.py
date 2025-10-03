@@ -558,7 +558,7 @@ class Client(object):
             data={
                 'client_id': self.auth.client_id,
                 'client_secret': self.auth.client_secret,
-                'token': self.auth.access_token,
+                'token': self.auth.refresh_token,
             }
         )
         self.auth.update(
