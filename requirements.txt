@@ -1,5 +1,4 @@
 requests>=2.21.0
-pytz>=2018.9
 
 pytest>=6.2.4
 pytest-cov>=4.1

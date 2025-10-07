@@ -5,8 +5,6 @@ import hashlib
 import base64
 import hmac
 
-import pytz
-
 from pycronofy import settings
 from pycronofy.auth import Auth
 from pycronofy.batch import BatchEntry
@@ -281,7 +279,7 @@ class Client(object):
                 'redirect_uri': redirect_uri if redirect_uri else self.auth.redirect_uri,
             })
         data = response.json()
-        token_expiration = (datetime.datetime.now(tz=pytz.utc) + datetime.timedelta(seconds=data['expires_in']))
+        token_expiration = (datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(seconds=data['expires_in']))
         self.auth.update(
             token_expiration=token_expiration,
             access_token=data['access_token'],
@@ -308,7 +306,7 @@ class Client(object):
                 'application_calendar_id': application_calendar_id,
             })
         data = response.json()
-        token_expiration = (datetime.datetime.now(tz=pytz.utc) + datetime.timedelta(seconds=data['expires_in']))
+        token_expiration = (datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(seconds=data['expires_in']))
         self.auth.update(
             token_expiration=token_expiration,
             access_token=data['access_token'],
@@ -330,7 +328,7 @@ class Client(object):
         """
         if not self.auth.token_expiration:
             return True
-        return datetime.datetime.now(tz=pytz.utc) > self.auth.token_expiration
+        return datetime.datetime.now(tz=datetime.timezone.utc) > self.auth.token_expiration
 
     def list_calendars(self):
         """Return a list of calendars available for the active account.
@@ -538,7 +536,7 @@ class Client(object):
             }
         )
         data = response.json()
-        token_expiration = (datetime.datetime.now(tz=pytz.utc) + datetime.timedelta(seconds=data['expires_in']))
+        token_expiration = (datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(seconds=data['expires_in']))
         self.auth.update(
             token_expiration=token_expiration,
             access_token=data['access_token'],
