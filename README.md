@@ -36,7 +36,7 @@ import pycronofy
 cronofy = pycronofy.Client(client_id=YOUR_CLIENT_ID, client_secret=YOUR_CLIENT_SECRET)
 
 url = cronofy.user_auth_link('http://yourwebsite.com')
-print('Go to this url in your browser, and paste the code below')
+print(f'Go to {url} in your browser, and paste the code below')
 
 code = input('Paste Code Here: ') # raw_input() for python 2.
 auth = cronofy.get_authorization_from_code(code)
