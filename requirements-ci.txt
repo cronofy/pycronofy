@@ -1,5 +1,5 @@
 requests>=2.21.0
-pytz>=2018.9
+backports.zoneinfo>=0.2.1 ; python_version < "3.9"
 
 pytest
 pytest-cov

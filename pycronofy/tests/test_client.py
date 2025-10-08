@@ -1,7 +1,6 @@
 import datetime
 import json
 import pytest
-import pytz
 import responses
 
 from functools import partial
@@ -336,9 +335,9 @@ def test_is_authorization_expired(client):
 
     :param Client client: Client instance with test data.
     """
-    client.auth.token_expiration = datetime.datetime.now(tz=pytz.utc) + datetime.timedelta(seconds=60)
+    client.auth.token_expiration = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(seconds=60)
     assert client.is_authorization_expired() is False
-    client.auth.token_expiration = datetime.datetime.now(tz=pytz.utc) - datetime.timedelta(seconds=60)
+    client.auth.token_expiration = datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(seconds=60)
     assert client.is_authorization_expired() is True
 
 
