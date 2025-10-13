@@ -2,6 +2,7 @@ import datetime
 import json
 import pytest
 import pytz
+import zoneinfo
 import responses
 
 from functools import partial
@@ -87,6 +88,238 @@ def test_change_participation_status(client):
         content_type='application/json',
     )
     result = client.change_participation_status(calendar_id, event_uid, status)
+    assert result is None
+
+@responses.activate
+def test_read_events(client):
+    """Test Client.read_events().
+
+    :param Client client: Client instance with test data.
+    """
+
+    test_events_page_1 = [
+        {
+            "calendar_id": "cal_U9uuErStTG@EAAAB_IsAsykA2DBTWqQTf-f0kJw",
+            "event_uid": "evt_external_54008b1a4a41730f8d5c6037",
+            "summary": "Company Retreat",
+            "description": "",
+            "start": "2014-09-06",
+            "end": "2014-09-08",
+            "deleted": False,
+            "created": "2025-01-22T08:00:01Z",
+            "updated": "2025-01-22T09:24:16Z",
+            "location": {
+                "description": "Beach"
+            },
+            "participation_status": "needs_action",
+            "attendees": [
+                {
+                    "email": "example@cronofy.com",
+                    "display_name": "Example Person",
+                    "status": "needs_action"
+                }
+            ],
+            "organizer": {
+                "email": "example@cronofy.com",
+                "display_name": "Example Person"
+            },
+            "transparency": "opaque",
+            "status": "confirmed",
+            "categories": [],
+            "recurring": False,
+            "event_private": False,
+            "options": {
+                "delete": True,
+                "update": True,
+                "change_participation_status": True
+            }
+        }
+    ]
+
+    test_events_page_2 = [
+        {
+            "calendar_id": "cal_U9uuErStTG@EAAAB_IsAsykA2DBTWqQTf-f0kJw",
+            "event_uid": "evt_external_54008b1a4a41730f8d5c6038",
+            "summary": "Board Meeting",
+            "description": "Discuss quarterly goals",
+            "start": "2025-02-01",
+            "end": "2025-02-01",
+            "deleted": False,
+            "created": "2025-01-22T08:00:01Z",
+            "updated": "2025-01-22T09:24:16Z",
+            "location": {
+                "description": "Conference Room A"
+            },
+            "participation_status": "needs_action",
+            "attendees": [
+                {
+                    "email": "example@cronofy.com",
+                    "display_name": "Example Person",
+                    "status": "needs_action"
+                }
+            ],
+            "organizer": {
+                "email": "example@cronofy.com",
+                    "display_name": "Example Person"
+            },
+            "transparency": "opaque",
+            "status": "confirmed",
+            "categories": [],
+            "recurring": False,
+            "event_private": False,
+            "options": {
+                "delete": True,
+                "update": True,
+                "change_participation_status": True
+            }
+        }
+    ]
+
+    test_response_page_1 = {
+        "pages": {
+            "current": 1,
+            "total": 2,
+            "next_page": "https://api.cronofy.com/v1/events/pages/next_page_url"
+        },
+        "events": test_events_page_1
+    }
+
+    test_response_page_2 = {
+        "pages": {
+            "current": 2,
+            "total": 2
+        },
+        "events": test_events_page_2
+    }
+
+    responses.add(
+        responses.GET,
+        '%s/%s/events' % (settings.API_BASE_URL, settings.API_VERSION),
+        body=json.dumps(test_response_page_1),
+        status=200,
+        content_type='application/json'
+    )
+
+    responses.add(
+        responses.GET,
+        'https://api.cronofy.com/v1/events/pages/next_page_url',
+        body=json.dumps(test_response_page_2),
+        status=200,
+        content_type='application/json'
+    )
+
+    result = client.read_events()
+
+    all_events = result.all()
+
+    assert all_events == test_events_page_1 + test_events_page_2
+
+
+@responses.activate
+def test_read_free_busy(client):
+    """Test Client.read_free_busy().
+
+    :param Client client: Client instance with test data.
+    """
+
+    test_free_busy_page_1 = [
+        {
+        "calendar_id": "cal_U9uuErStTG@EAAAB_IsAsykA2DBTWqQTf-f0kJw",
+        "start": "2025-01-22T08:00:00Z",
+        "end": "2025-01-22T08:30:00Z",
+        "free_busy_status": "busy",
+        },
+        {
+        "calendar_id": "cal_U9uuErStTG@EAAAB_IsAsykA2DBTWqQTf-f0kJw",
+        "start": "2025-01-24",
+        "end": "2025-01-25",
+        "free_busy_status": "free",
+        }
+    ]
+
+    test_free_busy_page_2 = [
+        {
+        "calendar_id": "cal_U9uuErStTG@EAAAB_IsAsykA2DBTWqQTf-f0kJw",
+        "start": "2025-01-25T08:00:00Z",
+        "end": "2025-01-25T08:30:00Z",
+        "free_busy_status": "busy",
+        },
+        {
+        "calendar_id": "cal_U9uuErStTG@EAAAB_IsAsykA2DBTWqQTf-f0kJw",
+        "start": "2025-01-26",
+        "end": "2025-01-27",
+        "free_busy_status": "free",
+        }
+    ]
+
+    test_response_page_1 = {
+        "pages": {
+            "current": 1,
+            "total": 2,
+            "next_page": "https://api.cronofy.com/v1/events/pages/next_page_url"
+        },
+        "free_busy": test_free_busy_page_1
+    }
+
+    test_response_page_2 = {
+        "pages": {
+            "current": 2,
+            "total": 2
+        },
+        "free_busy": test_free_busy_page_2
+    }
+
+    responses.add(
+        responses.GET,
+        '%s/%s/free_busy' % (settings.API_BASE_URL, settings.API_VERSION),
+        body=json.dumps(test_response_page_1),
+        status=200,
+        content_type='application/json'
+    )
+
+    responses.add(
+        responses.GET,
+        'https://api.cronofy.com/v1/events/pages/next_page_url',
+        body=json.dumps(test_response_page_2),
+        status=200,
+        content_type='application/json'
+    )
+
+    result = client.read_free_busy()
+
+    all_events = result.all()
+
+    assert all_events == test_free_busy_page_1 + test_free_busy_page_2
+
+
+@responses.activate
+def test_delete_all_events(client):
+    """Test Client.delete_all_events().
+
+    :param Client client: Client instance with test data.
+    """
+    calendar_ids = ('cal_123', 'cal_456')
+
+    def request_callback(request):
+        params = request.params
+        if 'calendar_ids[]' in params:
+            assert params == {'calendar_ids[]': list(calendar_ids)}
+        else:
+            assert params == {'delete_all': 'True'}
+
+        return (202, {}, None)
+
+    responses.add_callback(
+        responses.DELETE,
+        url='%s/%s/events' % (settings.API_BASE_URL, settings.API_VERSION),
+        callback=request_callback,
+        content_type='application/json',
+    )
+
+    result = client.delete_all_events(calendar_ids=calendar_ids)
+    assert result is None
+
+    result = client.delete_all_events()
     assert result is None
 
 
@@ -288,6 +521,67 @@ def test_create_notification_channel_only_managed(client):
     channel = client.create_notification_channel('http://example.com', calendar_ids=('1',), only_managed=True)
     assert channel['filters']['only_managed']
 
+@responses.activate
+def test_list_notification_channels(client):
+    """Test Client.list_notification_channels().
+
+    :param Client client: Client instance with test data.
+    """
+    
+    test_notification_channels = [
+        {
+        "channel_id": "chn_54cf7c7cb4ad4c1027000001",
+        "callback_url": "https://example.yourapp.com/cronofy/smart_invite/notifications",
+        "filters": {
+        "calendar_ids": ["cal_n23kjnwrw2_sakdnawerd3"],
+        "only_managed": False
+            }
+        },
+        {
+        "channel_id": "chn_54cf7c7cb4ad4c1027000002",
+        "callback_url": "https://example.yourapp.com/cronofy/smart_invite/notifications",
+        "filters": {
+        "calendar_ids": ["cal_n23kjnwrw2_sakdnawefg6"],
+        "only_managed": True
+            }
+        }
+    ]
+
+    test_response = {
+        'channels': test_notification_channels
+    }
+
+    responses.add(
+        responses.GET,
+        '%s/%s/channels' % (settings.API_BASE_URL, settings.API_VERSION),
+        body=json.dumps(test_response),
+        status=200,
+        content_type='application/json'
+    )
+
+    result = client.list_notification_channels()
+
+    assert result == test_notification_channels
+
+@responses.activate
+def test_close_notification_channel(client):
+    """Test Client.close_notification_channel().
+
+    :param Client client: Client instance with test data.
+    """
+    channel_id = "chn_123example"
+    
+    def request_callback(request):
+        return (202, {}, None)
+
+    responses.add_callback(
+        responses.DELETE,
+        url='%s/%s/channels/%s' % (settings.API_BASE_URL, settings.API_VERSION, channel_id),
+        callback=request_callback,
+        content_type='application/json',
+    )
+    result = client.close_notification_channel(channel_id)
+    assert result is None
 
 @responses.activate
 def test_elevated_permissions(client):
@@ -394,6 +688,48 @@ def test_revoke_profile(client):
     result = client.revoke_profile(profile_id)
     assert result is None
 
+@responses.activate
+def test_list_profiles(client):
+    """Test Client.list_profiles().
+
+    :param Client client: Client instance with test data.
+    """
+
+    test_profiles = [
+        {
+        "provider_name": "google",
+        "provider_service": "gsuite",
+        "profile_id": "pro_n23kjnwrw2",
+        "profile_name": "example1@cronofy.com",
+        "profile_connected": True,
+        "profile_initial_sync_required": False
+        },
+        {
+        "provider_name": "exchange",
+        "provider_service": "office365",
+        "profile_id": "pro_fe145c37de",
+        "profile_name": "example2@cronofy.com",
+        "profile_connected": False,
+        "profile_initial_sync_required": False,
+        "profile_relink_url": "https://app.cronofy.com/relink/apple?email=example@cronofy.com"
+        }
+    ]
+
+    test_response = {
+        'profiles': test_profiles
+    }
+
+    responses.add(
+        responses.GET,
+        '%s/%s/profiles' % (settings.API_BASE_URL, settings.API_VERSION),
+        body=json.dumps(test_response),
+        status=200,
+        content_type='application/json'
+    )
+
+    result = client.list_profiles()
+
+    assert result == test_profiles
 
 @responses.activate
 def test_upsert_event(client):
