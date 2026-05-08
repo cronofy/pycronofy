@@ -2,7 +2,6 @@ import datetime
 import json
 
 import pytest
-import pytz
 import responses
 
 from pycronofy import Client
@@ -140,8 +139,8 @@ def test_batch_upsert_with_datetimes(client):
         'event_id': 'test-1',
         'summary': 'Test Event',
         'description': 'Talk about how awesome dogs are.',
-        'start': datetime.datetime(2022, 3, 22, 17, tzinfo=pytz.utc),
-        'end': datetime.datetime(2022, 3, 22, 18, tzinfo=pytz.utc),
+        'start': datetime.datetime(2022, 3, 22, 17, tzinfo=datetime.timezone.utc),
+        'end': datetime.datetime(2022, 3, 22, 18, tzinfo=datetime.timezone.utc),
         'tzid': 'Etc/UTC',
         'location': {
             'description': 'Location!',

@@ -4,7 +4,6 @@ dynamic = ["version"]
 requires-python = ">=3.7"
 dependencies = [
     "requests>=2.20.0",
-    "pytz>=2013.7",
 ]
 description = 'Python library for Cronofy'
 authors = [

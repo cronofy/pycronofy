@@ -1,5 +1,4 @@
 import datetime
-import pytz
 
 from pycronofy.exceptions import PyCronofyDateTimeError
 
@@ -41,6 +40,6 @@ def format_event_time(date_time):
         error_message = 'Unsupported type: ``%s``.\nSupported types: ``<datetime.datetime>``, ``<datetime.date>``, ``<dict>``, or ``<str>``.'
         raise PyCronofyDateTimeError(
             error_message % (repr(type(date_time))), date_time)
-    if date_time.tzinfo and date_time.tzinfo != pytz.utc:
-        date_time = date_time.astimezone(pytz.utc)
+    if date_time.tzinfo and date_time.tzinfo != datetime.timezone.utc:
+        date_time = date_time.astimezone(datetime.timezone.utc)
     return date_time.strftime(ISO_8601_DATETIME_FORMAT)
