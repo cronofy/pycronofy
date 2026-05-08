@@ -306,7 +306,7 @@ pycronofy.set_request_hook(on_request)
 # Running the Unit Tests
 
 ```bash
-py.test pycronofy --cov=pycronofy
+py.test pycronofy --cov=pycronofy --cov-report=term-missing
 ```
 
 # Dependencies
