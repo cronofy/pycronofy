@@ -1,3 +1,6 @@
+## [2.1.0]
+* Replaced `pytz` with the standard library `datetime.timezone.utc` and `zoneinfo` modules; `pytz` is no longer a dependency [#116]
+
 ## [2.0.7]
 * Added support for the `response_format` parameter to the `real_time_scheduling` query API [#108]
 
@@ -38,6 +41,7 @@
 ## [1.9.3]
 * Add support for Element Token generation [#70]
 
+[2.1.0]: https://github.com/cronofy/pycronofy/releases/tag/2.1.0
 [2.0.7]: https://github.com/cronofy/pycronofy/releases/tag/2.0.7
 [2.0.6]: https://github.com/cronofy/pycronofy/releases/tag/2.0.6
 [2.0.5]: https://github.com/cronofy/pycronofy/releases/tag/2.0.5
@@ -51,6 +55,7 @@
 [1.9.4]: https://github.com/cronofy/pycronofy/releases/tag/1.9.4
 [1.9.3]: https://github.com/cronofy/pycronofy/releases/tag/1.9.3
 
+[#116]: https://github.com/cronofy/pycronofy/pull/116
 [#108]: https://github.com/cronofy/pycronofy/pull/108
 [#107]: https://github.com/cronofy/pycronofy/pull/107
 [#105]: https://github.com/cronofy/pycronofy/pull/105
