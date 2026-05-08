@@ -564,7 +564,10 @@ def test_get_smart_invite(client):
     recipient = "example@example.com"
 
     def request_callback(request):
-        assert request.url == 'https://api.cronofy.com/v1/smart_invites?smart_invite_id=qTtZdczOccgaPncGJaCiLg&recipient_email=example%40example.com'
+        if "recipient_email" in request.url:
+            assert request.url == 'https://api.cronofy.com/v1/smart_invites?smart_invite_id=qTtZdczOccgaPncGJaCiLg&recipient_email=example%40example.com'
+        else:
+            assert request.url == 'https://api.cronofy.com/v1/smart_invites?smart_invite_id=qTtZdczOccgaPncGJaCiLg'
 
         response = {
             "recipient": {
@@ -588,7 +591,7 @@ def test_get_smart_invite(client):
             }
         }
 
-        return (202, {}, json.dumps(response))
+        return (200, {}, json.dumps(response))
 
     responses.add_callback(
         responses.GET,
@@ -598,6 +601,10 @@ def test_get_smart_invite(client):
     )
 
     result = client.get_smart_invite(smart_invite_id, recipient)
+
+    assert result['attachments']['icalendar'] == "BEGIN:VCALENDAR\nVERSION:2.0..."
+
+    result = client.get_smart_invite(smart_invite_id)
 
     assert result['attachments']['icalendar'] == "BEGIN:VCALENDAR\nVERSION:2.0..."
 
