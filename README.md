@@ -10,7 +10,7 @@ Inspired by [Cronofy-Ruby](https://github.com/cronofy/cronofy-ruby)
 
 # Installation
 
-**NOTE:** Support for Python v2.7 was dropped as of pycronofy v2.0.0
+**NOTE:** Support for Python v2.7 was dropped as of pycronofy v2.0.0. As of v3.0.0 the minimum supported version is Python 3.10.
 
 (unless performing a system wide install, it's recommended to install inside of a virtualenv)
 
@@ -18,9 +18,9 @@ Inspired by [Cronofy-Ruby](https://github.com/cronofy/cronofy-ruby)
 # Install via pip:
 pip install pycronofy
 
-# Install via setup.py:
+# Install from a local checkout:
 pip install -r requirements.txt # Install core & dependencies for tests
-python setup.py install
+pip install .
 ```
 
 ---
@@ -319,7 +319,7 @@ Tests depend on ``pytest, pytest-cov, responses``.
 
 In the event of an insecure platform warning:
 
-* Install python >= 2.7.9
+* Install a supported python version (>= 3.10)
 * pip install requests\[security\] (you may need to install additional library packages)
 * Call ``requests.packages.urllib3.disable_warnings()`` in your code to suppress the warnings.
 
