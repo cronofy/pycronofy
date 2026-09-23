@@ -1,0 +1,139 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Build and check the package without publishing to PyPI"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - name: Check branch is master
+        if: github.ref != 'refs/heads/master'
+        run: |
+          echo "::error::Releases must be run from master, not ${GITHUB_REF}"
+          exit 1
+
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Read version
+        id: version
+        run: echo "version=$(make version)" >> "${GITHUB_OUTPUT}"
+
+      - name: Check tag does not exist
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if git ls-remote --exit-code --tags origin "refs/tags/${VERSION}" > /dev/null; then
+            echo "::error::Tag ${VERSION} already exists, bump the version in a prep PR first"
+            exit 1
+          fi
+
+      - name: Check CHANGELOG entry exists
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if ! grep -qxF "## [${VERSION}]" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no '## [${VERSION}]' entry"
+            exit 1
+          fi
+
+      - name: Check version is not on PyPI
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          status=$(curl -s -o /dev/null -w '%{http_code}' "https://pypi.org/pypi/PyCronofy/${VERSION}/json")
+          if [ "${status}" != "404" ]; then
+            echo "::error::Expected 404 from PyPI for ${VERSION}, got ${status}"
+            exit 1
+          fi
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Build package
+        run: |
+          pip install build twine
+          make build
+          twine check --strict dist/*
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+
+  test:
+    needs: preflight
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    needs: [preflight, test]
+    if: ${{ !inputs.dry_run }}
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/PyCronofy/
+    permissions:
+      id-token: write
+
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+
+  github-release:
+    needs: [preflight, publish]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist/
+
+      - name: Create GitHub release and tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.preflight.outputs.version }}
+        run: |
+          awk -v heading="## [${VERSION}]" '
+            $0 == heading { found = 1; next }
+            found && /^## \[/ { exit }
+            found { print }
+          ' CHANGELOG.md > notes.md
+          if ! grep -q '[^[:space:]]' notes.md; then
+            echo "::error::CHANGELOG.md entry for ${VERSION} is empty"
+            exit 1
+          fi
+          gh release create "${VERSION}" dist/* \
+            --target "${GITHUB_SHA}" \
+            --title "${VERSION}" \
+            --notes-file notes.md

@@ -47,7 +47,14 @@ pytest:
 	python -m flake8
 
 .PHONY: release
-release: test
+release:
+	@echo "Releases are published by the Release GitHub Actions workflow:"
+	@echo "https://github.com/cronofy/pycronofy/actions/workflows/release.yml"
+	@echo "See the Releasing section of README.md. 'make release_manual' is a break-glass fallback."
+	@exit 1
+
+.PHONY: release_manual
+release_manual: test
 	# Check pypi configured
 	test -f ~/.pypirc
 	twine upload -r pypi dist/*
