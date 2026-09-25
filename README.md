@@ -309,6 +309,20 @@ pycronofy.set_request_hook(on_request)
 py.test pycronofy --cov=pycronofy
 ```
 
+# Releasing
+
+Releases are published to PyPI by the [Release workflow](https://github.com/cronofy/pycronofy/actions/workflows/release.yml) using PyPI trusted publishing, so no PyPI credentials are needed.
+
+1. Open a prep PR that bumps the version in `PKG-INFO` and `pycronofy/__init__.py` and adds a `## [X.Y.Z]` entry to `CHANGELOG.md`, then merge it.
+2. Go to Actions → Release → Run workflow on `master`. Tick `dry_run` to build and check the package without publishing.
+3. Once the tests pass, the publish job waits for approval from another member of the Engineering team. The person who ran the workflow can't approve it.
+
+After publishing, the workflow creates the `X.Y.Z` tag and a GitHub release with the CHANGELOG entry as notes.
+
+If a job fails after the package is published, use **Re-run failed jobs** on the same run. A new run will stop at the preflight checks because the version is already on PyPI.
+
+`make release_manual` is a break-glass fallback for the PyPI project owners. It uploads with a personal `~/.pypirc` token and pushes the tag, but doesn't create a GitHub release.
+
 # Dependencies
 
 Core library depends on ``requests``.
