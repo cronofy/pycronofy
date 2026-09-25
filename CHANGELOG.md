@@ -1,3 +1,7 @@
+## [2.1.1]
+* Support for Python 3.14 added [#118]
+* Removed Python 2 era packaging leftovers: the universal wheel flag and the `setup.py` entry in `MANIFEST.in` [#118]
+
 ## [2.1.0]
 * Replaced `pytz` with the standard library `datetime.timezone.utc` and `zoneinfo` modules; `pytz` is no longer a dependency [#116]
 
