@@ -18,9 +18,9 @@ Inspired by [Cronofy-Ruby](https://github.com/cronofy/cronofy-ruby)
 # Install via pip:
 pip install pycronofy
 
-# Install via setup.py:
+# Install from a local checkout:
 pip install -r requirements.txt # Install core & dependencies for tests
-python setup.py install
+pip install .
 ```
 
 ---
@@ -333,7 +333,7 @@ Tests depend on ``pytest, pytest-cov, responses``.
 
 In the event of an insecure platform warning:
 
-* Install python >= 2.7.9
+* Install a supported python version (>= 3.7)
 * pip install requests\[security\] (you may need to install additional library packages)
 * Call ``requests.packages.urllib3.disable_warnings()`` in your code to suppress the warnings.
 
