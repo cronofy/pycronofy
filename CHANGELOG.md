@@ -1,6 +1,7 @@
 ## [2.1.1]
 * Support for Python 3.14 added [#118]
 * Removed Python 2 era packaging leftovers: the universal wheel flag and the `setup.py` entry in `MANIFEST.in` [#118]
+* Package metadata now carries the README as its long description, so the PyPI project page renders it [#120]
 
 ## [2.1.0]
 * Replaced `pytz` with the standard library `datetime.timezone.utc` and `zoneinfo` modules; `pytz` is no longer a dependency [#116]
