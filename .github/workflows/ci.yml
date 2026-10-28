@@ -2,6 +2,8 @@ name: python CI
 
 on:
   push:
+    branches: [master]
+  pull_request:
   workflow_call:
 
 permissions:
@@ -33,3 +35,21 @@ jobs:
 
       - name: test application
         run: make test_ci
+
+  ci-passed:
+    name: CI passed
+    if: always()
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check all jobs succeeded
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          for result in ${RESULTS}; do
+            if [ "${result}" != "success" ]; then
+              echo "::error::A required job finished with '${result}'"
+              exit 1
+            fi
+          done
