@@ -34,7 +34,7 @@ def test_iso8601_string_in_dict():
 
 def test_tz_aware_datetime_in_dict():
     """Test format_event_time returns an ISO8601 formatted date string in a dict when passed a datetimee object"""
-    date = datetime.datetime(2016, 1, 15, 14, 20, 15, tzinfo=zoneinfo.ZoneInfo('EST'))
+    date = datetime.datetime(2016, 1, 15, 14, 20, 15, tzinfo=zoneinfo.ZoneInfo('America/New_York'))
     params = {
         'time': date,
         'tzid': 'Etc/UTC',
@@ -63,7 +63,7 @@ def test_none():
 def test_tz_aware_datetime():
     """Test format_event_time returns an ISO8601 formatted datetime string with UTC timezone
     when passed a datetime.date object that's set to another timezone."""
-    d = datetime.datetime(2016, 1, 15, 14, 20, 15, tzinfo=zoneinfo.ZoneInfo('EST'))
+    d = datetime.datetime(2016, 1, 15, 14, 20, 15, tzinfo=zoneinfo.ZoneInfo('America/New_York'))
     assert format_event_time(d) == '2016-01-15T19:20:15Z'
 
 
