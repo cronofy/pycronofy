@@ -333,7 +333,7 @@ Tests depend on ``pytest, pytest-cov, responses``.
 
 In the event of an insecure platform warning:
 
-* Install a supported python version (>= 3.7)
+* Install a supported python version (>= 3.11)
 * pip install requests\[security\] (you may need to install additional library packages)
 * Call ``requests.packages.urllib3.disable_warnings()`` in your code to suppress the warnings.
 
