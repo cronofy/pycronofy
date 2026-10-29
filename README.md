@@ -313,7 +313,7 @@ py.test pycronofy --cov=pycronofy
 
 Releases are published to PyPI by the [Release workflow](https://github.com/cronofy/pycronofy/actions/workflows/release.yml) using PyPI trusted publishing, so no PyPI credentials are needed.
 
-1. Open a prep PR that bumps the version in `PKG-INFO` and `pycronofy/__init__.py` and adds a `## [X.Y.Z]` entry to `CHANGELOG.md`, then merge it.
+1. Open a prep PR that bumps the version in `PKG-INFO` and `pycronofy/__init__.py` and adds a `## [X.Y.Z]` entry to `CHANGELOG.md`, then merge it. Add the matching `[X.Y.Z]` and `[#PR]` link definitions at the bottom of `CHANGELOG.md` too, otherwise the heading and PR references render as plain text.
 2. Go to Actions → Release → Run workflow on `master`. Tick `dry_run` to build and check the package without publishing.
 3. Once the tests pass, the publish job waits for approval from another member of the Engineering team. The person who ran the workflow can't approve it.
 
