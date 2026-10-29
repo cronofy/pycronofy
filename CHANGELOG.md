@@ -46,6 +46,7 @@
 ## [1.9.3]
 * Add support for Element Token generation [#70]
 
+[2.1.1]: https://github.com/cronofy/pycronofy/releases/tag/2.1.1
 [2.1.0]: https://github.com/cronofy/pycronofy/releases/tag/2.1.0
 [2.0.7]: https://github.com/cronofy/pycronofy/releases/tag/2.0.7
 [2.0.6]: https://github.com/cronofy/pycronofy/releases/tag/2.0.6
@@ -60,6 +61,8 @@
 [1.9.4]: https://github.com/cronofy/pycronofy/releases/tag/1.9.4
 [1.9.3]: https://github.com/cronofy/pycronofy/releases/tag/1.9.3
 
+[#120]: https://github.com/cronofy/pycronofy/pull/120
+[#118]: https://github.com/cronofy/pycronofy/pull/118
 [#116]: https://github.com/cronofy/pycronofy/pull/116
 [#108]: https://github.com/cronofy/pycronofy/pull/108
 [#107]: https://github.com/cronofy/pycronofy/pull/107
