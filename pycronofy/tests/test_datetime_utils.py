@@ -1,9 +1,6 @@
 import datetime
 import pytest
-try:
-    import zoneinfo
-except ImportError:
-    from backports import zoneinfo
+import zoneinfo
 from pycronofy.datetime_utils import format_event_time
 
 
