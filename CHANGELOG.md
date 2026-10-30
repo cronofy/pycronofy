@@ -1,3 +1,7 @@
+## [2.1.2]
+* Support for Python 3.15 added [#122]
+* Support for Python 3.7, 3.8, 3.9 and 3.10 removed, as they are end of life. `requires-python` is now `>=3.11` [#122]
+
 ## [2.1.1]
 * Support for Python 3.14 added [#118]
 * Removed Python 2 era packaging leftovers: the universal wheel flag and the `setup.py` entry in `MANIFEST.in` [#118]
@@ -46,6 +50,7 @@
 ## [1.9.3]
 * Add support for Element Token generation [#70]
 
+[2.1.2]: https://github.com/cronofy/pycronofy/releases/tag/2.1.2
 [2.1.1]: https://github.com/cronofy/pycronofy/releases/tag/2.1.1
 [2.1.0]: https://github.com/cronofy/pycronofy/releases/tag/2.1.0
 [2.0.7]: https://github.com/cronofy/pycronofy/releases/tag/2.0.7
@@ -61,6 +66,7 @@
 [1.9.4]: https://github.com/cronofy/pycronofy/releases/tag/1.9.4
 [1.9.3]: https://github.com/cronofy/pycronofy/releases/tag/1.9.3
 
+[#122]: https://github.com/cronofy/pycronofy/pull/122
 [#120]: https://github.com/cronofy/pycronofy/pull/120
 [#118]: https://github.com/cronofy/pycronofy/pull/118
 [#116]: https://github.com/cronofy/pycronofy/pull/116
